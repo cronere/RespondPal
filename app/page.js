@@ -33,7 +33,7 @@ export default function Home() {
     },
     {
       q: 'Does this work for multiple locations?',
-      a: "Yes — each location is priced per our standard plans. If you have 3 or more locations, contact us for a discounted multi-location rate.",
+      a: "Yes — each location is $397/month. If you have 3 or more locations, contact us for a discounted multi-location rate.",
     },
   ]
 
@@ -84,7 +84,7 @@ export default function Home() {
             professionally, promptly, and on-brand — within 24 hours, every time.
           </p>
           <div className="hero-cta-group">
-            <a href="#pricing" className="btn-orange">See plans &amp; pricing →</a>
+            <a href="#pricing" className="btn-orange">Start for $397/month →</a>
             <a href="#how" className="btn-outline">See how it works</a>
           </div>
           <div className="hero-stats">
@@ -311,53 +311,30 @@ export default function Home() {
       <section className="pricing" id="pricing">
         <div className="container">
           <div className="section-label">Pricing</div>
-          <h2 className="section-h2">Simple pricing.<br />No surprises.</h2>
-          <p className="section-sub" style={{ margin: '0.5rem auto 2rem' }}>
+          <h2 className="section-h2">One plan. One price.<br />No surprises.</h2>
+          <p className="section-sub" style={{ margin: '0.5rem auto 0' }}>
             Flat monthly rate. No setup fees. No contracts. Cancel anytime.
           </p>
-          <div className="pricing-cards">
-
-            {/* GOOGLE ONLY */}
-            <div className="price-card">
-              <div className="price-plan">Google</div>
-              <div className="price-amount"><span>$</span>297</div>
-              <div className="price-period">per month, per location</div>
-              <ul className="price-list">
-                <li>Google Business Profile responses</li>
-                <li>Unlimited reviews covered</li>
-                <li>24-hour response guarantee</li>
-                <li>Human-reviewed, never templated</li>
-                <li>All star ratings (1–5 stars)</li>
-                <li>Client dashboard access</li>
-                <li>Cancel anytime, no penalty</li>
-              </ul>
-              <a href="mailto:hello@respondpal.ai" className="price-cta price-cta-outline">
-                Get started →
-              </a>
-              <div className="price-note">Live within 48 hours.</div>
+          <div className="price-card price-card-featured" style={{ maxWidth: '440px', margin: '2rem auto 0' }}>
+            <div className="price-badge">Google + Yelp included</div>
+            <div className="price-amount"><span>$</span>397</div>
+            <div className="price-period">per month, per location</div>
+            <ul className="price-list">
+              <li>Google <strong>and</strong> Yelp review responses</li>
+              <li>Unlimited reviews covered</li>
+              <li>24-hour response guarantee</li>
+              <li>Human-reviewed, never templated</li>
+              <li>All star ratings (1–5 stars)</li>
+              <li>Client dashboard access</li>
+              <li>Dedicated account setup</li>
+              <li>Cancel anytime, no penalty</li>
+            </ul>
+            <a href="mailto:hello@respondpal.ai" className="price-cta">
+              Start responding today →
+            </a>
+            <div className="price-note">
+              Setup takes less than 10 minutes. You&apos;ll be live within 48 hours.
             </div>
-
-            {/* GOOGLE + YELP */}
-            <div className="price-card price-card-featured">
-              <div className="price-badge">Most popular</div>
-              <div className="price-plan">Google + Yelp</div>
-              <div className="price-amount"><span>$</span>397</div>
-              <div className="price-period">per month, per location</div>
-              <ul className="price-list">
-                <li>Google <strong>and</strong> Yelp responses</li>
-                <li>Unlimited reviews covered</li>
-                <li>24-hour response guarantee</li>
-                <li>Human-reviewed, never templated</li>
-                <li>All star ratings (1–5 stars)</li>
-                <li>Client dashboard access</li>
-                <li>Cancel anytime, no penalty</li>
-              </ul>
-              <a href="mailto:hello@respondpal.ai" className="price-cta">
-                Get started →
-              </a>
-              <div className="price-note">Live within 48 hours.</div>
-            </div>
-
           </div>
           <p className="multi-note">
             Manage multiple locations?{' '}
@@ -404,7 +381,7 @@ export default function Home() {
           Every day without a response is a day a potential customer chose
           someone else. Let&apos;s fix that — starting today.
         </p>
-        <a href="#pricing" className="btn-white">See plans &amp; pricing →</a>
+        <a href="#pricing" className="btn-white">Get started for $397/month →</a>
       </section>
 
       {/* FOOTER */}
