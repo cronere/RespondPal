@@ -9,11 +9,15 @@ export default function Home() {
   const faqs = [
     {
       q: 'Which review platforms do you cover?',
-      a: "Our standard plan covers Google Business Profile. Our Pro plan adds Yelp — we get added as a Team Member on your Yelp Business account, so no credential sharing required. Both platforms are covered from a single monthly fee.",
+      a: "Our standard plan covers both Google Business Profile and Yelp. We get added as a Manager on Google and a Team Member on Yelp — no passwords shared on either platform.",
     },
     {
       q: 'How do you get access to respond to my reviews?',
       a: "For Google, we get added as a Manager on your Google Business Profile — takes about 2 minutes. For Yelp, you add us as a Team Member in your Yelp Business dashboard — another 2 minutes. You stay the owner on both platforms. Remove our access instantly if you ever cancel.",
+    },
+    {
+      q: 'What is the Profile Cleanup add-on?',
+      a: "When you sign up, you likely have months of unanswered reviews sitting on your profile — especially negative ones. Our one-time Profile Cleanup responds to every 1–3 star review from the last 180 days, so your profile looks professionally managed from day one, not just going forward.",
     },
     {
       q: 'What if I get a really negative or complicated review?',
@@ -307,34 +311,94 @@ export default function Home() {
         </div>
       </section>
 
+      {/* AI VISIBILITY */}
+      <section className="ai-section">
+        <div className="container">
+          <div className="section-label">The bigger picture</div>
+          <h2 className="section-h2">Reviews aren&apos;t just<br />for humans anymore.</h2>
+          <p className="section-sub">
+            AI search tools like Google&apos;s AI Overviews, ChatGPT, and Perplexity
+            now synthesize your reviews to decide whether to recommend your business.
+            Response rate, recency, and sentiment all factor in. An unanswered review
+            isn&apos;t just a missed conversation — it&apos;s a signal to AI that
+            your business is disengaged.
+          </p>
+          <div className="ai-cards">
+            <div className="ai-card">
+              <div className="ai-card-icon">🤖</div>
+              <h3>AI reads your responses</h3>
+              <p>When you respond professionally to a negative review, that response becomes part of how AI characterizes your business — often neutralizing the bad review in AI-generated summaries.</p>
+            </div>
+            <div className="ai-card">
+              <div className="ai-card-icon">📈</div>
+              <h3>Response rate affects rankings</h3>
+              <p>Google&apos;s local ranking algorithm factors in review engagement. Businesses that respond consistently rank higher in Maps and get cited more favorably in AI Overviews.</p>
+            </div>
+            <div className="ai-card">
+              <div className="ai-card-icon">🔍</div>
+              <h3>Silence is now a liability</h3>
+              <p>As AI compresses local search into recommendations, unmanaged reputations are riskier than ever. One unanswered 1-star review can define you in an AI summary to thousands of potential customers.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* PRICING */}
       <section className="pricing" id="pricing">
         <div className="container">
           <div className="section-label">Pricing</div>
-          <h2 className="section-h2">One plan. One price.<br />No surprises.</h2>
+          <h2 className="section-h2">Simple pricing.<br />No surprises.</h2>
           <p className="section-sub" style={{ margin: '0.5rem auto 0' }}>
             Flat monthly rate. No setup fees. No contracts. Cancel anytime.
           </p>
-          <div className="price-card price-card-featured" style={{ maxWidth: '440px', margin: '2rem auto 0' }}>
-            <div className="price-badge">Google + Yelp included</div>
-            <div className="price-amount"><span>$</span>397</div>
-            <div className="price-period">per month, per location</div>
-            <ul className="price-list">
-              <li>Google <strong>and</strong> Yelp review responses</li>
-              <li>Unlimited reviews covered</li>
-              <li>24-hour response guarantee</li>
-              <li>Human-reviewed, never templated</li>
-              <li>All star ratings (1–5 stars)</li>
-              <li>Client dashboard access</li>
-              <li>Dedicated account setup</li>
-              <li>Cancel anytime, no penalty</li>
-            </ul>
-            <a href="mailto:hello@respondpal.ai" className="price-cta">
-              Start responding today →
-            </a>
-            <div className="price-note">
-              Setup takes less than 10 minutes. You&apos;ll be live within 48 hours.
+          <div className="pricing-cards">
+
+            {/* MONTHLY PLAN */}
+            <div className="price-card price-card-featured">
+              <div className="price-badge">Monthly plan</div>
+              <div className="price-amount"><span>$</span>397</div>
+              <div className="price-period">per month, per location</div>
+              <ul className="price-list">
+                <li>Google <strong>and</strong> Yelp review responses</li>
+                <li>Unlimited reviews covered</li>
+                <li>24-hour response guarantee</li>
+                <li>Human-reviewed, never templated</li>
+                <li>All star ratings (1–5 stars)</li>
+                <li>Client dashboard access</li>
+                <li>Dedicated account setup</li>
+                <li>Cancel anytime, no penalty</li>
+              </ul>
+              <a href="mailto:hello@respondpal.ai" className="price-cta">
+                Start responding today →
+              </a>
+              <div className="price-note">
+                Setup takes less than 10 minutes. Live within 48 hours.
+              </div>
             </div>
+
+            {/* PROFILE CLEANUP */}
+            <div className="price-card">
+              <div className="price-badge-alt">One-time add-on</div>
+              <div className="price-plan-label">Profile Cleanup</div>
+              <div className="price-amount"><span>$</span>197</div>
+              <div className="price-period">one-time fee</div>
+              <ul className="price-list">
+                <li>Responds to all 1–3 star reviews</li>
+                <li>Covers last 180 days of reviews</li>
+                <li>Google and Yelp profiles covered</li>
+                <li>Completed within 5 business days</li>
+                <li>Professional, on-brand responses</li>
+                <li>Makes your profile look managed from day one</li>
+                <li>Available at signup or anytime</li>
+              </ul>
+              <a href="mailto:hello@respondpal.ai" className="price-cta price-cta-secondary">
+                Add to my plan →
+              </a>
+              <div className="price-note">
+                Most clients add this at signup. Highly recommended.
+              </div>
+            </div>
+
           </div>
           <p className="multi-note">
             Manage multiple locations?{' '}
