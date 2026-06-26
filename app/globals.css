@@ -696,24 +696,53 @@ a {
   text-align: center;
 }
 
+.pricing-cards {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 2rem;
+}
+
 .price-card {
   background: var(--card);
   border: 1px solid var(--border2);
   border-radius: 16px;
   padding: 2.5rem;
-  max-width: 440px;
-  margin: 2rem auto 0;
+  width: 100%;
+  max-width: 380px;
   position: relative;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
 }
 
-.price-card::before {
+.price-card-featured {
+  border-color: var(--orange);
+  background: var(--card2);
+}
+
+.price-card-featured::before {
   content: '';
   position: absolute;
   inset: -1px;
   border-radius: 17px;
-  background: linear-gradient(135deg, var(--orange) 0%, transparent 60%);
+  background: linear-gradient(135deg, var(--orange) 0%, transparent 55%);
   z-index: -1;
-  opacity: 0.4;
+  opacity: 0.35;
+}
+
+.price-plan {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 0.75rem;
+}
+
+.price-card-featured .price-plan {
+  color: var(--orange);
 }
 
 .price-badge {
@@ -726,7 +755,12 @@ a {
   text-transform: uppercase;
   padding: 0.3rem 1rem;
   border-radius: 100px;
-  margin-bottom: 1.5rem;
+  margin-bottom: 0.75rem;
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
 }
 
 .price-amount {
@@ -757,7 +791,7 @@ a {
   flex-direction: column;
   gap: 0.75rem;
   margin-bottom: 2rem;
-  text-align: left;
+  flex: 1;
 }
 
 .price-list li {
@@ -789,18 +823,31 @@ a {
 
 .price-cta:hover {
   background: var(--orange-dark);
+  color: var(--white);
+}
+
+.price-cta-outline {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--border2);
+}
+
+.price-cta-outline:hover {
+  background: var(--border2);
+  color: var(--white);
 }
 
 .price-note {
   font-size: 0.8rem;
   color: var(--muted2);
   margin-top: 0.875rem;
+  text-align: center;
 }
 
 .multi-note {
   font-size: 0.85rem;
   color: var(--muted);
-  margin-top: 1.25rem;
+  margin-top: 1.5rem;
 }
 
 .multi-note a {
