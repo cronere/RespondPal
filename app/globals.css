@@ -188,6 +188,7 @@ a {
   text-transform: uppercase;
   color: var(--orange);
   margin-bottom: 0.75rem;
+  text-align: center;
 }
 
 .section-h2 {
@@ -198,6 +199,7 @@ a {
   color: var(--white);
   line-height: 1.05;
   margin-bottom: 0.75rem;
+  text-align: center;
 }
 
 .section-sub {
@@ -206,6 +208,9 @@ a {
   margin-bottom: 2.5rem;
   max-width: 560px;
   line-height: 1.7;
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 /* ── BUTTONS ── */
@@ -829,6 +834,7 @@ a {
 .faq {
   background: var(--card);
   padding: 5rem 0;
+  text-align: center;
 }
 
 .faq-list {
@@ -836,6 +842,8 @@ a {
   display: flex;
   flex-direction: column;
   gap: 0;
+  text-align: left;
+  margin: 0 auto;
 }
 
 .faq-item {
