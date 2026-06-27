@@ -5,6 +5,9 @@ import { useState } from 'react'
 export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [openFaq, setOpenFaq] = useState(null)
+  const [formState, setFormState] = useState({ name: '', business: '', email: '', phone: '', interest: 'Monthly Plan ($397/mo) + Profile Cleanup ($197)' })
+  const [submitted, setSubmitted] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
 
   const faqs = [
     {
@@ -44,6 +47,26 @@ export default function Home() {
   const toggleFaq = (i) => setOpenFaq(openFaq === i ? null : i)
   const closeMenu = () => setMenuOpen(false)
 
+  const handleChange = (e) => {
+    setFormState({ ...formState, [e.target.name]: e.target.value })
+  }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    setSubmitting(true)
+    try {
+      const res = await fetch('https://formspree.io/f/YOUR_FORM_ID', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify(formState),
+      })
+      if (res.ok) setSubmitted(true)
+    } catch (err) {
+      console.error(err)
+    }
+    setSubmitting(false)
+  }
+
   return (
     <>
       {/* NAV */}
@@ -54,7 +77,7 @@ export default function Home() {
             <a href="#how">How it works</a>
             <a href="#pricing">Pricing</a>
             <a href="#faq">FAQ</a>
-            <a href="#pricing" className="nav-cta">Get started</a>
+            <a href="#contact" className="nav-cta">Get started</a>
           </div>
           <button
             className={`hamburger${menuOpen ? ' open' : ''}`}
@@ -69,7 +92,7 @@ export default function Home() {
             <a href="#how" onClick={closeMenu}>How it works</a>
             <a href="#pricing" onClick={closeMenu}>Pricing</a>
             <a href="#faq" onClick={closeMenu}>FAQ</a>
-            <a href="#pricing" onClick={closeMenu}>Get started →</a>
+            <a href="#contact" onClick={closeMenu}>Get started →</a>
           </div>
         )}
       </nav>
@@ -88,7 +111,7 @@ export default function Home() {
             professionally, promptly, and on-brand — within 24 hours, every time.
           </p>
           <div className="hero-cta-group">
-            <a href="#pricing" className="btn-orange">Start for $397/month →</a>
+            <a href="#contact" className="btn-orange">Get started today →</a>
             <a href="#how" className="btn-outline">See how it works</a>
           </div>
           <div className="hero-stats">
@@ -352,8 +375,6 @@ export default function Home() {
             Flat monthly rate. No setup fees. No contracts. Cancel anytime.
           </p>
           <div className="pricing-cards">
-
-            {/* MONTHLY PLAN */}
             <div className="price-card price-card-featured">
               <div className="price-badge">Monthly plan</div>
               <div className="price-amount"><span>$</span>397</div>
@@ -368,15 +389,9 @@ export default function Home() {
                 <li>Dedicated account setup</li>
                 <li>Cancel anytime, no penalty</li>
               </ul>
-              <a href="mailto:jacob@respondpal.ai" className="price-cta">
-                Start responding today →
-              </a>
-              <div className="price-note">
-                Setup takes less than 10 minutes. Live within 48 hours.
-              </div>
+              <a href="#contact" className="price-cta">Get started →</a>
+              <div className="price-note">Setup takes less than 10 minutes. Live within 48 hours.</div>
             </div>
-
-            {/* PROFILE CLEANUP */}
             <div className="price-card">
               <div className="price-badge-alt">One-time add-on</div>
               <div className="price-plan-label">Profile Cleanup</div>
@@ -391,18 +406,13 @@ export default function Home() {
                 <li>Makes your profile look managed from day one</li>
                 <li>Available at signup or anytime</li>
               </ul>
-              <a href="mailto:jacob@respondpal.ai" className="price-cta price-cta-secondary">
-                Add to my plan →
-              </a>
-              <div className="price-note">
-                Most clients add this at signup. Highly recommended.
-              </div>
+              <a href="#contact" className="price-cta price-cta-secondary">Add to my plan →</a>
+              <div className="price-note">Most clients add this at signup. Highly recommended.</div>
             </div>
-
           </div>
           <p className="multi-note">
             Manage multiple locations?{' '}
-            <a href="mailto:jacob@respondpal.ai">Contact us for a multi-location rate.</a>
+            <a href="#contact">Contact us for a multi-location rate.</a>
           </p>
         </div>
       </section>
@@ -426,6 +436,100 @@ export default function Home() {
         </div>
       </section>
 
+      {/* CONTACT FORM */}
+      <section className="contact-sec" id="contact">
+        <div className="container">
+          <div className="section-label">Get started</div>
+          <h2 className="section-h2">Ready to hand this off?</h2>
+          <p className="section-sub">
+            Fill out the form below and we&apos;ll reach out within one business day
+            to get your account set up.
+          </p>
+          <div className="contact-card">
+            {submitted ? (
+              <div className="form-success">
+                <div className="success-icon">✓</div>
+                <h3>You&apos;re on your way.</h3>
+                <p>We&apos;ll be in touch within one business day to get everything set up.</p>
+              </div>
+            ) : (
+              <form onSubmit={handleSubmit} className="contact-form">
+                <div className="form-row">
+                  <div className="form-group">
+                    <label htmlFor="name">Your name</label>
+                    <input
+                      type="text"
+                      id="name"
+                      name="name"
+                      required
+                      placeholder="Jane Smith"
+                      value={formState.name}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="business">Business name</label>
+                    <input
+                      type="text"
+                      id="business"
+                      name="business"
+                      required
+                      placeholder="Smith HVAC Services"
+                      value={formState.business}
+                      onChange={handleChange}
+                    />
+                  </div>
+                </div>
+                <div className="form-row">
+                  <div className="form-group">
+                    <label htmlFor="email">Email address</label>
+                    <input
+                      type="email"
+                      id="email"
+                      name="email"
+                      required
+                      placeholder="jane@smithhvac.com"
+                      value={formState.email}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="phone">Phone number</label>
+                    <input
+                      type="tel"
+                      id="phone"
+                      name="phone"
+                      placeholder="(555) 555-5555"
+                      value={formState.phone}
+                      onChange={handleChange}
+                    />
+                  </div>
+                </div>
+                <div className="form-group">
+                  <label htmlFor="interest">I&apos;m interested in</label>
+                  <select
+                    id="interest"
+                    name="interest"
+                    value={formState.interest}
+                    onChange={handleChange}
+                  >
+                    <option>Monthly Plan ($397/mo)</option>
+                    <option>Monthly Plan ($397/mo) + Profile Cleanup ($197)</option>
+                    <option>Profile Cleanup only ($197)</option>
+                    <option>Multi-location pricing</option>
+                    <option>Just have questions</option>
+                  </select>
+                </div>
+                <button type="submit" className="form-submit" disabled={submitting}>
+                  {submitting ? 'Sending...' : 'Get started →'}
+                </button>
+                <p className="form-note">No commitment. We&apos;ll reach out to answer any questions and get you set up.</p>
+              </form>
+            )}
+          </div>
+        </div>
+      </section>
+
       {/* SOURCES */}
       <section className="sources-sec">
         <div className="container sources-inner">
@@ -445,7 +549,7 @@ export default function Home() {
           Every day without a response is a day a potential customer chose
           someone else. Let&apos;s fix that — starting today.
         </p>
-        <a href="#pricing" className="btn-white">Get started for $397/month →</a>
+        <a href="#contact" className="btn-white">Get started today →</a>
       </section>
 
       {/* FOOTER */}
