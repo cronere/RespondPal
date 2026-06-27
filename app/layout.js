@@ -15,21 +15,35 @@ const barlowCondensed = Barlow_Condensed({
 })
 
 export const metadata = {
-  title: 'RespondPal — Google Review Responses, Done For You',
+  title: 'RespondPal — Google & Yelp Review Responses, Done For You',
   description:
-    'We respond to every Google review your business receives within 24 hours. Done-for-you review management for $297/month. No contracts.',
+    'We respond to every Google and Yelp review your business receives within 24 hours. Done-for-you review management for $397/month. No contracts.',
   metadataBase: new URL('https://respondpal.ai'),
+  icons: {
+    icon: [
+      { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
+      { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+      { url: '/favicon.ico' },
+    ],
+    apple: [
+      { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
+    ],
+    other: [
+      { rel: 'icon', url: '/icon-192.png', sizes: '192x192', type: 'image/png' },
+      { rel: 'icon', url: '/icon-512.png', sizes: '512x512', type: 'image/png' },
+    ],
+  },
   openGraph: {
-    title: 'RespondPal — Google Review Responses, Done For You',
+    title: 'RespondPal — Google & Yelp Review Responses, Done For You',
     description:
-      '95% of businesses never respond to reviews. We do it for you — every review, within 24 hours, $297/month.',
+      '95% of businesses never respond to reviews. We handle every Google and Yelp review within 24 hours — $397/month, no contracts.',
     url: 'https://respondpal.ai',
     siteName: 'RespondPal',
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'RespondPal — Google Review Responses, Done For You',
+    title: 'RespondPal — Google & Yelp Review Responses, Done For You',
     description: '95% of businesses never respond to reviews. We handle every review within 24 hours so you don\'t have to.',
   },
 }
