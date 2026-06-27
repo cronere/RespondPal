@@ -629,7 +629,7 @@ a {
   grid-template-columns: 1fr 1fr;
   gap: 1rem;
   max-width: 720px;
-  margin-top: 2.5rem;
+  margin: 2.5rem auto 0;
 }
 
 .compare-col {
