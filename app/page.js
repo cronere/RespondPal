@@ -80,7 +80,7 @@ export default function Home() {
           <div className="hero-eyebrow">Done-for-you review management</div>
           <h1>
             Every review.<br />
-            <em>Every platform.</em><br />
+            <em>Google &amp; Yelp.</em><br />
             You do nothing.
           </h1>
           <p className="hero-sub">
