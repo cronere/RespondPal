@@ -368,7 +368,7 @@ export default function Home() {
                 <li>Dedicated account setup</li>
                 <li>Cancel anytime, no penalty</li>
               </ul>
-              <a href="mailto:hello@respondpal.ai" className="price-cta">
+              <a href="mailto:jacob@respondpal.ai" className="price-cta">
                 Start responding today →
               </a>
               <div className="price-note">
@@ -391,7 +391,7 @@ export default function Home() {
                 <li>Makes your profile look managed from day one</li>
                 <li>Available at signup or anytime</li>
               </ul>
-              <a href="mailto:hello@respondpal.ai" className="price-cta price-cta-secondary">
+              <a href="mailto:jacob@respondpal.ai" className="price-cta price-cta-secondary">
                 Add to my plan →
               </a>
               <div className="price-note">
@@ -402,7 +402,7 @@ export default function Home() {
           </div>
           <p className="multi-note">
             Manage multiple locations?{' '}
-            <a href="mailto:hello@respondpal.ai">Contact us for a multi-location rate.</a>
+            <a href="mailto:jacob@respondpal.ai">Contact us for a multi-location rate.</a>
           </p>
         </div>
       </section>
