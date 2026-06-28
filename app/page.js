@@ -364,46 +364,64 @@ export default function Home() {
           <p className="section-sub" style={{ margin: '0.5rem auto 0' }}>
             Flat monthly rate. No setup fees. No contracts. Cancel anytime.
           </p>
-          <div className="pricing-cards">
-            <div className="price-card price-card-featured">
-              <div className="price-badge">Monthly plan</div>
-              <div className="price-amount"><span>$</span>397</div>
-              <div className="price-period">per month, per location</div>
-              <ul className="price-list">
-                <li>Google <strong>and</strong> Yelp review responses</li>
-                <li>Unlimited reviews covered</li>
-                <li>24-hour response guarantee</li>
-                <li>Human-reviewed, never templated</li>
-                <li>All star ratings (1–5 stars)</li>
-                <li>Client dashboard access</li>
-                <li>Dedicated account setup</li>
-                <li>Cancel anytime, no penalty</li>
-              </ul>
-              <a href="#contact" className="price-cta">Get started →</a>
-              <div className="price-note">Setup takes less than 10 minutes. Live within 48 hours.</div>
+
+          {/* Location tiers */}
+          <div className="location-tiers">
+            <div className="location-tier">
+              <div className="tier-locations">1 Location</div>
+              <div className="tier-price"><span>$</span>397<em>/mo</em></div>
+              <a href="#contact" className="tier-cta">Get started →</a>
             </div>
-            <div className="price-card">
-              <div className="price-badge-alt">One-time add-on</div>
-              <div className="price-plan-label">Profile Cleanup</div>
-              <div className="price-amount"><span>$</span>197</div>
-              <div className="price-period">one-time fee</div>
-              <ul className="price-list">
-                <li>Responds to all 1–3 star reviews</li>
-                <li>Covers last 180 days of reviews</li>
-                <li>Google and Yelp profiles covered</li>
-                <li>Completed within 5 business days</li>
-                <li>Professional, on-brand responses</li>
-                <li>Makes your profile look managed from day one</li>
-                <li>Available at signup or anytime</li>
-              </ul>
-              <a href="#contact" className="price-cta price-cta-secondary">Add to my plan →</a>
-              <div className="price-note">Most clients add this at signup. Highly recommended.</div>
+            <div className="location-tier location-tier-featured">
+              <div className="tier-badge">Most popular</div>
+              <div className="tier-locations">2 Locations</div>
+              <div className="tier-price"><span>$</span>649<em>/mo</em></div>
+              <div className="tier-savings">Save $145/mo vs. individual</div>
+              <a href="#contact" className="tier-cta">Get started →</a>
+            </div>
+            <div className="location-tier">
+              <div className="tier-locations">3 Locations</div>
+              <div className="tier-price"><span>$</span>897<em>/mo</em></div>
+              <div className="tier-savings">Save $294/mo vs. individual</div>
+              <a href="#contact" className="tier-cta">Get started →</a>
             </div>
           </div>
-          <p className="multi-note">
-            Manage multiple locations?{' '}
-            <a href="#contact">Contact us for a multi-location rate.</a>
-          </p>
+          <p className="multi-note">4+ locations? <a href="#contact">Contact us for a custom rate.</a></p>
+
+          {/* What's included */}
+          <div className="pricing-includes">
+            <div className="pi-label">All plans include</div>
+            <div className="pi-items">
+              <div className="pi-item">✓ Google &amp; Yelp responses</div>
+              <div className="pi-item">✓ Unlimited reviews covered</div>
+              <div className="pi-item">✓ 24-hour response guarantee</div>
+              <div className="pi-item">✓ Human-reviewed, never templated</div>
+              <div className="pi-item">✓ All star ratings (1–5 stars)</div>
+              <div className="pi-item">✓ Client dashboard access</div>
+              <div className="pi-item">✓ Dedicated account setup</div>
+              <div className="pi-item">✓ Cancel anytime, no penalty</div>
+            </div>
+          </div>
+
+          {/* Profile Cleanup add-on */}
+          <div className="cleanup-card">
+            <div className="cleanup-left">
+              <div className="price-badge-alt">One-time add-on</div>
+              <div className="cleanup-title">Profile Cleanup</div>
+              <p className="cleanup-desc">You likely have months of unanswered negative reviews sitting on your profile. We respond to every 1–3 star review from the last 180 days so your profile looks professionally managed from day one — not just going forward.</p>
+              <ul className="cleanup-list">
+                <li>All 1–3 star reviews from last 180 days</li>
+                <li>Google and Yelp profiles covered</li>
+                <li>Completed within 5 business days</li>
+              </ul>
+            </div>
+            <div className="cleanup-right">
+              <div className="cleanup-price"><span>$</span>197</div>
+              <div className="cleanup-period">one-time</div>
+              <a href="#contact" className="price-cta price-cta-secondary" style={{marginTop:'1rem',display:'block',textAlign:'center'}}>Add to my plan →</a>
+              <div className="price-note">Most clients add this at signup.</div>
+            </div>
+          </div>
         </div>
       </section>
 
