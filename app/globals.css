@@ -1689,3 +1689,245 @@ footer a:hover {
     text-align: center;
   }
 }
+
+/* ── LOCATION TIER PRICING ── */
+.location-tiers {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin: 2rem auto 0;
+  max-width: 860px;
+}
+
+.location-tier {
+  background: var(--card);
+  border: 1px solid var(--border2);
+  border-radius: 14px;
+  padding: 2rem 1.5rem;
+  text-align: center;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.location-tier-featured {
+  border-color: var(--orange);
+  background: var(--card2);
+}
+
+.location-tier-featured::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: 15px;
+  background: linear-gradient(135deg, var(--orange) 0%, transparent 55%);
+  z-index: -1;
+  opacity: 0.3;
+}
+
+.tier-badge {
+  background: var(--orange);
+  color: var(--white);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.25rem 0.75rem;
+  border-radius: 100px;
+  margin-bottom: 0.25rem;
+}
+
+.tier-locations {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.location-tier-featured .tier-locations {
+  color: var(--orange);
+}
+
+.tier-price {
+  font-family: var(--font-display);
+  font-size: 3rem;
+  font-weight: 800;
+  color: var(--white);
+  line-height: 1;
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+}
+
+.tier-price span {
+  font-size: 1.4rem;
+  margin-top: 0.4rem;
+  display: inline-block;
+}
+
+.tier-price em {
+  font-style: normal;
+  font-size: 1rem;
+  color: var(--muted);
+  font-family: var(--font-body);
+  font-weight: 400;
+  margin-left: 2px;
+}
+
+.tier-savings {
+  font-size: 0.78rem;
+  color: var(--green);
+  font-weight: 600;
+}
+
+.tier-cta {
+  display: block;
+  width: 100%;
+  background: var(--orange);
+  color: var(--white);
+  font-weight: 700;
+  font-size: 0.9rem;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  margin-top: 0.75rem;
+  transition: background 0.2s;
+  text-align: center;
+}
+
+.tier-cta:hover {
+  background: var(--orange-dark);
+  color: var(--white);
+}
+
+/* What's included */
+.pricing-includes {
+  max-width: 860px;
+  margin: 1.5rem auto 0;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+.pi-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted2);
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.pi-items {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.5rem 1.5rem;
+}
+
+.pi-item {
+  font-size: 0.875rem;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Profile Cleanup card */
+.cleanup-card {
+  max-width: 860px;
+  margin: 1.5rem auto 0;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 2rem;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 2rem;
+  align-items: start;
+}
+
+.cleanup-title {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: var(--white);
+  margin: 0.5rem 0 0.75rem;
+  letter-spacing: 0.02em;
+}
+
+.cleanup-desc {
+  font-size: 0.875rem;
+  color: var(--muted);
+  line-height: 1.65;
+  margin-bottom: 1rem;
+  max-width: 480px;
+}
+
+.cleanup-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.cleanup-list li {
+  font-size: 0.875rem;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.cleanup-list li::before {
+  content: '✓';
+  color: var(--green);
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.cleanup-right {
+  text-align: center;
+  min-width: 160px;
+}
+
+.cleanup-price {
+  font-family: var(--font-display);
+  font-size: 3.5rem;
+  font-weight: 800;
+  color: var(--white);
+  line-height: 1;
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+}
+
+.cleanup-price span {
+  font-size: 1.5rem;
+  margin-top: 0.5rem;
+  display: inline-block;
+}
+
+.cleanup-period {
+  font-size: 0.875rem;
+  color: var(--muted);
+  margin-top: 0.25rem;
+}
+
+@media (max-width: 768px) {
+  .location-tiers {
+    grid-template-columns: 1fr;
+    max-width: 400px;
+  }
+  .cleanup-card {
+    grid-template-columns: 1fr;
+  }
+  .cleanup-right {
+    border-top: 1px solid var(--border);
+    padding-top: 1.5rem;
+  }
+}
