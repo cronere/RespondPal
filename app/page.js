@@ -1,18 +1,25 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 
 export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [openFaq, setOpenFaq] = useState(null)
-  const [formState, setFormState] = useState({ name: '', business: '', email: '', phone: '', interest: 'Monthly Plan ($397/mo) + Profile Cleanup ($197)' })
+  const [formState, setFormState] = useState({
+    name: '',
+    business: '',
+    email: '',
+    phone: '',
+    interest: 'Monthly Plan ($397/mo) + Profile Cleanup ($197)',
+  })
   const [submitted, setSubmitted] = useState(false)
   const [submitting, setSubmitting] = useState(false)
 
   const faqs = [
     {
       q: 'Which review platforms do you cover?',
-      a: "Our standard plan covers both Google Business Profile and Yelp. We get added as a Manager on Google and a Team Member on Yelp — no passwords shared on either platform.",
+      a: 'Our standard plan covers both Google Business Profile and Yelp. We get added as a Manager on Google and a Team Member on Yelp — no passwords shared on either platform.',
     },
     {
       q: 'How do you get access to respond to my reviews?',
@@ -40,16 +47,13 @@ export default function Home() {
     },
     {
       q: 'Does this work for multiple locations?',
-      a: "Yes — each location is $397/month. If you have 3 or more locations, contact us for a discounted multi-location rate.",
+      a: 'Yes — each location is $397/month. If you have 3 or more locations, contact us for a discounted multi-location rate.',
     },
   ]
 
   const toggleFaq = (i) => setOpenFaq(openFaq === i ? null : i)
   const closeMenu = () => setMenuOpen(false)
-
-  const handleChange = (e) => {
-    setFormState({ ...formState, [e.target.name]: e.target.value })
-  }
+  const handleChange = (e) => setFormState({ ...formState, [e.target.name]: e.target.value })
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -72,7 +76,7 @@ export default function Home() {
       {/* NAV */}
       <nav className="nav" style={{ position: 'relative' }}>
         <div className="nav-inner">
-          <div className="logo">Respond<span>Pal</span></div>
+          <Image src="/logo-white.png" alt="RespondPal" className="nav-logo" width={180} height={36} />
           <div className="desktop-links">
             <a href="#how">How it works</a>
             <a href="#pricing">Pricing</a>
@@ -139,9 +143,7 @@ export default function Home() {
       <section className="problem" id="problem">
         <div className="container">
           <div className="section-label">The problem</div>
-          <h2 className="section-h2">
-            Every unanswered review<br />is a missed sale.
-          </h2>
+          <h2 className="section-h2">Every unanswered review<br />is a missed sale.</h2>
           <p className="section-sub">
             When a potential customer is choosing between you and a competitor,
             they read your reviews on Google and Yelp. If your competitor responds
@@ -221,14 +223,10 @@ export default function Home() {
                   <div className="stars">★★★★★</div>
                 </div>
               </div>
-              <div className="review-text">
-                &ldquo;Absolutely love this place. Best service I&apos;ve had in years. Will definitely be back and telling all my friends!&rdquo;
-              </div>
+              <div className="review-text">&ldquo;Absolutely love this place. Best service I&apos;ve had in years. Will definitely be back and telling all my friends!&rdquo;</div>
               <div className="response-box">
                 <div className="response-label">Owner response · posted within 24 hrs</div>
-                <div className="response-text">
-                  Thank you so much, Sarah — this genuinely made our day! We&apos;ll make sure to pass along the kind words to the team. We can&apos;t wait to see you again soon.
-                </div>
+                <div className="response-text">Thank you so much, Sarah — this genuinely made our day! We&apos;ll make sure to pass along the kind words to the team. We can&apos;t wait to see you again soon.</div>
               </div>
             </div>
             <div className="review-item">
@@ -239,14 +237,10 @@ export default function Home() {
                   <div className="stars low">★★☆☆☆</div>
                 </div>
               </div>
-              <div className="review-text">
-                &ldquo;Service was slow and nobody checked in on us. The food itself was good but the experience was frustrating.&rdquo;
-              </div>
+              <div className="review-text">&ldquo;Service was slow and nobody checked in on us. The food itself was good but the experience was frustrating.&rdquo;</div>
               <div className="response-box">
                 <div className="response-label">Owner response · posted within 24 hrs</div>
-                <div className="response-text">
-                  Tom, thank you for being honest — we&apos;re sorry we let you down on the service side. That&apos;s not the experience we work hard to deliver, and we hear you. Please reach out directly and we&apos;ll make it right on your next visit.
-                </div>
+                <div className="response-text">Tom, thank you for being honest — we&apos;re sorry we let you down on the service side. That&apos;s not the experience we work hard to deliver, and we hear you. Please reach out directly and we&apos;ll make it right on your next visit.</div>
               </div>
             </div>
             <div className="demo-note">
@@ -301,13 +295,10 @@ export default function Home() {
       <section className="compare-sec">
         <div className="container">
           <div className="section-label">Be honest with yourself</div>
-          <h2 className="section-h2">
-            You&apos;re not going to do<br />this yourself. That&apos;s fine.
-          </h2>
+          <h2 className="section-h2">You&apos;re not going to do<br />this yourself. That&apos;s fine.</h2>
           <p className="section-sub">
             Business owners know they should respond to reviews. They just never
-            get to it. Between staff, customers, and operations — it falls off
-            the list every time.
+            get to it. Between staff, customers, and operations — it falls off the list every time.
           </p>
           <div className="compare-grid">
             <div className="compare-col bad">
@@ -343,8 +334,7 @@ export default function Home() {
             AI search tools like Google&apos;s AI Overviews, ChatGPT, and Perplexity
             now synthesize your reviews to decide whether to recommend your business.
             Response rate, recency, and sentiment all factor in. An unanswered review
-            isn&apos;t just a missed conversation — it&apos;s a signal to AI that
-            your business is disengaged.
+            isn&apos;t just a missed conversation — it&apos;s a signal to AI that your business is disengaged.
           </p>
           <div className="ai-cards">
             <div className="ai-card">
@@ -442,8 +432,7 @@ export default function Home() {
           <div className="section-label">Get started</div>
           <h2 className="section-h2">Ready to hand this off?</h2>
           <p className="section-sub">
-            Fill out the form below and we&apos;ll reach out within one business day
-            to get your account set up.
+            Fill out the form below and we&apos;ll reach out within one business day to get your account set up.
           </p>
           <div className="contact-card">
             {submitted ? (
@@ -457,62 +446,26 @@ export default function Home() {
                 <div className="form-row">
                   <div className="form-group">
                     <label htmlFor="name">Your name</label>
-                    <input
-                      type="text"
-                      id="name"
-                      name="name"
-                      required
-                      placeholder="Jane Smith"
-                      value={formState.name}
-                      onChange={handleChange}
-                    />
+                    <input type="text" id="name" name="name" required placeholder="Jane Smith" value={formState.name} onChange={handleChange} />
                   </div>
                   <div className="form-group">
                     <label htmlFor="business">Business name</label>
-                    <input
-                      type="text"
-                      id="business"
-                      name="business"
-                      required
-                      placeholder="Smith HVAC Services"
-                      value={formState.business}
-                      onChange={handleChange}
-                    />
+                    <input type="text" id="business" name="business" required placeholder="Smith HVAC Services" value={formState.business} onChange={handleChange} />
                   </div>
                 </div>
                 <div className="form-row">
                   <div className="form-group">
                     <label htmlFor="email">Email address</label>
-                    <input
-                      type="email"
-                      id="email"
-                      name="email"
-                      required
-                      placeholder="jane@smithhvac.com"
-                      value={formState.email}
-                      onChange={handleChange}
-                    />
+                    <input type="email" id="email" name="email" required placeholder="jane@smithhvac.com" value={formState.email} onChange={handleChange} />
                   </div>
                   <div className="form-group">
                     <label htmlFor="phone">Phone number</label>
-                    <input
-                      type="tel"
-                      id="phone"
-                      name="phone"
-                      placeholder="(555) 555-5555"
-                      value={formState.phone}
-                      onChange={handleChange}
-                    />
+                    <input type="tel" id="phone" name="phone" placeholder="(555) 555-5555" value={formState.phone} onChange={handleChange} />
                   </div>
                 </div>
                 <div className="form-group">
                   <label htmlFor="interest">I&apos;m interested in</label>
-                  <select
-                    id="interest"
-                    name="interest"
-                    value={formState.interest}
-                    onChange={handleChange}
-                  >
+                  <select id="interest" name="interest" value={formState.interest} onChange={handleChange}>
                     <option>Monthly Plan ($397/mo)</option>
                     <option>Monthly Plan ($397/mo) + Profile Cleanup ($197)</option>
                     <option>Profile Cleanup only ($197)</option>
@@ -545,19 +498,13 @@ export default function Home() {
       {/* FINAL CTA */}
       <section className="final-cta">
         <h2>Your reviews are going<br />unanswered right now.</h2>
-        <p>
-          Every day without a response is a day a potential customer chose
-          someone else. Let&apos;s fix that — starting today.
-        </p>
-        <a href="#contact" className="btn-white">Get started today →</a>
+        <p>Every day without a response is a day a potential customer chose someone else. Let&apos;s fix that — starting today.</p>
+        <a href="#contact" className="btn-white">Get started for $397/month →</a>
       </section>
 
       {/* FOOTER */}
       <footer>
-        <p>
-          © 2026 RespondPal LLC · respondpal.ai ·{' '}
-          <a href="mailto:jacob@respondpal.ai">jacob@respondpal.ai</a>
-        </p>
+        <p>© 2026 RespondPal LLC · respondpal.ai · <a href="mailto:jacob@respondpal.ai">jacob@respondpal.ai</a></p>
       </footer>
     </>
   )
