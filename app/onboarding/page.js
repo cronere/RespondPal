@@ -71,7 +71,7 @@ export default function Onboarding() {
     <div className="ob-wrap">
       {/* Header */}
       <div className="ob-header">
-        <Image src="/logo-white.png" alt="RespondPal" className="nav-logo" width={180} height={36} />
+        <Image src="/logo-white.png" alt="RespondPal" className="ob-logo" width={180} height={36} />
         <h1>Let&apos;s get you set up.</h1>
         <p>Takes about 3 minutes. We&apos;ll use this to tailor every response to your business.</p>
       </div>
