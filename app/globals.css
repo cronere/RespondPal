@@ -1336,16 +1336,8 @@ footer a:hover {
 }
 
 .ob-logo {
-  font-family: var(--font-display);
-  font-size: 1.5rem;
-  font-weight: 800;
-  color: var(--white);
-  margin-bottom: 1.5rem;
-  letter-spacing: 0.02em;
-}
-
-.ob-logo span {
-  color: var(--orange);
+  margin: 0 auto 1.5rem;
+  display: block;
 }
 
 .ob-header h1 {
