@@ -9,7 +9,7 @@ export async function GET() {
   try {
     const { data, error } = await supabaseAdmin
       .from('reviews')
-      .select('*, clients(business_name, response_signer, response_tone, things_to_avoid, business_tagline)')
+      .select('*, clients(business_name, response_signer, response_tone, things_to_avoid, business_tagline, ai_instructions)')
       .order('created_at', { ascending: false })
 
     if (error) {
@@ -54,7 +54,7 @@ export async function POST(req) {
     const { data, error } = await supabaseAdmin
       .from('reviews')
       .insert(insert)
-      .select('*, clients(business_name, response_signer, response_tone, things_to_avoid, business_tagline)')
+      .select('*, clients(business_name, response_signer, response_tone, things_to_avoid, business_tagline, ai_instructions)')
       .single()
 
     if (error) {
