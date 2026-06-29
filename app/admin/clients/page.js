@@ -31,7 +31,7 @@ export default function AdminClients() {
     setLoading(true)
     setError('')
     try {
-      const res = await fetch('/api/admin/clients')
+      const res = await fetch('/api/admin/clients', { cache: 'no-store' })
       const data = await res.json()
       if (res.ok) setClients(data.clients)
       else setError(data.error || 'Failed to load clients.')
@@ -41,7 +41,14 @@ export default function AdminClients() {
     setLoading(false)
   }
 
-  useEffect(() => { loadClients() }, [])
+  // Re-fetch when the tab regains focus, so changes made on the Onboarding
+  // tab (or in another window) show up without a manual reload.
+  useEffect(() => {
+    loadClients()
+    const onFocus = () => loadClients()
+    window.addEventListener('focus', onFocus)
+    return () => window.removeEventListener('focus', onFocus)
+  }, [])
 
   const filtered = clients.filter((c) => {
     if (statusFilter !== 'all' && c.status !== statusFilter) return false
@@ -72,11 +79,16 @@ export default function AdminClients() {
 
   return (
     <div className="admin-page admin-page-wide">
-      <header className="admin-page-head">
-        <h1>Clients</h1>
-        <p className="admin-page-sub">
-          {loading ? 'Loading…' : `${clients.length} client${clients.length === 1 ? '' : 's'} total`}
-        </p>
+      <header className="admin-page-head admin-page-head-row">
+        <div>
+          <h1>Clients</h1>
+          <p className="admin-page-sub">
+            {loading ? 'Loading…' : `${clients.length} client${clients.length === 1 ? '' : 's'} total`}
+          </p>
+        </div>
+        <button className="admin-refresh-btn" onClick={loadClients} disabled={loading}>
+          ↻ Refresh
+        </button>
       </header>
 
       <div className="clients-toolbar">
