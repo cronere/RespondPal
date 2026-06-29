@@ -326,6 +326,24 @@ export default function Home() {
       </section>
 
 
+      {/* FOUNDER */}
+      <section className="founder-sec">
+        <div className="container founder-inner">
+          <img src="/jacob-merkley.png" alt="Jacob Merkley, Founder & CEO of RespondPal" className="founder-photo" />
+          <div className="founder-label">From the founder</div>
+          <blockquote className="founder-quote">
+            &ldquo;Every business owner I talk to knows review response matters. But they
+            don&apos;t have the time — there&apos;s always a customer to help or a fire to
+            put out. I built RespondPal to take that to-do list item off your plate. You
+            run your business and we&apos;ll ensure every review gets a thoughtful human
+            response within 24 hours. Your reputation stays sharp and it costs you zero
+            minutes a month.&rdquo;
+          </blockquote>
+          <div className="founder-name">Jacob Merkley</div>
+          <div className="founder-title">Founder &amp; CEO, RespondPal</div>
+        </div>
+      </section>
+
       {/* TESTIMONIALS */}
       <section className="testimonials-sec">
         <div className="container">
@@ -484,30 +502,6 @@ export default function Home() {
                 <div className="faq-a">{item.a}</div>
               </div>
             ))}
-          </div>
-        </div>
-      </section>
-
-      {/* FOUNDER */}
-      <section className="founder-sec">
-        <div className="container founder-inner">
-          <div className="founder-photo-wrap">
-            <img src="/jacob-merkley.png" alt="Jacob Merkley, Founder & CEO of RespondPal" className="founder-photo" />
-          </div>
-          <div className="founder-content">
-            <div className="section-label" style={{ textAlign: 'left' }}>From the founder</div>
-            <blockquote className="founder-quote">
-              &ldquo;Every business owner I talk to knows review response matters. But they
-              don&apos;t have the time — there&apos;s always a customer to help or a fire to
-              put out. I built RespondPal to take that to-do list item off your plate. You
-              run your business and we&apos;ll ensure every review gets a thoughtful human
-              response within 24 hours. Your reputation stays sharp and it costs you zero
-              minutes a month.&rdquo;
-            </blockquote>
-            <div className="founder-attribution">
-              <div className="founder-name">Jacob Merkley</div>
-              <div className="founder-title">Founder &amp; CEO, RespondPal</div>
-            </div>
           </div>
         </div>
       </section>
