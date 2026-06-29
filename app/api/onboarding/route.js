@@ -64,19 +64,30 @@ export async function POST(req) {
 
     if (dbError) {
       console.error('Supabase error:', dbError)
-      // Don't fail the whole request if DB insert fails
-      // Still send emails
+      // Don't fail the whole request if DB insert fails — still send emails,
+      // but loudly flag the failure in the internal notification below so the
+      // record is never silently lost.
     }
+
+    const dbFailed = Boolean(dbError)
+    const dbErrorMessage = dbError ? (dbError.message || JSON.stringify(dbError)) : ''
 
     // ── 2. Internal notification to Jacob ────────────────────────
     await transporter.sendMail({
       from: `"RespondPal" <${process.env.GMAIL_USER}>`,
       to: process.env.GMAIL_USER,
-      subject: `✅ Onboarding complete — ${business_name}`,
+      subject: dbFailed
+        ? `⚠ DB INSERT FAILED — ${business_name} (NOT saved)`
+        : `✅ Onboarding complete — ${business_name}`,
       html: `
         <div style="font-family: Arial, Helvetica, sans-serif; max-width: 600px; margin: 0 auto; background: #ffffff; color: #4a4a4a; border: 1px solid #dde2e8; border-radius: 12px; overflow: hidden;">
+          ${dbFailed ? `
+          <div style="background: #b23b30; padding: 1.25rem 2rem;">
+            <p style="color: #ffffff; font-weight: 700; font-size: 0.95rem; margin: 0 0 0.5rem;">⚠ DATABASE INSERT FAILED — this client is NOT saved in Supabase</p>
+            <p style="color: #ffe5e2; font-size: 0.8rem; margin: 0; line-height: 1.5;">Save this client's details manually. Error: ${dbErrorMessage}</p>
+          </div>` : ''}
           <div style="background: #1e2a44; padding: 1.5rem 2rem;">
-            <span style="background: #2a7a4a; color: #ffffff; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.3rem 0.75rem; border-radius: 100px;">Onboarding Complete</span>
+            <span style="background: ${dbFailed ? '#b23b30' : '#2a7a4a'}; color: #ffffff; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.3rem 0.75rem; border-radius: 100px;">${dbFailed ? 'Saved to email only' : 'Onboarding Complete'}</span>
             <h2 style="color: #ffffff; margin: 0.85rem 0 0; font-size: 1.3rem;">${business_name} is ready to go live</h2>
           </div>
           <div style="padding: 1.75rem 2rem;">
