@@ -8,7 +8,7 @@ const NAV = [
   { href: '/admin/clients', label: 'Clients' },
   { href: '/admin/onboarding', label: 'Onboarding' },
   { href: '/admin/reviews', label: 'Reviews' },
-  { href: '/admin/yelp-prep', label: 'Yelp Prep' },
+  { href: '/admin/yelp-prep', label: 'Quick Draft' },
 ]
 
 export default function AdminLayout({ children }) {
