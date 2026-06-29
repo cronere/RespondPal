@@ -116,7 +116,7 @@ export default function Home() {
           </p>
           <div className="hero-cta-group">
             <a href="#contact" className="btn-orange">Get started today →</a>
-            <a href="#how" className="btn-outline">See how it works</a>
+            <a href="#demo" className="btn-outline">See a live example</a>
           </div>
           <div className="hero-stats">
             <div className="hero-stat">
@@ -567,6 +567,11 @@ export default function Home() {
       {/* FOOTER */}
       <footer>
         <p>© 2026 RespondPal LLC · respondpal.ai · <a href="mailto:jacob@respondpal.ai">jacob@respondpal.ai</a></p>
+        <p className="footer-legal">
+          <a href="/terms">Terms of Service</a>
+          <span> · </span>
+          <a href="/privacy">Privacy Policy</a>
+        </p>
       </footer>
     </>
   )
