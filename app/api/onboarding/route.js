@@ -74,29 +74,31 @@ export async function POST(req) {
       to: process.env.GMAIL_USER,
       subject: `✅ Onboarding complete — ${business_name}`,
       html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; background: #0a0a0a; color: #e8e8e8; padding: 2rem; border-radius: 12px;">
-          <div style="margin-bottom: 1rem;">
-            <span style="background: #22c55e; color: white; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.3rem 0.75rem; border-radius: 100px;">Onboarding Complete</span>
+        <div style="font-family: Arial, Helvetica, sans-serif; max-width: 600px; margin: 0 auto; background: #ffffff; color: #4a4a4a; border: 1px solid #dde2e8; border-radius: 12px; overflow: hidden;">
+          <div style="background: #1e2a44; padding: 1.5rem 2rem;">
+            <span style="background: #2a7a4a; color: #ffffff; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.3rem 0.75rem; border-radius: 100px;">Onboarding Complete</span>
+            <h2 style="color: #ffffff; margin: 0.85rem 0 0; font-size: 1.3rem;">${business_name} is ready to go live</h2>
           </div>
-          <h2 style="color: #fff; margin: 0 0 1.5rem;">${business_name} is ready to go live</h2>
-          <table style="width: 100%; border-collapse: collapse;">
-            <tr><td style="padding: 0.6rem 0; border-bottom: 1px solid #2a2a2a; color: #888; width: 180px; font-size:0.85rem;">Sales Rep (commission)</td><td style="padding: 0.6rem 0; border-bottom: 1px solid #2a2a2a; color: #FF5C1A; font-weight:700;">${sales_rep || '⚠ NONE ENTERED'}</td></tr>
-            <tr><td style="padding: 0.6rem 0; border-bottom: 1px solid #2a2a2a; color: #888; width: 180px; font-size:0.85rem;">Owner</td><td style="padding: 0.6rem 0; border-bottom: 1px solid #2a2a2a; color: #e8e8e8;">${owner_name}</td></tr>
-            <tr><td style="padding: 0.6rem 0; border-bottom: 1px solid #2a2a2a; color: #888; font-size:0.85rem;">Email</td><td style="padding: 0.6rem 0; border-bottom: 1px solid #2a2a2a; color: #FF5C1A;">${email}</td></tr>
-            <tr><td style="padding: 0.6rem 0; border-bottom: 1px solid #2a2a2a; color: #888; font-size:0.85rem;">Phone</td><td style="padding: 0.6rem 0; border-bottom: 1px solid #2a2a2a; color: #e8e8e8;">${phone || 'Not provided'}</td></tr>
-            <tr><td style="padding: 0.6rem 0; border-bottom: 1px solid #2a2a2a; color: #888; font-size:0.85rem;">Industry</td><td style="padding: 0.6rem 0; border-bottom: 1px solid #2a2a2a; color: #e8e8e8;">${industry}</td></tr>
-            <tr><td style="padding: 0.6rem 0; border-bottom: 1px solid #2a2a2a; color: #888; font-size:0.85rem;">Locations</td><td style="padding: 0.6rem 0; border-bottom: 1px solid #2a2a2a; color: #e8e8e8;">${locations}</td></tr>
-            <tr><td style="padding: 0.6rem 0; border-bottom: 1px solid #2a2a2a; color: #888; font-size:0.85rem;">GBP Email</td><td style="padding: 0.6rem 0; border-bottom: 1px solid #2a2a2a; color: #e8e8e8;">${google_profile_email}</td></tr>
-            <tr><td style="padding: 0.6rem 0; border-bottom: 1px solid #2a2a2a; color: #888; font-size:0.85rem;">Yelp URL</td><td style="padding: 0.6rem 0; border-bottom: 1px solid #2a2a2a; color: #e8e8e8;">${yelp_url || 'Not provided'}</td></tr>
-            <tr><td style="padding: 0.6rem 0; border-bottom: 1px solid #2a2a2a; color: #888; font-size:0.85rem;">Signs responses as</td><td style="padding: 0.6rem 0; border-bottom: 1px solid #2a2a2a; color: #e8e8e8;">${response_signer || 'Not specified'}</td></tr>
-            <tr><td style="padding: 0.6rem 0; border-bottom: 1px solid #2a2a2a; color: #888; font-size:0.85rem;">Tone</td><td style="padding: 0.6rem 0; border-bottom: 1px solid #2a2a2a; color: #e8e8e8;">${response_tone}</td></tr>
-            <tr><td style="padding: 0.6rem 0; border-bottom: 1px solid #2a2a2a; color: #888; font-size:0.85rem;">Avoid</td><td style="padding: 0.6rem 0; border-bottom: 1px solid #2a2a2a; color: #e8e8e8;">${things_to_avoid || 'Nothing specified'}</td></tr>
-            <tr><td style="padding: 0.6rem 0; border-bottom: 1px solid #2a2a2a; color: #888; font-size:0.85rem;">Tagline</td><td style="padding: 0.6rem 0; border-bottom: 1px solid #2a2a2a; color: #e8e8e8;">${business_tagline || 'None'}</td></tr>
-            <tr><td style="padding: 0.6rem 0; color: #888; font-size:0.85rem;">Notes</td><td style="padding: 0.6rem 0; color: #e8e8e8;">${additional_notes || 'None'}</td></tr>
-          </table>
-          <div style="margin-top: 2rem; padding: 1rem; background: rgba(255,92,26,0.1); border: 1px solid rgba(255,92,26,0.3); border-radius: 8px;">
-            <p style="color: #FF5C1A; font-weight: 700; font-size: 0.875rem; margin: 0 0 0.5rem;">⚡ Action required</p>
-            <p style="color: #888; font-size: 0.85rem; margin: 0;">Accept the Google Manager invitation and Yelp Team Member invitation, then send the "You're Live" email once the first response is posted.</p>
+          <div style="padding: 1.75rem 2rem;">
+            <table style="width: 100%; border-collapse: collapse;">
+              <tr><td style="padding: 0.6rem 0; border-bottom: 1px solid #eef1f5; color: #6b7280; width: 180px; font-size:0.85rem;">Sales Rep (commission)</td><td style="padding: 0.6rem 0; border-bottom: 1px solid #eef1f5; color: #C2410C; font-weight:700;">${sales_rep || '⚠ NONE ENTERED'}</td></tr>
+              <tr><td style="padding: 0.6rem 0; border-bottom: 1px solid #eef1f5; color: #6b7280; font-size:0.85rem;">Owner</td><td style="padding: 0.6rem 0; border-bottom: 1px solid #eef1f5; color: #1a1a1a;">${owner_name}</td></tr>
+              <tr><td style="padding: 0.6rem 0; border-bottom: 1px solid #eef1f5; color: #6b7280; font-size:0.85rem;">Email</td><td style="padding: 0.6rem 0; border-bottom: 1px solid #eef1f5; color: #C2410C;">${email}</td></tr>
+              <tr><td style="padding: 0.6rem 0; border-bottom: 1px solid #eef1f5; color: #6b7280; font-size:0.85rem;">Phone</td><td style="padding: 0.6rem 0; border-bottom: 1px solid #eef1f5; color: #1a1a1a;">${phone || 'Not provided'}</td></tr>
+              <tr><td style="padding: 0.6rem 0; border-bottom: 1px solid #eef1f5; color: #6b7280; font-size:0.85rem;">Industry</td><td style="padding: 0.6rem 0; border-bottom: 1px solid #eef1f5; color: #1a1a1a;">${industry}</td></tr>
+              <tr><td style="padding: 0.6rem 0; border-bottom: 1px solid #eef1f5; color: #6b7280; font-size:0.85rem;">Locations</td><td style="padding: 0.6rem 0; border-bottom: 1px solid #eef1f5; color: #1a1a1a;">${locations}</td></tr>
+              <tr><td style="padding: 0.6rem 0; border-bottom: 1px solid #eef1f5; color: #6b7280; font-size:0.85rem;">GBP Email</td><td style="padding: 0.6rem 0; border-bottom: 1px solid #eef1f5; color: #1a1a1a;">${google_profile_email}</td></tr>
+              <tr><td style="padding: 0.6rem 0; border-bottom: 1px solid #eef1f5; color: #6b7280; font-size:0.85rem;">Yelp URL</td><td style="padding: 0.6rem 0; border-bottom: 1px solid #eef1f5; color: #1a1a1a;">${yelp_url || 'Not provided'}</td></tr>
+              <tr><td style="padding: 0.6rem 0; border-bottom: 1px solid #eef1f5; color: #6b7280; font-size:0.85rem;">Signs responses as</td><td style="padding: 0.6rem 0; border-bottom: 1px solid #eef1f5; color: #1a1a1a;">${response_signer || 'Not specified'}</td></tr>
+              <tr><td style="padding: 0.6rem 0; border-bottom: 1px solid #eef1f5; color: #6b7280; font-size:0.85rem;">Tone</td><td style="padding: 0.6rem 0; border-bottom: 1px solid #eef1f5; color: #1a1a1a;">${response_tone}</td></tr>
+              <tr><td style="padding: 0.6rem 0; border-bottom: 1px solid #eef1f5; color: #6b7280; font-size:0.85rem;">Avoid</td><td style="padding: 0.6rem 0; border-bottom: 1px solid #eef1f5; color: #1a1a1a;">${things_to_avoid || 'Nothing specified'}</td></tr>
+              <tr><td style="padding: 0.6rem 0; border-bottom: 1px solid #eef1f5; color: #6b7280; font-size:0.85rem;">Tagline</td><td style="padding: 0.6rem 0; border-bottom: 1px solid #eef1f5; color: #1a1a1a;">${business_tagline || 'None'}</td></tr>
+              <tr><td style="padding: 0.6rem 0; color: #6b7280; font-size:0.85rem;">Notes</td><td style="padding: 0.6rem 0; color: #1a1a1a;">${additional_notes || 'None'}</td></tr>
+            </table>
+            <div style="margin-top: 1.5rem; padding: 1rem; background: #fff5f0; border: 1px solid #f3d9cb; border-radius: 8px;">
+              <p style="color: #C2410C; font-weight: 700; font-size: 0.875rem; margin: 0 0 0.5rem;">Action required</p>
+              <p style="color: #6b7280; font-size: 0.85rem; margin: 0; line-height: 1.6;">Accept the Google Manager invitation and Yelp Team Member invitation, then send the &ldquo;You&apos;re Live&rdquo; email once the first response is posted.</p>
+            </div>
           </div>
         </div>
       `,
@@ -106,51 +108,56 @@ export async function POST(req) {
     await transporter.sendMail({
       from: `"RespondPal" <${process.env.GMAIL_USER}>`,
       to: email,
-      subject: `${owner_name.split(' ')[0]}, your RespondPal setup is complete`,
+      subject: `${owner_name.split(' ')[0]}, your RespondPal setup is confirmed`,
       html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; background: #0a0a0a; color: #e8e8e8; padding: 2rem; border-radius: 12px;">
-          <h2 style="color: #fff; margin: 0 0 1rem;">Almost live — one quick step left.</h2>
-          <p style="color: #888; line-height: 1.7; margin: 0 0 1rem;">Hi ${owner_name.split(' ')[0]},</p>
-          <p style="color: #888; line-height: 1.7; margin: 0 0 1.5rem;">
-            Thanks for completing your setup. We have everything we need to start responding to your reviews. There&apos;s just one step left — granting us access to your Google and Yelp profiles.
-          </p>
+        <div style="font-family: Arial, Helvetica, sans-serif; max-width: 600px; margin: 0 auto; background: #ffffff; color: #4a4a4a; border: 1px solid #dde2e8; border-radius: 12px; overflow: hidden;">
 
-          <div style="background: #141414; border: 1px solid #2a2a2a; border-radius: 10px; padding: 1.5rem; margin-bottom: 1.5rem;">
-            <p style="color: #fff; font-weight: 700; margin: 0 0 1rem;">🔵 Google Business Profile</p>
-            <ol style="color: #888; font-size: 0.875rem; line-height: 2; margin: 0; padding-left: 1.25rem;">
-              <li>Go to <a href="https://business.google.com" style="color: #FF5C1A;">business.google.com</a> and sign in</li>
-              <li>Click your business → Settings → Managers</li>
-              <li>Click Add and enter <strong style="color: #fff;">team@respondpal.ai</strong></li>
-              <li>Set role to Manager and click Invite</li>
-            </ol>
+          <div style="background: #1e2a44; padding: 1.75rem 2rem;">
+            <div style="font-size: 1.4rem; font-weight: 800; color: #ffffff; letter-spacing: 0.01em;">Respond<span style="color: #E8772E;">Pal</span></div>
           </div>
 
-          <div style="background: #141414; border: 1px solid #2a2a2a; border-radius: 10px; padding: 1.5rem; margin-bottom: 1.5rem;">
-            <p style="color: #fff; font-weight: 700; margin: 0 0 1rem;">🔴 Yelp Business</p>
-            <ol style="color: #888; font-size: 0.875rem; line-height: 2; margin: 0; padding-left: 1.25rem;">
-              <li>Go to <a href="https://biz.yelp.com" style="color: #FF5C1A;">biz.yelp.com</a> and sign in</li>
-              <li>Click Account Settings → Team Members</li>
-              <li>Click Add Team Member and enter <strong style="color: #fff;">team@respondpal.ai</strong></li>
-              <li>Set role to Manager and click Send Invitation</li>
-            </ol>
-          </div>
-
-          <p style="color: #888; line-height: 1.7; margin: 0 0 1.5rem;">
-            Once we receive both invitations we&apos;ll get everything configured and send you a confirmation that we&apos;re live. This typically takes less than 24 hours.
-          </p>
-
-          <div style="background: #141414; border: 1px solid #2a2a2a; border-radius: 10px; padding: 1.25rem; margin-bottom: 1.5rem;">
-            <p style="color: #888; font-size: 0.8rem; line-height: 1.65; margin: 0;">
-              <strong style="color: #fff;">A quick note on billing:</strong> RespondPal is billed monthly, in advance. You can cancel anytime — there&apos;s no contract. If you cancel, we keep your reviews handled through the end of the month you&apos;ve already paid for, and you simply won&apos;t be charged again. See our <a href="https://respondpal.ai/terms" style="color: #FF5C1A;">Terms of Service</a> for details.
+          <div style="padding: 2rem;">
+            <h2 style="color: #1e2a44; font-size: 1.4rem; margin: 0 0 1rem;">You&apos;re all set, ${owner_name.split(' ')[0]}.</h2>
+            <p style="color: #4a4a4a; line-height: 1.7; margin: 0 0 1.5rem; font-size: 0.95rem;">
+              Thanks for completing your setup — we have everything we need to start responding to your reviews. The only thing left is making sure we have access to your Google and Yelp profiles. If you haven&apos;t granted access yet (or did it with your rep on the phone), here&apos;s the reference:
             </p>
-          </div>
 
-          <div style="border-top: 1px solid #2a2a2a; padding-top: 1.5rem;">
-            <p style="color: #555; font-size: 0.85rem; margin: 0;">
-              The RespondPal Team<br />
-              <a href="mailto:team@respondpal.ai" style="color: #FF5C1A;">team@respondpal.ai</a><br />
-              <a href="https://respondpal.ai" style="color: #FF5C1A;">respondpal.ai</a>
+            <div style="background: #f6f7f9; border: 1px solid #dde2e8; border-left: 3px solid #4285F4; border-radius: 10px; padding: 1.5rem; margin-bottom: 1.25rem;">
+              <p style="color: #1e2a44; font-weight: 700; margin: 0 0 0.85rem; font-size: 0.95rem;">Google Business Profile</p>
+              <ol style="color: #4a4a4a; font-size: 0.875rem; line-height: 1.9; margin: 0; padding-left: 1.25rem;">
+                <li>Go to <a href="https://business.google.com" style="color: #C2410C;">business.google.com</a> and sign in</li>
+                <li>Click your business &rarr; Settings &rarr; Managers</li>
+                <li>Click Add and enter <strong style="color: #1e2a44;">team@respondpal.ai</strong></li>
+                <li>Set role to Manager and click Invite</li>
+              </ol>
+            </div>
+
+            <div style="background: #f6f7f9; border: 1px solid #dde2e8; border-left: 3px solid #d32323; border-radius: 10px; padding: 1.5rem; margin-bottom: 1.5rem;">
+              <p style="color: #1e2a44; font-weight: 700; margin: 0 0 0.85rem; font-size: 0.95rem;">Yelp Business</p>
+              <ol style="color: #4a4a4a; font-size: 0.875rem; line-height: 1.9; margin: 0; padding-left: 1.25rem;">
+                <li>Go to <a href="https://biz.yelp.com" style="color: #C2410C;">biz.yelp.com</a> and sign in</li>
+                <li>Click Account Settings &rarr; Team Members</li>
+                <li>Click Add Team Member and enter <strong style="color: #1e2a44;">team@respondpal.ai</strong></li>
+                <li>Set role to Manager and click Send Invitation</li>
+              </ol>
+            </div>
+
+            <p style="color: #4a4a4a; line-height: 1.7; margin: 0 0 1.5rem; font-size: 0.95rem;">
+              Once we have access, we&apos;ll get everything configured and send you a note when we&apos;re live — typically within 24 hours. After that, every new review gets a professional response within 24 hours, and you never have to think about it again.
             </p>
+
+            <div style="background: #f6f7f9; border: 1px solid #dde2e8; border-radius: 10px; padding: 1.25rem; margin-bottom: 1.5rem;">
+              <p style="color: #6b7280; font-size: 0.8rem; line-height: 1.65; margin: 0;">
+                <strong style="color: #1e2a44;">A quick note on billing:</strong> RespondPal is billed monthly, in advance. You can cancel anytime — there&apos;s no contract. If you cancel, we keep your reviews handled through the end of the month you&apos;ve already paid for, and you simply won&apos;t be charged again. See our <a href="https://respondpal.ai/terms" style="color: #C2410C;">Terms of Service</a> for details.
+              </p>
+            </div>
+
+            <div style="border-top: 1px solid #dde2e8; padding-top: 1.25rem;">
+              <p style="color: #6b7280; font-size: 0.85rem; margin: 0; line-height: 1.6;">
+                The RespondPal Team<br />
+                <a href="mailto:team@respondpal.ai" style="color: #C2410C;">team@respondpal.ai</a> &middot; <a href="https://respondpal.ai" style="color: #C2410C;">respondpal.ai</a>
+              </p>
+            </div>
           </div>
         </div>
       `,
