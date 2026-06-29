@@ -1855,6 +1855,11 @@ footer a:hover {
   grid-template-columns: 1fr auto;
   gap: 2rem;
   align-items: start;
+  text-align: left;
+}
+
+.cleanup-left {
+  text-align: left;
 }
 
 .cleanup-title {
