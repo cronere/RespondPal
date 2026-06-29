@@ -11,7 +11,7 @@ export default function AdminOnboarding() {
   const load = async () => {
     setLoading(true)
     try {
-      const res = await fetch('/api/admin/clients')
+      const res = await fetch('/api/admin/clients', { cache: 'no-store' })
       const data = await res.json()
       if (res.ok) setClients(data.clients)
       else setError(data.error || 'Failed to load.')
