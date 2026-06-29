@@ -2074,107 +2074,6 @@ footer a:hover {
   color: var(--light-muted);
 }
 
-/* ── PRICING — LIGHT ── */
-.pricing {
-  background: var(--light-bg);
-}
-
-.pricing .section-label {
-  color: var(--orange);
-}
-
-.pricing .section-h2 {
-  color: var(--light-text);
-}
-
-.pricing .section-sub {
-  color: var(--light-muted);
-}
-
-/* Location tier cards */
-.pricing .location-tier {
-  background: var(--light-card);
-  border-color: var(--light-border);
-  box-shadow: 0 1px 3px rgba(20, 30, 50, 0.06), 0 8px 24px rgba(20, 30, 50, 0.05);
-}
-
-.pricing .location-tier-featured {
-  border-color: var(--orange);
-  background: var(--light-card);
-}
-
-.pricing .location-tier-featured::before {
-  opacity: 0.12;
-}
-
-.pricing .tier-locations {
-  color: var(--light-muted);
-}
-
-.pricing .location-tier-featured .tier-locations {
-  color: var(--orange);
-}
-
-.pricing .tier-price {
-  color: var(--light-text);
-}
-
-.pricing .tier-price em {
-  color: var(--light-muted);
-}
-
-/* "What's included" panel */
-.pricing .pricing-includes {
-  background: var(--light-card);
-  border-color: var(--light-border);
-  box-shadow: 0 1px 3px rgba(20, 30, 50, 0.05);
-}
-
-.pricing .pi-label {
-  color: var(--light-muted2);
-}
-
-.pricing .pi-item {
-  color: var(--light-text);
-}
-
-/* Profile Cleanup card */
-.pricing .cleanup-card {
-  background: var(--light-card);
-  border-color: var(--light-border);
-  box-shadow: 0 1px 3px rgba(20, 30, 50, 0.05);
-}
-
-.pricing .cleanup-title {
-  color: var(--light-text);
-}
-
-.pricing .cleanup-desc {
-  color: var(--light-muted);
-}
-
-.pricing .cleanup-list li {
-  color: var(--light-text);
-}
-
-.pricing .cleanup-price {
-  color: var(--light-text);
-}
-
-.pricing .cleanup-period {
-  color: var(--light-muted);
-}
-
-.pricing .multi-note {
-  color: var(--light-muted);
-}
-
-@media (max-width: 768px) {
-  .pricing .cleanup-right {
-    border-top: 1px solid var(--light-border);
-  }
-}
-
 /* ════════════════════════════════════════════════════════════════════
    LEGAL PAGES — Terms of Service & Privacy Policy
    ════════════════════════════════════════════════════════════════════ */
@@ -3017,4 +2916,85 @@ footer a:hover {
     width: 110px;
     height: 110px;
   }
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   LIGHT SECTIONS — "The Bigger Picture" (AI) + FAQ converted to grey
+   ════════════════════════════════════════════════════════════════════ */
+
+/* ── THE BIGGER PICTURE (AI) — LIGHT ── */
+.ai-section {
+  background: var(--light-bg);
+  border-top: 1px solid var(--light-border);
+}
+
+.ai-section .section-label {
+  color: var(--orange);
+}
+
+.ai-section .section-h2 {
+  color: var(--light-text);
+}
+
+.ai-section .section-sub {
+  color: var(--light-muted);
+}
+
+.ai-section .ai-cards {
+  background: var(--light-border);
+  border-color: var(--light-border);
+  box-shadow: 0 1px 3px rgba(20, 30, 50, 0.06), 0 8px 24px rgba(20, 30, 50, 0.05);
+}
+
+.ai-section .ai-card {
+  background: var(--light-card);
+}
+
+.ai-section .ai-card h3 {
+  color: var(--light-text);
+}
+
+.ai-section .ai-card p {
+  color: var(--light-muted);
+}
+
+/* ── FAQ — LIGHT ── */
+.faq {
+  background: var(--light-bg);
+}
+
+.faq .section-label {
+  color: var(--orange);
+}
+
+.faq .section-h2 {
+  color: var(--light-text);
+}
+
+.faq .faq-item {
+  border-bottom-color: var(--light-border);
+}
+
+.faq .faq-item:first-child {
+  border-top-color: var(--light-border);
+}
+
+.faq .faq-q {
+  color: var(--light-text);
+}
+
+.faq .faq-q:hover {
+  color: var(--orange);
+}
+
+.faq .faq-icon {
+  color: var(--light-muted2);
+}
+
+.faq .faq-item.open .faq-icon {
+  color: var(--orange);
+}
+
+.faq .faq-a {
+  color: var(--light-muted);
 }
