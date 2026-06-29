@@ -258,6 +258,7 @@ function ReviewDrawer({ review, onClose, onUpdate, onDelete }) {
   const client = review.clients || {}
   const [draft, setDraft] = useState(review.response_final || review.response_draft || '')
   const [saving, setSaving] = useState(false)
+  const [drafting, setDrafting] = useState(false)
   const [msg, setMsg] = useState('')
 
   const patch = async (payload, successMsg) => {
@@ -273,6 +274,28 @@ function ReviewDrawer({ review, onClose, onUpdate, onDelete }) {
       else setMsg(data.error || 'Save failed.')
     } catch { setMsg('Save failed.') }
     setSaving(false)
+  }
+
+  const generateDraft = async () => {
+    if (drafting) return
+    setDrafting(true); setMsg('')
+    try {
+      const res = await fetch('/api/admin/ai-draft', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ review, client }),
+      })
+      const data = await res.json()
+      if (res.ok) {
+        setDraft(data.draft)
+        setMsg('Draft generated — review and edit before posting.')
+      } else {
+        setMsg(data.error || 'Could not generate a draft.')
+      }
+    } catch {
+      setMsg('Could not generate a draft.')
+    }
+    setDrafting(false)
   }
 
   const saveDraft = () => patch({ response_draft: draft, response_status: 'drafted' }, 'Draft saved.')
@@ -329,13 +352,22 @@ function ReviewDrawer({ review, onClose, onUpdate, onDelete }) {
           </div>
 
           <div className="drawer-section">
-            <div className="drawer-section-label">Your response</div>
+            <div className="rev-response-head">
+              <div className="drawer-section-label">Your response</div>
+              <button
+                className="rev-ai-btn"
+                onClick={generateDraft}
+                disabled={drafting || saving}
+              >
+                {drafting ? 'Drafting…' : draft ? '✨ Redraft with AI' : '✨ Draft with AI'}
+              </button>
+            </div>
             <textarea
               className="rev-draft"
               rows={7}
               value={draft}
               onChange={(e) => setDraft(e.target.value)}
-              placeholder="Write the response here, then copy it into the platform…"
+              placeholder="Write the response here, or click ‘Draft with AI’ to generate one in this client's voice…"
             />
             <div className="rev-draft-actions">
               <button className="rev-mini-btn" onClick={copyDraft} disabled={!draft}>Copy</button>
