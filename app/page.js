@@ -566,7 +566,7 @@ export default function Home() {
 
       {/* FOOTER */}
       <footer>
-        <p>© 2026 RespondPal LLC · respondpal.ai · <a href="mailto:jacob@respondpal.ai">jacob@respondpal.ai</a></p>
+        <p>© 2026 RespondPal LLC · respondpal.ai · <a href="mailto:team@respondpal.ai">team@respondpal.ai</a></p>
         <p className="footer-legal">
           <a href="/terms">Terms of Service</a>
           <span> · </span>
