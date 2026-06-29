@@ -94,16 +94,16 @@ export default function Home() {
           </div>
           <div className="hero-stats">
             <div className="hero-stat">
-              <div className="num">95%<sup>1</sup></div>
-              <div className="label">of businesses don&apos;t respond to reviews</div>
+              <div className="num">5%<sup>1</sup></div>
+              <div className="label">of businesses respond to reviews consistently</div>
             </div>
             <div className="hero-stat">
               <div className="num">24hr</div>
               <div className="label">response guarantee on every review</div>
             </div>
             <div className="hero-stat">
-              <div className="num">18%<sup>2</sup></div>
-              <div className="label">more revenue from responding to all reviews</div>
+              <div className="num">50%<sup>1</sup></div>
+              <div className="label">are put off by generic, templated replies</div>
             </div>
             <div className="hero-stat">
               <div className="num">89%<sup>1</sup></div>
@@ -117,32 +117,33 @@ export default function Home() {
       <section className="problem" id="problem">
         <div className="container">
           <div className="section-label">The problem</div>
-          <h2 className="section-h2">Every unanswered review<br />is a missed sale.</h2>
+          <h2 className="section-h2">Knowing matters isn&apos;t<br />the same as keeping up.</h2>
           <p className="section-sub">
-            When a potential customer is choosing between you and a competitor,
-            they read your reviews on Google and Yelp. If your competitor responds
-            and you don&apos;t, you lose. It&apos;s that simple.
+            Most business owners know they should respond to reviews. The trouble is
+            doing it for every review, on every platform, fast — week after week. Almost
+            no one keeps that up. So reviews pile up unanswered, or get rushed,
+            templated replies that customers can spot a mile away.
           </p>
           <div className="stat-grid">
             <div className="stat-box">
               <div className="big">89%<sup>1</sup></div>
-              <div className="desc">of consumers expect businesses to respond to their review</div>
+              <div className="desc">of consumers expect businesses to respond to their reviews</div>
               <div className="stat-source">BrightLocal Local Consumer Review Survey</div>
             </div>
             <div className="stat-box">
-              <div className="big">2.7<sup>3</sup></div>
-              <div className="desc">days — average time a business takes to respond (when they respond at all)</div>
-              <div className="stat-source">ReplyOnTheFly Benchmark Report</div>
+              <div className="big">5%<sup>1</sup></div>
+              <div className="desc">of businesses actually respond to their reviews consistently</div>
+              <div className="stat-source">BrightLocal / Upfirst</div>
             </div>
             <div className="stat-box">
-              <div className="big">41%<sup>1</sup></div>
-              <div className="desc">of consumers always read reviews before choosing a local business</div>
+              <div className="big">50%<sup>1</sup></div>
+              <div className="desc">of consumers are put off by generic, templated responses</div>
               <div className="stat-source">BrightLocal Local Consumer Review Survey</div>
             </div>
             <div className="stat-box">
-              <div className="big">18%<sup>2</sup></div>
-              <div className="desc">more revenue correlates with businesses that respond to every review</div>
-              <div className="stat-source">Harvard Business Review</div>
+              <div className="big">81%<sup>1</sup></div>
+              <div className="desc">of consumers expect a response within a week of leaving a review</div>
+              <div className="stat-source">BrightLocal Local Consumer Review Survey</div>
             </div>
           </div>
         </div>
@@ -488,9 +489,7 @@ export default function Home() {
         <div className="container sources-inner">
           <div className="sources-label">Sources</div>
           <ul className="sources-list">
-            <li><sup>1</sup> BrightLocal Local Consumer Review Survey (2024)</li>
-            <li><sup>2</sup> Harvard Business Review — &ldquo;Responding to Customer Reviews&rdquo; (2022)</li>
-            <li><sup>3</sup> ReplyOnTheFly Benchmark Report (2023)</li>
+            <li><sup>1</sup> BrightLocal Local Consumer Review Survey (2026); business response-rate data via BrightLocal &amp; Upfirst (2025)</li>
           </ul>
         </div>
       </section>
