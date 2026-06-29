@@ -161,7 +161,7 @@ export default function Privacy() {
           <h2>11. Contact</h2>
           <p>
             Questions about this Privacy Policy or your information? Contact us
-            at <a href="mailto:jacob@respondpal.ai">jacob@respondpal.ai</a>.
+            at <a href="mailto:team@respondpal.ai">team@respondpal.ai</a>.
           </p>
         </section>
 
