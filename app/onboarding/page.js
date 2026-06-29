@@ -24,6 +24,7 @@ export default function Onboarding() {
     things_to_avoid: '',
     business_tagline: '',
     additional_notes: '',
+    sales_rep: '',
   })
 
   const handleChange = (e) => {
@@ -294,6 +295,17 @@ export default function Onboarding() {
                   rows={3}
                   placeholder="We specialize in commercial HVAC, we have a sister location in Scottsdale, we offer a senior discount..."
                   value={form.additional_notes}
+                  onChange={handleChange}
+                />
+              </div>
+              <div className="ob-group">
+                <label>Sales representative</label>
+                <p className="ob-hint">If a RespondPal representative helped you sign up, enter their name here so we can credit them.</p>
+                <input
+                  name="sales_rep"
+                  type="text"
+                  placeholder="Rep's full name"
+                  value={form.sales_rep}
                   onChange={handleChange}
                 />
               </div>
