@@ -152,7 +152,7 @@ export default function Terms() {
           <h2>11. Contact</h2>
           <p>
             Questions about these Terms? Reach us at{' '}
-            <a href="mailto:jacob@respondpal.ai">jacob@respondpal.ai</a>.
+            <a href="mailto:team@respondpal.ai">team@respondpal.ai</a>.
           </p>
         </section>
 
