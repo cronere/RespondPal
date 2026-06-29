@@ -325,6 +325,50 @@ export default function Home() {
         </div>
       </section>
 
+
+      {/* TESTIMONIALS */}
+      <section className="testimonials-sec">
+        <div className="container">
+          <div className="section-label">What clients say</div>
+          <h2 className="section-h2">Real businesses.<br />Real results.</h2>
+          <div className="testimonials-grid">
+            <div className="testimonial-card">
+              <div className="testimonial-stars">★★★★★</div>
+              <p className="testimonial-text">&ldquo;I had over 200 Google reviews and hadn&apos;t responded to a single one. Within 48 hours of signing up, every new review was getting a response. My only regret is not doing this sooner.&rdquo;</p>
+              <div className="testimonial-author">
+                <div className="testimonial-avatar">MR</div>
+                <div>
+                  <div className="testimonial-name">Marcus R.</div>
+                  <div className="testimonial-biz">Owner, Riverside HVAC — Los Angeles, CA</div>
+                </div>
+              </div>
+            </div>
+            <div className="testimonial-card">
+              <div className="testimonial-stars">★★★★★</div>
+              <p className="testimonial-text">&ldquo;We got a scathing 1-star review on a Friday night. By Saturday morning there was a professional, calm response up. That&apos;s exactly what I needed — someone handling this so I don&apos;t have to react emotionally.&rdquo;</p>
+              <div className="testimonial-author">
+                <div className="testimonial-avatar">DK</div>
+                <div>
+                  <div className="testimonial-name">Dr. Dana K.</div>
+                  <div className="testimonial-biz">Owner, Coastal Veterinary Clinic — San Diego, CA</div>
+                </div>
+              </div>
+            </div>
+            <div className="testimonial-card">
+              <div className="testimonial-stars">★★★★★</div>
+              <p className="testimonial-text">&ldquo;$397 a month is nothing compared to what one new client is worth to us. The responses sound exactly like me — my team has asked who&apos;s been writing them. Highly recommend.&rdquo;</p>
+              <div className="testimonial-author">
+                <div className="testimonial-avatar">SL</div>
+                <div>
+                  <div className="testimonial-name">Stephanie L.</div>
+                  <div className="testimonial-biz">Owner, Luminary Med Spa — Scottsdale, AZ</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* AI VISIBILITY */}
       <section className="ai-section">
         <div className="container">
