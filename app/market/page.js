@@ -51,17 +51,20 @@ export default function Market() {
         <SectionLabel n="01" title="Why review responses are non-negotiable" />
 
         <div className="market-stat-grid">
-          <Stat n="89%" label="of consumers expect a response to their review" src="BrightLocal 2024" />
-          <Stat n="95%" label="of local businesses never respond to any reviews" src="BrightLocal 2024" />
-          <Stat n="2.7 days" label="average time a business takes to respond" src="ReplyOnTheFly 2023" />
-          <Stat n="18%" label="more revenue for businesses that respond to all reviews" src="Harvard Business Review" />
+          <Stat n="89%" label="of consumers expect a response to their review" src="BrightLocal 2026" />
+          <Stat n="5%" label="of businesses respond to their reviews consistently" src="BrightLocal / Upfirst 2025" />
+          <Stat n="50%" label="of consumers are put off by generic, templated replies" src="BrightLocal 2026" />
+          <Stat n="81%" label="expect a response within a week of leaving a review" src="BrightLocal 2026" />
         </div>
 
         <p className="market-p">
-          When you call a business owner who has 80 reviews and zero responses, this is their reality:
-          potential customers are reading those reviews, seeing competitors who respond, and choosing
-          the competitor — while the owner has no idea it&apos;s happening. Negative reviews sit unanswered,
-          permanently visible, and AI search tools quietly deprioritize them.
+          Here&apos;s the reality you&apos;re selling into: business owners now know reviews matter — most
+          will tell you they &ldquo;try to respond.&rdquo; But only about 5% actually keep it up consistently,
+          across every review and every platform. The rest fall into three buckets, and <strong>all three
+          are your prospect</strong>: the ones who&apos;ve given up and let reviews sit unanswered, the ones
+          rushing out generic replies in their spare time (which half of consumers actively distrust), and
+          the ones paying $300–800/month for a tool that still makes them do the work. You&apos;re not there
+          to convince them reviews matter — they already believe it. You&apos;re there to take it off their plate.
         </p>
 
         <div className="market-callout">
@@ -69,8 +72,8 @@ export default function Market() {
           <p>
             AI search tools like Google&apos;s AI Overviews, ChatGPT, and Perplexity now synthesize reviews
             to decide whether to recommend a business. Response rate, recency, and sentiment all factor in.
-            A business that never responds is sending a signal — to real customers and to AI — that they
-            don&apos;t engage.
+            A business that responds inconsistently — or with obvious templates — is sending a weak signal
+            to real customers and to AI alike.
           </p>
           <p className="market-pitch">
             Pitch line: &ldquo;Google&apos;s AI is literally reading your review responses now. An unanswered
@@ -215,7 +218,7 @@ export default function Market() {
           <div className="market-why-col">
             <div className="market-why-label">The product makes selling easy</div>
             <ul>
-              <li>Nearly every business you call qualifies — 95% don&apos;t respond</li>
+              <li>Nearly every business you call qualifies — only ~5% respond consistently</li>
               <li>The problem is visible — you can see unanswered reviews before you call</li>
               <li>One-call close — not a complex enterprise sale</li>
               <li>No contract removes the biggest objection before they raise it</li>
