@@ -3679,3 +3679,167 @@ footer a:hover {
   .drawer-grid { grid-template-columns: 1fr; }
   .clients-toolbar { flex-direction: column; align-items: stretch; }
 }
+
+/* ════════════════════════════════════════════════════════════════════
+   ADMIN — ONBOARDING (Stage 3): per-client checklist + go live
+   ════════════════════════════════════════════════════════════════════ */
+.onb-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.onb-card {
+  background: var(--admin-surface);
+  border: 1px solid var(--admin-border);
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+.onb-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.onb-card-head h3 {
+  font-family: var(--font-display, 'Barlow Condensed', sans-serif);
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--admin-navy);
+  line-height: 1.1;
+}
+
+.onb-card-sub {
+  font-size: 0.85rem;
+  color: var(--admin-muted);
+  margin-top: 0.25rem;
+}
+
+.onb-tag {
+  display: inline-block;
+  background: #fff3e0;
+  color: #b26a00;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.1rem 0.5rem;
+  border-radius: 20px;
+  margin-left: 0.5rem;
+  vertical-align: middle;
+}
+
+.onb-card-meta {
+  font-size: 0.8rem;
+  color: var(--admin-muted2);
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.onb-checklist {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-bottom: 1.25rem;
+}
+
+.onb-check {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: #fafbfc;
+  border: 1px solid var(--admin-border);
+  border-radius: 8px;
+  padding: 0.7rem 0.9rem;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  transition: background 0.12s, border-color 0.12s;
+}
+
+.onb-check:not(.auto):hover { border-color: var(--admin-muted2); }
+
+.onb-check.auto { cursor: default; opacity: 0.95; }
+
+.onb-check-box {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  border: 1.5px solid var(--admin-border);
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.onb-check.done .onb-check-box {
+  background: #2a7a4a;
+  border-color: #2a7a4a;
+}
+
+.onb-check-label {
+  flex: 1;
+  font-size: 0.9rem;
+  color: var(--admin-text);
+}
+
+.onb-check.done .onb-check-label { color: var(--admin-muted); }
+
+.onb-check-auto {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--admin-muted2);
+  background: #eef1f5;
+  padding: 0.15rem 0.45rem;
+  border-radius: 20px;
+}
+
+.onb-message {
+  padding: 0.7rem 0.9rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+}
+
+.onb-message.success { background: #e6f4ea; color: #1e7e44; border: 1px solid #b6dcc2; }
+.onb-message.error { background: #fdecea; color: #b23b30; border: 1px solid #f5c6c0; }
+
+.onb-card-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  border-top: 1px solid #eef1f5;
+  padding-top: 1.25rem;
+}
+
+.onb-hint {
+  font-size: 0.82rem;
+  color: var(--admin-muted2);
+  flex: 1;
+  min-width: 200px;
+}
+
+.onb-golive-btn {
+  background: var(--admin-orange);
+  border: none;
+  color: #fff;
+  font-size: 0.92rem;
+  font-weight: 700;
+  padding: 0.7rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-left: auto;
+  transition: opacity 0.15s;
+}
+
+.onb-golive-btn:hover:not(:disabled) { opacity: 0.92; }
+.onb-golive-btn:disabled { background: #c8cdd6; cursor: default; }
