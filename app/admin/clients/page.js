@@ -285,8 +285,12 @@ function ClientDrawer({ client, onClose, onSaved }) {
           <div className="drawer-section">
             <div className="drawer-section-label">Brand voice</div>
             <div className="drawer-grid">
-              <Field label="Signs responses as">
+              <Field
+                label="Sign responses as (optional)"
+                hint="Leave blank for unsigned responses. Google already labels replies “Response from the owner,” so a signature is only needed when you want a personal touch (usually the owner's name)."
+              >
                 <input value={form.response_signer || ''}
+                  placeholder="Usually leave blank"
                   onChange={(e) => set('response_signer', e.target.value)} />
               </Field>
               <Field label="Tone">
@@ -303,6 +307,14 @@ function ClientDrawer({ client, onClose, onSaved }) {
             <Field label="Business tagline">
               <input value={form.business_tagline || ''}
                 onChange={(e) => set('business_tagline', e.target.value)} />
+            </Field>
+            <Field
+              label="Custom AI instructions"
+              hint="Free-form guidance for drafting this client's responses — industry context, phrases they love or hate, what to emphasize, who to thank. This carries more weight than the fields above. Build it up as you learn the client."
+            >
+              <textarea rows={5} value={form.ai_instructions || ''}
+                placeholder="e.g. HVAC company — emphasize 24/7 emergency availability. Owner is warm and informal, uses ‘folks.’ If a technician is named in the review, thank them by name. Never quote prices. Keep it short."
+                onChange={(e) => set('ai_instructions', e.target.value)} />
             </Field>
           </div>
 
@@ -327,11 +339,12 @@ function ClientDrawer({ client, onClose, onSaved }) {
   )
 }
 
-function Field({ label, children }) {
+function Field({ label, children, hint }) {
   return (
     <label className="field">
       {label && <span className="field-label">{label}</span>}
       {children}
+      {hint && <span className="field-hint">{hint}</span>}
     </label>
   )
 }
