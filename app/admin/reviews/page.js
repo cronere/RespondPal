@@ -344,10 +344,11 @@ function ReviewDrawer({ review, onClose, onUpdate, onDelete }) {
           <div className="drawer-section">
             <div className="drawer-section-label">Voice guide</div>
             <div className="rev-voice">
-              <div><strong>Signs as:</strong> {client.response_signer || '—'}</div>
+              <div><strong>Signs as:</strong> {client.response_signer || 'Unsigned'}</div>
               <div><strong>Tone:</strong> {(client.response_tone || 'professional_friendly').replace(/_/g, ' ')}</div>
               {client.things_to_avoid && <div><strong>Avoid:</strong> {client.things_to_avoid}</div>}
               {client.business_tagline && <div><strong>Tagline:</strong> {client.business_tagline}</div>}
+              {client.ai_instructions && <div><strong>Custom instructions:</strong> {client.ai_instructions}</div>}
             </div>
           </div>
 
