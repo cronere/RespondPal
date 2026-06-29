@@ -1925,6 +1925,18 @@ footer a:hover {
   margin-top: 0.25rem;
 }
 
+.cleanup-addon-note {
+  margin-top: 1rem;
+  display: inline-block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--orange);
+  background: rgba(255, 92, 26, 0.1);
+  border: 1px solid rgba(255, 92, 26, 0.25);
+  padding: 0.5rem 1rem;
+  border-radius: 100px;
+}
+
 @media (max-width: 768px) {
   .location-tiers {
     grid-template-columns: 1fr;
