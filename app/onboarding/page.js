@@ -31,14 +31,16 @@ export default function Onboarding() {
     setForm({ ...form, [e.target.name]: e.target.value })
   }
 
-  const handleSubmit = async (e) => {
+  // The form never submits on its own. This is a hard safety net that
+  // blocks any implicit submit (Enter key, etc.) from doing anything.
+  const handleSubmit = (e) => {
     e.preventDefault()
-    // Only allow actual submission from the final step.
-    // Prevents the Enter key on an input (steps 1–2) from submitting early.
-    if (step < 3) {
-      if (canProceed()) setStep(step + 1)
-      return
-    }
+  }
+
+  // The ONLY path that actually submits — called explicitly by the
+  // "Complete setup" button onClick, and only ever from step 3.
+  const doSubmit = async () => {
+    if (step !== 3 || submitting) return
     setSubmitting(true)
     try {
       const res = await fetch('/api/onboarding', {
@@ -340,13 +342,18 @@ export default function Onboarding() {
             <button
               type="button"
               className="ob-btn-next"
-              onClick={() => setStep(step + 1)}
+              onClick={() => { if (canProceed()) setStep(step + 1) }}
               disabled={!canProceed()}
             >
               Continue →
             </button>
           ) : (
-            <button type="submit" className="ob-btn-submit" disabled={submitting}>
+            <button
+              type="button"
+              className="ob-btn-submit"
+              onClick={doSubmit}
+              disabled={submitting}
+            >
               {submitting ? 'Submitting...' : 'Complete setup →'}
             </button>
           )}
