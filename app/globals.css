@@ -4640,3 +4640,12 @@ footer a:hover {
 @media (max-width: 768px) {
   .market-earn-grid { grid-template-columns: 1fr; }
 }
+
+/* Admin form field hint text */
+.field-hint {
+  display: block;
+  font-size: 0.72rem;
+  color: var(--admin-muted2);
+  line-height: 1.45;
+  margin-top: 0.35rem;
+}
