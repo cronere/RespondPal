@@ -272,8 +272,9 @@ export default function Home() {
           <div className="section-label">Be honest with yourself</div>
           <h2 className="section-h2">You&apos;re not going to do<br />this yourself. That&apos;s fine.</h2>
           <p className="section-sub">
-            Business owners know they should respond to reviews. They just never
-            get to it. Between staff, customers, and operations — it falls off the list every time.
+            Business owners know they should respond to reviews consistently. They just
+            aren&apos;t able to get to it most days. Between staff, customers, and
+            operations — it falls off the list every time.
           </p>
           <div className="compare-grid">
             <div className="compare-col bad">
