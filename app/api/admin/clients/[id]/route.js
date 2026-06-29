@@ -25,6 +25,7 @@ const EDITABLE_FIELDS = [
   'notes',
   'rep_name',
   'cleanup_status',
+  'onboarding_checklist',
 ]
 
 // GET /api/admin/clients/[id] — single client detail
