@@ -243,7 +243,7 @@ export default function Details() {
           <h2>Ready to get started?</h2>
           <p>Setup takes less than 10 minutes. Live within 48 hours. No contract.</p>
           <div className="details-cta-buttons">
-            <a href="mailto:jacob@respondpal.ai" className="details-btn-primary">
+            <a href="mailto:team@respondpal.ai" className="details-btn-primary">
               Get started today
             </a>
             <Link href="/" className="details-btn-outline">
@@ -251,7 +251,7 @@ export default function Details() {
             </Link>
           </div>
           <p className="details-cta-contact">
-            respondpal.ai · jacob@respondpal.ai
+            respondpal.ai · team@respondpal.ai
           </p>
         </section>
 
