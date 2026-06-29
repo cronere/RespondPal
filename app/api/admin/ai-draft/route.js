@@ -22,6 +22,7 @@ function buildPrompt({ review, client }) {
   const tone = TONE_GUIDANCE[client.response_tone] || TONE_GUIDANCE.professional_friendly
   const avoid = client.things_to_avoid
   const tagline = client.business_tagline
+  const customInstructions = client.ai_instructions
 
   const ratingLine = review.star_rating
     ? `${review.star_rating} out of 5 stars`
@@ -54,11 +55,18 @@ HOW TO WRITE THIS RESPONSE
   } else {
     prompt += `\n- Do not add a signature or sign-off name.`
   }
-  if (avoid) {
-    prompt += `\n- IMPORTANT — things to avoid: ${avoid}`
-  }
   if (tagline) {
     prompt += `\n- The business tagline (use only if it fits naturally, don't force it): "${tagline}"`
+  }
+
+  if (customInstructions && customInstructions.trim()) {
+    prompt += `\n\nCLIENT-SPECIFIC INSTRUCTIONS — this guidance comes directly from ${businessName} and is more important than the general rules above. Follow it closely:
+${customInstructions.trim()}`
+  }
+
+  if (avoid) {
+    prompt += `\n\nHARD CONSTRAINTS — these override everything above. The business owner has specifically asked you to avoid the following: ${avoid}
+Treat this by meaning, not just exact words. If they ask you to avoid a phrase, also avoid close variations and reworded versions of it (for example, avoiding "thanks so much" also means avoiding "thank you so much," "thanks a lot," and similar). Before you finalize the response, reread it and rewrite anything that conflicts with this.`
   }
 
   prompt += `\n\nWrite ONLY the response text itself — no preamble, no quotation marks around it, no explanation. Just the response exactly as it should be posted.`
