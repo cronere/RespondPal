@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import nodemailer from 'nodemailer'
-import { supabaseAdmin } from '../../../../lib/supabaseAdmin'
+import { supabaseAdmin } from '../../../../../lib/supabaseAdmin'
 
 const transporter = nodemailer.createTransport({
   service: 'gmail',
