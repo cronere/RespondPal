@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 
 export const metadata = {
   title: 'How RespondPal Works — Review Management, Done For You',
@@ -9,17 +10,31 @@ export const metadata = {
 export default function Details() {
   return (
     <main className="details-page">
-      {/* Header */}
-      <header className="details-header">
+      {/* Nav — matches main site */}
+      <nav className="details-nav">
+        <div className="details-nav-inner">
+          <Link href="/">
+            <Image src="/logo-white.png" alt="RespondPal" className="details-nav-logo" width={180} height={36} />
+          </Link>
+          <a href="mailto:team@respondpal.ai" className="details-nav-cta">Get started</a>
+        </div>
+      </nav>
+
+      {/* Hero */}
+      <section className="details-hero">
         <div className="details-container">
-          <div className="details-logo">
-            Respond<span>Pal</span>
-          </div>
-          <p className="details-tagline">
-            Google &amp; Yelp Review Response Management — Done For You
+          <div className="details-hero-eyebrow">Done-for-you review management</div>
+          <h1 className="details-hero-title">
+            Every review.<br />
+            <em>Google &amp; Yelp.</em><br />
+            You do nothing.
+          </h1>
+          <p className="details-hero-sub">
+            We respond to every Google and Yelp review your business receives —
+            professionally, promptly, and on-brand — within 24 hours, every time.
           </p>
         </div>
-      </header>
+      </section>
 
       <div className="details-container">
         {/* The Problem */}
