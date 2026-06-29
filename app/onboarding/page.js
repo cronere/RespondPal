@@ -33,6 +33,12 @@ export default function Onboarding() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    // Only allow actual submission from the final step.
+    // Prevents the Enter key on an input (steps 1–2) from submitting early.
+    if (step < 3) {
+      if (canProceed()) setStep(step + 1)
+      return
+    }
     setSubmitting(true)
     try {
       const res = await fetch('/api/onboarding', {
@@ -61,7 +67,7 @@ export default function Onboarding() {
           <h2>You&apos;re all set.</h2>
           <p>We have everything we need to get started. Check your email for next steps on granting us access to your Google and Yelp profiles.</p>
           <p style={{ marginTop: '0.75rem', color: 'var(--muted2)', fontSize: '0.875rem' }}>
-            Questions? Email <a href="mailto:jacob@respondpal.ai" style={{ color: 'var(--orange)' }}>jacob@respondpal.ai</a>
+            Questions? Email <a href="mailto:team@respondpal.ai" style={{ color: 'var(--orange)' }}>team@respondpal.ai</a>
           </p>
         </div>
       </div>
@@ -93,7 +99,17 @@ export default function Onboarding() {
       </div>
 
       {/* Form */}
-      <form onSubmit={handleSubmit} className="ob-form">
+      <form
+        onSubmit={handleSubmit}
+        className="ob-form"
+        onKeyDown={(e) => {
+          // Prevent the Enter key in a single-line input from submitting
+          // the form. Allow Enter inside textareas (for line breaks).
+          if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA') {
+            e.preventDefault()
+          }
+        }}
+      >
 
         {/* STEP 1 */}
         {step === 1 && (
@@ -221,7 +237,7 @@ export default function Onboarding() {
                   <ol className="ob-steps-list">
                     <li>Go to <strong>business.google.com</strong> and sign in</li>
                     <li>Click on your business → <strong>Settings</strong> → <strong>Managers</strong></li>
-                    <li>Click <strong>Add</strong> and enter: <strong style={{color:'var(--orange)'}}>jacob@respondpal.ai</strong></li>
+                    <li>Click <strong>Add</strong> and enter: <strong style={{color:'var(--orange)'}}>team@respondpal.ai</strong></li>
                     <li>Set role to <strong>Manager</strong> and click <strong>Invite</strong></li>
                   </ol>
                 </div>
@@ -231,7 +247,7 @@ export default function Onboarding() {
                   <ol className="ob-steps-list">
                     <li>Go to <strong>biz.yelp.com</strong> and sign in</li>
                     <li>Click <strong>Account Settings</strong> → <strong>Team Members</strong></li>
-                    <li>Click <strong>Add Team Member</strong> and enter: <strong style={{color:'var(--orange)'}}>jacob@respondpal.ai</strong></li>
+                    <li>Click <strong>Add Team Member</strong> and enter: <strong style={{color:'var(--orange)'}}>team@respondpal.ai</strong></li>
                     <li>Set role to <strong>Manager</strong> and click <strong>Send Invitation</strong></li>
                   </ol>
                 </div>
