@@ -3972,3 +3972,31 @@ footer a:hover {
   color: var(--admin-muted2);
   background: #fafbfc;
 }
+
+/* Clients header row + refresh button */
+.admin-page-head-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.admin-refresh-btn {
+  background: var(--admin-surface);
+  border: 1px solid var(--admin-border);
+  color: var(--admin-muted);
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.55rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.admin-refresh-btn:hover:not(:disabled) {
+  border-color: var(--admin-orange);
+  color: var(--admin-orange);
+}
+
+.admin-refresh-btn:disabled { opacity: 0.6; cursor: default; }
