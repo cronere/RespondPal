@@ -190,28 +190,57 @@ export default function Market() {
         <SectionLabel n="05" title="The opportunity for you" />
 
         <p className="market-p">
-          To make a great living, you don&apos;t need millions of clients. You need a few hundred. Because
-          you earn residuals on every active client, your income compounds. Here&apos;s what a book of
-          business looks like at one location per client:
+          To make a great living, you don&apos;t need millions of clients — you need a few hundred. Every
+          client you close pays you in year one <strong>and</strong> keeps paying you every year they stay.
+          Here&apos;s exactly what a single client is worth to you:
+        </p>
+
+        {/* Per-client earnings breakdown */}
+        <div className="market-earn-grid">
+          <div className="market-earn-card">
+            <div className="market-earn-label">Year 1, per client</div>
+            <div className="market-earn-num">$1,400</div>
+            <div className="market-earn-detail">
+              $200/mo for months 1–2 ($400) + $100/mo for months 3–12 ($1,000)
+            </div>
+          </div>
+          <div className="market-earn-card market-earn-card-accent">
+            <div className="market-earn-label">Every year after, per client</div>
+            <div className="market-earn-num">$600<span className="market-earn-unit">/yr</span></div>
+            <div className="market-earn-detail">
+              $50/mo residual for as long as they stay an active, paying client — no clawbacks
+            </div>
+          </div>
+        </div>
+
+        <p className="market-p">
+          That residual is the whole game. Close a client once, and they pay you $600 a year — year after
+          year — with zero additional work. Build a book of a few hundred and your ongoing residual income
+          alone becomes life-changing. Here&apos;s how it scales:
         </p>
 
         <div className="market-table-wrap">
           <table className="market-table">
             <thead>
-              <tr><th>Your Book</th><th>Upfront (per close)</th><th>Monthly Residual</th><th>Annual Residual</th></tr>
+              <tr>
+                <th>Your Book</th>
+                <th>Year 1 Earnings</th>
+                <th>Ongoing Residuals / Year</th>
+              </tr>
             </thead>
             <tbody>
-              <tr><td>25 clients</td><td>$200 each</td><td>~$2,500/mo</td><td>~$30,000/yr</td></tr>
-              <tr><td>50 clients</td><td>$200 each</td><td>~$5,000/mo</td><td>~$60,000/yr</td></tr>
-              <tr><td>100 clients</td><td>$200 each</td><td>~$10,000/mo</td><td>~$120,000/yr</td></tr>
-              <tr className="market-row-highlight"><td>200 clients</td><td>$200 each</td><td>~$20,000/mo</td><td>~$240,000/yr</td></tr>
+              <tr><td>25 clients</td><td>$35,000</td><td>$15,000/yr</td></tr>
+              <tr><td>50 clients</td><td>$70,000</td><td>$30,000/yr</td></tr>
+              <tr><td>100 clients</td><td>$140,000</td><td>$60,000/yr</td></tr>
+              <tr className="market-row-highlight"><td>200 clients</td><td>$280,000</td><td>$120,000/yr</td></tr>
             </tbody>
           </table>
         </div>
         <p className="market-fineprint">
-          Residual figures show the blended monthly residual once your book is established (months 2–12
-          pay $100/location, month 13+ pays $50/location). The upfront $200 per location is on top of this,
-          every time you close.
+          Year 1 earnings = $1,400 per client (the upfront and first-year commission). Ongoing residuals =
+          $600 per client per year from year two onward, paid every year they remain an active client.
+          Figures assume one location per client; multi-location clients pay proportionally more. Residuals
+          survive even if you move on, and there are no clawbacks.
         </p>
 
         <div className="market-two-col">
