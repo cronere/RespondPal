@@ -56,7 +56,7 @@ export default function Onboarding() {
   }
 
   const canProceed = () => {
-    if (step === 1) return form.owner_name && form.business_name && form.email && form.industry
+    if (step === 1) return form.owner_name && form.business_name && form.email && form.phone && form.industry
     if (step === 2) return form.google_profile_email
     return true
   }
@@ -155,10 +155,11 @@ export default function Onboarding() {
                   />
                 </div>
                 <div className="ob-group">
-                  <label>Phone number</label>
+                  <label>Phone number <span className="req">*</span></label>
                   <input
                     name="phone"
                     type="tel"
+                    required
                     placeholder="(555) 555-5555"
                     value={form.phone}
                     onChange={handleChange}
