@@ -238,14 +238,14 @@ export default function Home() {
               <p>Every review on every platform gets a response within 24 hours. No exceptions.</p>
             </div>
             <div className="feat">
-              <div className="feat-icon">✍️</div>
-              <h3>Human-reviewed responses</h3>
-              <p>Our team reviews every response before it goes live. No generic copy-paste — written for your business and your reviewer.</p>
+              <div className="feat-icon">🧠</div>
+              <h3>Quarterly intelligence report</h3>
+              <p>Every quarter, we send a Reputation &amp; Business Intelligence Report — your rating trend, what customers are actually saying, and the real takeaways buried in your reviews. Not just responses. Insight.</p>
             </div>
             <div className="feat">
-              <div className="feat-icon">⭐</div>
-              <h3>All star ratings covered</h3>
-              <p>5-star, 1-star, no-text reviews on Google and Yelp. We respond to them all.</p>
+              <div className="feat-icon">✍️</div>
+              <h3>Human-reviewed responses</h3>
+              <p>5-star, 1-star, no-text — every review on Google and Yelp gets a real response, reviewed by our team before it goes live. No generic copy-paste, no AI sounding like AI.</p>
             </div>
             <div className="feat">
               <div className="feat-icon">📊</div>
