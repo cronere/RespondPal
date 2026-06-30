@@ -8,6 +8,7 @@ const NAV = [
   { href: '/admin/clients', label: 'Clients' },
   { href: '/admin/onboarding', label: 'Onboarding' },
   { href: '/admin/reviews', label: 'Reviews' },
+  { href: '/admin/feedback', label: 'Feedback' },
   { href: '/admin/yelp-prep', label: 'Quick Draft' },
 ]
 
