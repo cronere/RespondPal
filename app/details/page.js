@@ -41,28 +41,27 @@ export default function Details() {
         <section className="details-section">
           <div className="details-label">The Problem</div>
           <p className="details-lead">
-            Most business owners know reviews matter — but only about 5% actually
-            respond to every review, consistently. The rest mean to, then get
-            slammed and fall behind. Every unanswered review is a signal to
-            potential customers — and now to AI search tools like Google&apos;s AI
-            Overviews — that your business doesn&apos;t engage. That costs you customers.
+            95% of local businesses never respond to their Google and Yelp
+            reviews. Every unanswered review is a signal to potential customers —
+            and now to AI search tools like Google&apos;s AI Overviews — that
+            your business doesn&apos;t engage. That costs you customers.
           </p>
           <div className="details-stats">
             <div className="details-stat">
               <div className="details-stat-num">89%</div>
-              <div className="details-stat-desc">of consumers expect a response to their reviews</div>
+              <div className="details-stat-desc">of consumers expect a response to their review</div>
             </div>
             <div className="details-stat">
-              <div className="details-stat-num">5%</div>
-              <div className="details-stat-desc">of businesses respond to reviews consistently</div>
+              <div className="details-stat-num">95%</div>
+              <div className="details-stat-desc">of businesses never respond to reviews</div>
             </div>
             <div className="details-stat">
-              <div className="details-stat-num">50%</div>
-              <div className="details-stat-desc">are put off by generic, templated replies</div>
+              <div className="details-stat-num">2.7 days</div>
+              <div className="details-stat-desc">average time a business takes to respond</div>
             </div>
             <div className="details-stat">
-              <div className="details-stat-num">81%</div>
-              <div className="details-stat-desc">expect a response within a week</div>
+              <div className="details-stat-num">18%</div>
+              <div className="details-stat-desc">more revenue from responding to all reviews</div>
             </div>
           </div>
         </section>
@@ -280,8 +279,8 @@ export default function Details() {
             <Link href="/privacy">Privacy Policy</Link>
           </div>
           <p className="details-sources">
-            Sources: BrightLocal Local Consumer Review Survey (2026) ·
-            business response-rate data via BrightLocal &amp; Upfirst (2025)
+            Sources: BrightLocal Local Consumer Review Survey (2024) · Harvard
+            Business Review (2022) · ReplyOnTheFly Benchmark Report (2023)
           </p>
         </footer>
       </div>
