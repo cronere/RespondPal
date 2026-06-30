@@ -177,7 +177,7 @@ export default function Home() {
             <div className="step">
               <div className="step-num">04</div>
               <h3>You stay in the loop</h3>
-              <p>Log into your dashboard anytime to see every review and every response across both platforms. Full visibility, zero effort.</p>
+              <p>Every response we post is public on your Google and Yelp profiles, so you can see our work anytime. We&apos;ll also keep you updated — and you can request a change on any response whenever you&apos;d like.</p>
             </div>
           </div>
         </div>
@@ -249,8 +249,8 @@ export default function Home() {
             </div>
             <div className="feat">
               <div className="feat-icon">📊</div>
-              <h3>Unified dashboard</h3>
-              <p>See every review and every response from Google and Yelp in one clean place. Full transparency, zero effort.</p>
+              <h3>Full transparency</h3>
+              <p>Every response is posted publicly on your Google and Yelp profiles — so you can see exactly what we wrote, anytime. Want something changed? Just ask.</p>
             </div>
             <div className="feat">
               <div className="feat-icon">🔒</div>
@@ -438,7 +438,7 @@ export default function Home() {
               <div className="pi-item">✓ 24-hour response guarantee</div>
               <div className="pi-item">✓ Human-reviewed, never templated</div>
               <div className="pi-item">✓ All star ratings (1–5 stars)</div>
-              <div className="pi-item">✓ Client dashboard access</div>
+              <div className="pi-item">✓ Request changes anytime</div>
               <div className="pi-item">✓ Dedicated account setup</div>
               <div className="pi-item">✓ Cancel anytime, no penalty</div>
             </div>
