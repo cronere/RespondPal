@@ -209,9 +209,9 @@ export default function Details() {
               <div className="details-price-period">per month · save $294</div>
             </div>
             <div className="details-price details-price-custom">
-              <div className="details-price-name">4+ Locations</div>
+              <div className="details-price-name">4+ Locations / Enterprise</div>
               <div className="details-price-amount sm">Custom</div>
-              <div className="details-price-period">contact us for a rate</div>
+              <div className="details-price-period">high-volume accounts welcome — contact us for a rate</div>
             </div>
           </div>
           <p className="details-price-note">
