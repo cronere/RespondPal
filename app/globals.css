@@ -4847,3 +4847,6 @@ footer a:hover {
   transition: all 0.15s;
 }
 .fb-again-btn:hover { background: var(--orange); color: #fff; }
+
+/* Feedback admin — contact name */
+.fb-contact-name { font-weight: 600; color: var(--admin-text); font-size: 0.9rem; margin-bottom: 0.15rem; }
