@@ -29,7 +29,7 @@ export async function PATCH(req, { params }) {
     // PATCH is the moment a change request transitions into "resolved".
     const { data: before } = await supabaseAdmin
       .from('feedback')
-      .select('status, feedback_type, contact_email, business_name')
+      .select('status, feedback_type, contact_email, contact_name, business_name')
       .eq('id', id)
       .single()
 
@@ -56,7 +56,7 @@ export async function PATCH(req, { params }) {
       before.contact_email
     ) {
       try {
-        const bizName = data.clients?.business_name || before.business_name || 'there'
+        const greetName = before.contact_name || data.clients?.business_name || before.business_name || 'there'
         await transporter.sendMail({
           from: `"RespondPal" <${process.env.GMAIL_USER}>`,
           to: before.contact_email,
@@ -64,7 +64,7 @@ export async function PATCH(req, { params }) {
           subject: 'Your review response has been updated',
           html: `
             <div style="font-family:Arial,sans-serif;max-width:560px;color:#1a1a1a;line-height:1.6">
-              <p>Hi ${escapeHtml(bizName)},</p>
+              <p>Hi ${escapeHtml(greetName)},</p>
               <p>Just a quick note to let you know we&rsquo;ve taken care of the
               change you requested. The updated response is now live on your profile.</p>
               <p>If it&rsquo;s not quite right, or there&rsquo;s anything else you&rsquo;d
