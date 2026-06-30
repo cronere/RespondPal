@@ -4649,3 +4649,162 @@ footer a:hover {
   line-height: 1.45;
   margin-top: 0.35rem;
 }
+
+/* ════════════════════════════════════════════════════════════════════
+   CLIENT FEEDBACK FORM (/feedback)
+   ════════════════════════════════════════════════════════════════════ */
+.fb-toggle {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+.fb-toggle-btn {
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 0.85rem 1rem;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.fb-toggle-btn:hover { border-color: var(--orange); color: var(--white); }
+.fb-toggle-btn.active {
+  background: var(--orange);
+  border-color: var(--orange);
+  color: #fff;
+}
+
+.fb-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 2rem;
+}
+
+.fb-mt { margin-top: 1.25rem; }
+
+.fb-hint {
+  font-size: 0.78rem;
+  color: var(--muted2);
+  line-height: 1.5;
+  margin-top: 0.4rem;
+}
+
+.fb-error {
+  margin-top: 1.25rem;
+  padding: 0.75rem 1rem;
+  background: rgba(178,59,48,0.1);
+  border: 1px solid rgba(178,59,48,0.4);
+  border-radius: 8px;
+  color: #e88; 
+  font-size: 0.875rem;
+}
+
+.fb-submit {
+  width: 100%;
+  margin-top: 1.5rem;
+  background: var(--orange);
+  border: none;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 700;
+  padding: 1rem;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.fb-submit:hover:not(:disabled) { opacity: 0.92; }
+.fb-submit:disabled { opacity: 0.6; cursor: default; }
+
+.fb-foot {
+  text-align: center;
+  margin-top: 1.5rem;
+  color: var(--muted2);
+  font-size: 0.85rem;
+}
+.fb-foot a { color: var(--orange); text-decoration: none; }
+
+.fb-back-link {
+  display: inline-block;
+  margin-top: 1.5rem;
+  color: var(--orange);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   ADMIN — FEEDBACK
+   ════════════════════════════════════════════════════════════════════ */
+.fb-admin-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1rem;
+}
+.fb-admin-card {
+  background: var(--admin-surface);
+  border: 1px solid var(--admin-border);
+  border-radius: 12px;
+  padding: 1.1rem;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+.fb-admin-card:hover { border-color: var(--admin-orange); box-shadow: 0 4px 14px rgba(20,30,50,0.06); }
+.fb-admin-top { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+.fb-admin-biz { font-weight: 700; color: var(--admin-text); font-size: 0.95rem; }
+.fb-admin-snippet {
+  font-size: 0.85rem;
+  color: var(--admin-muted);
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.fb-type-change_request { background: #fff3e0; color: #b26a00; }
+.fb-type-general_guidance { background: #e7eefc; color: #2a52be; }
+.fb-status-new { background: #fff3e0; color: #b26a00; }
+.fb-status-in_progress { background: #e7eefc; color: #2a52be; }
+.fb-status-resolved { background: #e6f4ea; color: #1e7e44; }
+.fb-status-archived { background: #eef0f3; color: #5c6677; }
+
+.fb-unmatched {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #b23b30;
+  background: rgba(178,59,48,0.08);
+  padding: 0.12rem 0.45rem;
+  border-radius: 20px;
+}
+.fb-unmatched-banner {
+  background: rgba(178,59,48,0.08);
+  border: 1px solid rgba(178,59,48,0.25);
+  border-radius: 8px;
+  padding: 0.8rem 1rem;
+  font-size: 0.85rem;
+  color: #b23b30;
+  margin-bottom: 1.5rem;
+}
+.fb-contact a { color: var(--admin-orange); text-decoration: none; font-size: 0.9rem; }
+.fb-body-text {
+  font-size: 0.92rem;
+  color: var(--admin-text);
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+.fb-tip {
+  margin-top: 0.6rem;
+  font-size: 0.8rem;
+  color: var(--admin-muted2);
+  font-style: italic;
+}
