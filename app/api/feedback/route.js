@@ -19,6 +19,7 @@ export async function POST(req) {
   try {
     const body = await req.json()
     const {
+      contact_name,
       business_name,
       contact_email,
       feedback_type, // 'change_request' | 'general_guidance'
@@ -27,8 +28,17 @@ export async function POST(req) {
       guidance,
     } = body
 
+    if (!contact_name || !contact_name.trim()) {
+      return NextResponse.json({ error: 'Please enter your first name.' }, { status: 400 })
+    }
     if (!business_name || !business_name.trim()) {
       return NextResponse.json({ error: 'Please enter your business name.' }, { status: 400 })
+    }
+    if (!contact_email || !contact_email.trim()) {
+      return NextResponse.json({ error: 'Please enter your email.' }, { status: 400 })
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contact_email.trim())) {
+      return NextResponse.json({ error: 'Please enter a valid email address.' }, { status: 400 })
     }
 
     const type = feedback_type === 'general_guidance' ? 'general_guidance' : 'change_request'
@@ -77,6 +87,7 @@ export async function POST(req) {
 
     const insert = {
       client_id,
+      contact_name: contact_name.trim(),
       business_name: business_name.trim(),
       contact_email: (contact_email || '').trim() || null,
       feedback_type: type,
@@ -117,6 +128,7 @@ export async function POST(req) {
             <p style="color:#6b7280;margin-top:0">${typeLabel}</p>
             <hr style="border:none;border-top:1px solid #e3e6eb">
             <p><strong>Business:</strong> ${escapeHtml(business_name)}</p>
+            <p><strong>From:</strong> ${escapeHtml(contact_name)}</p>
             <p><strong>Email:</strong> ${escapeHtml(contact_email) || '<em>not provided</em>'}</p>
             <p style="color:#6b7280;font-size:13px">${matchLine}</p>
             <hr style="border:none;border-top:1px solid #e3e6eb">
