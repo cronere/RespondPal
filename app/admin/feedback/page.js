@@ -162,11 +162,14 @@ function FeedbackDrawer({ item, onClose, onUpdate, onDelete }) {
             </div>
           )}
 
-          {item.contact_email && (
+          {(item.contact_name || item.contact_email) && (
             <div className="drawer-section">
               <div className="drawer-section-label">Contact</div>
               <div className="fb-contact">
-                <a href={`mailto:${item.contact_email}`}>{item.contact_email}</a>
+                {item.contact_name && <div className="fb-contact-name">{item.contact_name}</div>}
+                {item.contact_email && (
+                  <a href={`mailto:${item.contact_email}`}>{item.contact_email}</a>
+                )}
               </div>
             </div>
           )}
