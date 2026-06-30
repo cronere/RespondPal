@@ -161,7 +161,7 @@ export default function Market() {
             'On-brand voice for their specific business',
             'Negative reviews handled professionally',
             'No passwords shared — official manager access',
-            'Client dashboard to see all responses',
+            'Client can request changes anytime',
             'Cancel anytime — no contract, no penalty',
             'Profile Cleanup add-on available',
             'Setup in under 10 minutes, live in 48 hours',
