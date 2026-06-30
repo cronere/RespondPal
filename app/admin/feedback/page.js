@@ -188,6 +188,11 @@ function FeedbackDrawer({ item, onClose, onUpdate, onDelete }) {
                 Tip: add this to the client&apos;s Custom AI Instructions so it shapes every future response.
               </p>
             )}
+            {isChange && item.contact_email && item.status !== 'resolved' && item.status !== 'archived' && (
+              <p className="fb-tip">
+                When you mark this resolved, we&apos;ll email {item.contact_email} to confirm the change is done.
+              </p>
+            )}
           </div>
 
           <div className="drawer-section">
@@ -222,7 +227,16 @@ function FeedbackDrawer({ item, onClose, onUpdate, onDelete }) {
                   In progress
                 </button>
               )}
-              <button className="drawer-btn-primary" onClick={() => patch({ status: 'resolved' }, 'Resolved.')} disabled={saving}>
+              <button
+                className="drawer-btn-primary"
+                onClick={() => patch(
+                  { status: 'resolved' },
+                  isChange && item.contact_email
+                    ? 'Resolved — confirmation email sent to the client.'
+                    : 'Resolved.'
+                )}
+                disabled={saving}
+              >
                 Mark resolved
               </button>
             </>
