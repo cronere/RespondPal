@@ -427,7 +427,7 @@ export default function Home() {
               <a href="#" className="tier-cta">Get started →</a>
             </div>
           </div>
-          <p className="multi-note">4+ locations? <a href="mailto:jacob@respondpal.ai?subject=Multi-location%20pricing%20inquiry">Contact us for a custom rate.</a></p>
+          <p className="multi-note">4+ locations or a high-volume account? <a href="mailto:jacob@respondpal.ai?subject=Enterprise%20pricing%20inquiry">Contact us for an Enterprise rate.</a></p>
 
           {/* What's included */}
           <div className="pricing-includes">
