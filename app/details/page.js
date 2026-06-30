@@ -41,27 +41,28 @@ export default function Details() {
         <section className="details-section">
           <div className="details-label">The Problem</div>
           <p className="details-lead">
-            95% of local businesses never respond to their Google and Yelp
-            reviews. Every unanswered review is a signal to potential customers —
-            and now to AI search tools like Google&apos;s AI Overviews — that
-            your business doesn&apos;t engage. That costs you customers.
+            Most business owners know reviews matter — but only about 5% actually
+            respond to every review, consistently. The rest mean to, then get
+            slammed and fall behind. Every unanswered review is a signal to
+            potential customers — and now to AI search tools like Google&apos;s AI
+            Overviews — that your business doesn&apos;t engage. That costs you customers.
           </p>
           <div className="details-stats">
             <div className="details-stat">
               <div className="details-stat-num">89%</div>
-              <div className="details-stat-desc">of consumers expect a response to their review</div>
+              <div className="details-stat-desc">of consumers expect a response to their reviews</div>
             </div>
             <div className="details-stat">
-              <div className="details-stat-num">95%</div>
-              <div className="details-stat-desc">of businesses never respond to reviews</div>
+              <div className="details-stat-num">5%</div>
+              <div className="details-stat-desc">of businesses respond to reviews consistently</div>
             </div>
             <div className="details-stat">
-              <div className="details-stat-num">2.7 days</div>
-              <div className="details-stat-desc">average time a business takes to respond</div>
+              <div className="details-stat-num">50%</div>
+              <div className="details-stat-desc">are put off by generic, templated replies</div>
             </div>
             <div className="details-stat">
-              <div className="details-stat-num">18%</div>
-              <div className="details-stat-desc">more revenue from responding to all reviews</div>
+              <div className="details-stat-num">81%</div>
+              <div className="details-stat-desc">expect a response within a week</div>
             </div>
           </div>
         </section>
@@ -146,7 +147,7 @@ export default function Details() {
             <div className="details-step">
               <div className="details-step-num">04</div>
               <h3>You stay in the loop</h3>
-              <p>Log into your dashboard anytime to see every review and every response. Full visibility, zero effort.</p>
+              <p>Every response is public on your Google and Yelp profiles, so you can see our work anytime — and request a change on any response whenever you&apos;d like.</p>
             </div>
           </div>
         </section>
@@ -160,13 +161,31 @@ export default function Details() {
               <li>Unlimited reviews covered</li>
               <li>24-hour response guarantee</li>
               <li>Human-reviewed, never templated</li>
+              <li>Quarterly Reputation &amp; Business Intelligence Report</li>
             </ul>
             <ul>
               <li>All star ratings — 1 through 5 stars</li>
-              <li>Client dashboard access</li>
+              <li>Request changes anytime</li>
               <li>Secure manager access — no passwords shared</li>
               <li>Cancel anytime, no penalty</li>
             </ul>
+          </div>
+        </section>
+
+        {/* Quarterly Intelligence Report */}
+        <section className="details-section">
+          <div className="details-label">Beyond Responses — The Quarterly Intelligence Report</div>
+          <div className="details-cleanup">
+            <p>
+              Every quarter, we send you a Reputation &amp; Business Intelligence
+              Report — a clear, readable summary of what we handled, how your
+              rating is trending, and what your customers are actually telling
+              you. We read every review, not just to respond, but to surface
+              what&apos;s working and what deserves your attention — the
+              employee getting called out by name, the pattern worth a closer
+              look. It&apos;s the part of your reviews most owners never have
+              time to see.
+            </p>
           </div>
         </section>
 
@@ -279,8 +298,8 @@ export default function Details() {
             <Link href="/privacy">Privacy Policy</Link>
           </div>
           <p className="details-sources">
-            Sources: BrightLocal Local Consumer Review Survey (2024) · Harvard
-            Business Review (2022) · ReplyOnTheFly Benchmark Report (2023)
+            Sources: BrightLocal Local Consumer Review Survey (2026) ·
+            business response-rate data via BrightLocal &amp; Upfirst (2025)
           </p>
         </footer>
       </div>
