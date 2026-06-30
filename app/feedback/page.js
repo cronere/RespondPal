@@ -7,6 +7,7 @@ import Link from 'next/link'
 export default function Feedback() {
   const [type, setType] = useState('change_request')
   const [form, setForm] = useState({
+    contact_name: '',
     business_name: '',
     contact_email: '',
     review_reference: '',
@@ -30,13 +31,26 @@ export default function Feedback() {
     }))
     setType(nextType)
     setError('')
+    setSubmitting(false)
     setDone(false)
   }
 
   const submit = async () => {
     setError('')
+    if (!form.contact_name.trim()) {
+      setError('Please enter your first name.')
+      return
+    }
     if (!form.business_name.trim()) {
       setError('Please enter your business name.')
+      return
+    }
+    if (!form.contact_email.trim()) {
+      setError('Please enter your email so we can follow up.')
+      return
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.contact_email.trim())) {
+      setError('Please enter a valid email address.')
       return
     }
     if (type === 'change_request' && !form.requested_change.trim()) {
@@ -55,7 +69,7 @@ export default function Feedback() {
         body: JSON.stringify({ ...form, feedback_type: type }),
       })
       const data = await res.json()
-      if (res.ok) setDone(true)
+      if (res.ok) { setDone(true); setSubmitting(false) }
       else { setError(data.error || 'Something went wrong.'); setSubmitting(false) }
     } catch {
       setError('Something went wrong. Please try again.')
@@ -127,6 +141,14 @@ export default function Feedback() {
         <div className="fb-card">
           <div className="ob-row">
             <div className="ob-group">
+              <label>First name <span className="req">*</span></label>
+              <input
+                value={form.contact_name}
+                onChange={(e) => set('contact_name', e.target.value)}
+                placeholder="Your first name"
+              />
+            </div>
+            <div className="ob-group">
               <label>Business name <span className="req">*</span></label>
               <input
                 value={form.business_name}
@@ -134,15 +156,15 @@ export default function Feedback() {
                 placeholder="Your business"
               />
             </div>
-            <div className="ob-group">
-              <label>Your email</label>
-              <input
-                type="email"
-                value={form.contact_email}
-                onChange={(e) => set('contact_email', e.target.value)}
-                placeholder="So we can follow up"
-              />
-            </div>
+          </div>
+          <div className="ob-group fb-mt">
+            <label>Your email <span className="req">*</span></label>
+            <input
+              type="email"
+              value={form.contact_email}
+              onChange={(e) => set('contact_email', e.target.value)}
+              placeholder="So we can follow up with you"
+            />
           </div>
 
           {type === 'change_request' ? (
