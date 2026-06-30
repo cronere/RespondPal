@@ -19,6 +19,20 @@ export default function Feedback() {
 
   const set = (k, v) => setForm((f) => ({ ...f, [k]: v }))
 
+  // After a successful submit, let the client file another without retyping
+  // their business name and email. `nextType` sets which kind they're filing.
+  const startAnother = (nextType) => {
+    setForm((f) => ({
+      ...f,
+      review_reference: '',
+      requested_change: '',
+      guidance: '',
+    }))
+    setType(nextType)
+    setError('')
+    setDone(false)
+  }
+
   const submit = async () => {
     setError('')
     if (!form.business_name.trim()) {
@@ -55,10 +69,25 @@ export default function Feedback() {
         <div className="ob-success">
           <div className="ob-success-icon">✓</div>
           <h1>Got it — thank you!</h1>
-          <p>
-            Your {type === 'change_request' ? 'change request' : 'note'} is in our hands.
-            We&apos;ll take care of it and use it to keep your responses sounding just right.
-          </p>
+          {type === 'change_request' ? (
+            <p>
+              Your change request is in our hands. We&apos;ll take care of it and
+              email you to confirm once it&apos;s done — usually within 24 hours.
+            </p>
+          ) : (
+            <p>
+              Thank you for the guidance. We&apos;ll fold this into how we write
+              your responses going forward, so they keep sounding just right.
+            </p>
+          )}
+          <div className="fb-again-row">
+            <button className="fb-again-btn" onClick={() => startAnother('change_request')} type="button">
+              Request another change
+            </button>
+            <button className="fb-again-btn" onClick={() => startAnother('general_guidance')} type="button">
+              Add more guidance
+            </button>
+          </div>
           <Link href="/" className="fb-back-link">← Back to RespondPal</Link>
         </div>
       </div>
