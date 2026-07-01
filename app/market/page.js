@@ -58,26 +58,45 @@ export default function Market() {
         </div>
 
         <p className="market-p">
-          Here&apos;s the reality you&apos;re selling into: business owners now know reviews matter — most
-          will tell you they &ldquo;try to respond.&rdquo; But only about 5% actually keep it up consistently,
-          across every review and every platform. The rest fall into three buckets, and <strong>all three
-          are your prospect</strong>: the ones who&apos;ve given up and let reviews sit unanswered, the ones
-          rushing out generic replies in their spare time (which half of consumers actively distrust), and
-          the ones paying $300–800/month for a tool that still makes them do the work. You&apos;re not there
-          to convince them reviews matter — they already believe it. You&apos;re there to take it off their plate.
+          Here&apos;s the reality you&apos;re selling into: business owners now know reviews matter — and
+          most of them are responding at least sometimes. But the responses are <strong>bad</strong>.
+          Templated, defensive, tone-deaf, or so generic that half of consumers actively distrust them.
+          Your prospect falls into one of three buckets, and <strong>all three are your sale</strong>:
+          the ones who&apos;ve given up and let reviews sit unanswered, the ones rushing out generic replies
+          that hurt more than they help, and the ones paying $300–800/month for a tool that still makes
+          them do the work. You&apos;re not there to convince them reviews matter — they already believe it.
+          You&apos;re there to show them their current approach is costing them customers.
         </p>
 
         <div className="market-callout">
-          <div className="market-callout-label">The AI angle — getting more important, not less</div>
+          <div className="market-callout-label">Our AI advantage — the real differentiator</div>
           <p>
-            AI search tools like Google&apos;s AI Overviews, ChatGPT, and Perplexity now synthesize reviews
-            to decide whether to recommend a business. Response rate, recency, and sentiment all factor in.
-            A business that responds inconsistently — or with obvious templates — is sending a weak signal
-            to real customers and to AI alike.
+            RespondPal isn&apos;t using a generic chatbot. Our proprietary AI has been engineered on
+            thousands of real business reviews across dental, legal, veterinary, auto repair, the trades,
+            restaurants, and more — studying what works and what backfires. It knows the difference between
+            a billing complaint, a safety concern, and a rave review, and handles each one differently.
+            Every response is reviewed by a human before posting. And it gets smarter for each client
+            every month through our feedback loop.
           </p>
           <p className="market-pitch">
-            Pitch line: &ldquo;Google&apos;s AI is literally reading your review responses now. An unanswered
-            review isn&apos;t just a missed conversation — it&apos;s telling AI you&apos;re disengaged.&rdquo;
+            Pitch line: &ldquo;Our AI has been trained on thousands of real reviews across your industry.
+            It knows what to say, what never to say, and how to protect your reputation — and a human
+            approves every response before it goes live.&rdquo;
+          </p>
+        </div>
+
+        <div className="market-callout">
+          <div className="market-callout-label">The AI search angle — getting more important, not less</div>
+          <p>
+            AI search tools like Google&apos;s AI Overviews, ChatGPT, and Perplexity now synthesize reviews
+            to decide whether to recommend a business. Response quality, not just rate, factors in.
+            A business that responds with templates — or argues with customers publicly — is sending a
+            weak signal to real customers and to AI alike.
+          </p>
+          <p className="market-pitch">
+            Pitch line: &ldquo;Google&apos;s AI is literally reading your review responses now. A templated
+            reply or a defensive argument isn&apos;t just bad for customers — it&apos;s telling AI your
+            business doesn&apos;t care.&rdquo;
           </p>
         </div>
 
@@ -127,7 +146,7 @@ export default function Market() {
               <tr><td>Marqii</td><td>Volume-based</td><td>Yes</td><td>Done-for-you</td><td>Yes</td><td>Restaurants only. High volume required.</td></tr>
               <tr><td>RepliFast</td><td>$19–99</td><td>No</td><td>AI Software</td><td>No</td><td>Cheapest. Business still approves every post. No real service.</td></tr>
               <tr><td>BrightLocal</td><td>$7–70</td><td>No</td><td>Monitoring</td><td>No</td><td>Doesn&apos;t respond at all. Just tells you reviews exist.</td></tr>
-              <tr className="market-row-highlight"><td>RespondPal</td><td>$397–897</td><td>None</td><td>Done-for-you</td><td>Yes</td><td>The ONLY done-for-you service for ANY local business at this price.</td></tr>
+              <tr className="market-row-highlight"><td>RespondPal</td><td>$397–897</td><td>None</td><td>AI-drafted + human-approved</td><td>Yes</td><td>The ONLY done-for-you, AI-calibrated, human-approved service at this price.</td></tr>
             </tbody>
           </table>
         </div>
@@ -136,13 +155,17 @@ export default function Market() {
           <div className="market-objection">
             <div className="market-objection-q">&ldquo;I already use Birdeye or Podium&rdquo;</div>
             <p>Those are great tools if you have a marketing team logging in every day. Most owners pay
-            $400–600/month and never use them consistently. We actually do it for you — no logging in,
-            no approvals, no thinking about it. Same price, zero effort.</p>
+            $400–600/month and never use them consistently — or they use the built-in AI replies, which
+            are generic templates. We do it completely for you with AI calibrated for your specific industry,
+            and a human reviews every response. Same price, better quality, zero effort.</p>
           </div>
           <div className="market-objection">
-            <div className="market-objection-q">&ldquo;I use RepliFast for $39/month&rdquo;</div>
-            <p>RepliFast generates AI drafts you still have to approve and post every day. Are you actually
-            logging in every morning to do that? We handle every single response for you — you never touch it.</p>
+            <div className="market-objection-q">&ldquo;I already respond to my reviews myself&rdquo;</div>
+            <p>Great — that puts you ahead of most. But are you doing it within 24 hours, every time, on
+            both Google and Yelp? And are you sure your responses aren&apos;t accidentally hurting you?
+            We&apos;ve studied thousands of real responses and the most common mistakes — arguing back,
+            templated replies, privacy slips — happen even with good intentions. We do it faster, better,
+            and for less than your time is worth.</p>
           </div>
         </div>
 
@@ -155,16 +178,16 @@ export default function Market() {
           {[
             'Every review responded to within 24 hours',
             'Google Business Profile covered',
-            'Human-reviewed responses — never templates',
+            'Industry-calibrated AI — not a generic chatbot',
             'Yelp Business covered',
-            'All star ratings handled (1–5 stars)',
-            'On-brand voice for their specific business',
-            'Negative reviews handled professionally',
+            'Human-approved — every response reviewed before posting',
+            'On-brand voice calibrated for their specific business',
+            'Negative reviews handled with care (never defensive, never templated)',
+            'Gets smarter each month through our feedback loop',
             'No passwords shared — official manager access',
+            'Quarterly Reputation & Business Intelligence Report',
             'Client can request changes anytime',
             'Cancel anytime — no contract, no penalty',
-            'Profile Cleanup add-on available',
-            'Setup in under 10 minutes, live in 48 hours',
           ].map((item, i) => (
             <div key={i} className="market-deliver-item">
               <span className="market-check">✓</span> {item}
@@ -247,11 +270,11 @@ export default function Market() {
           <div className="market-why-col">
             <div className="market-why-label">The product makes selling easy</div>
             <ul>
-              <li>Nearly every business you call qualifies — only ~5% respond consistently</li>
-              <li>The problem is visible — you can see unanswered reviews before you call</li>
+              <li>Nearly every business you call has bad or inconsistent responses — the problem is visible before you dial</li>
+              <li>Proprietary AI + human approval = a story that sells itself</li>
               <li>One-call close — not a complex enterprise sale</li>
               <li>No contract removes the biggest objection before they raise it</li>
-              <li>Low price point — easy yes for any business owner</li>
+              <li>Faster, better, and cheaper than doing it themselves or paying a marketing platform</li>
             </ul>
           </div>
           <div className="market-why-col">
@@ -270,10 +293,11 @@ export default function Market() {
         <div className="market-bottomline">
           <div className="market-bottomline-label">The bottom line</div>
           <p>
-            A massive, underserved market. A product that sells itself. A comp plan that pays you for years
-            on every client you close. If you&apos;re a hungry closer who knows how to talk to local business
-            owners, there&apos;s no ceiling on what you can build here. The only question is how many calls
-            you&apos;re willing to make.
+            A massive market full of businesses responding badly. A product that&apos;s faster, better,
+            and cheaper than anything they&apos;re doing now — powered by proprietary AI and backed by
+            human quality control. A comp plan that pays you for years on every client you close. If
+            you&apos;re a hungry closer who knows how to talk to local business owners, there&apos;s no
+            ceiling on what you can build here.
           </p>
         </div>
 
