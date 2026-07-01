@@ -222,7 +222,7 @@ export default function Home() {
         <div className="container">
           <div className="section-label">What&apos;s included</div>
           <h2 className="section-h2">Everything you need.<br />Nothing you don&apos;t.</h2>
-          <div className="feature-grid">
+          <div className="feat-grid">
             {[
               { icon: '💬', title: 'Every review, every platform', desc: 'Google and Yelp. 1-star complaints to 5-star raves. Every single one gets a response.' },
               { icon: '⚡', title: '24-hour response guarantee', desc: 'Every review answered within 24 hours of posting. Your profile never looks neglected.' },
@@ -231,8 +231,8 @@ export default function Home() {
               { icon: '🔒', title: 'Secure access', desc: 'Official manager/team access on Google and Yelp. No passwords shared. You stay in control.' },
               { icon: '📊', title: 'Quarterly intelligence report', desc: 'What your customers are actually telling you — trends, patterns, and insights most owners never see.' },
             ].map((f, i) => (
-              <div key={i} className="feature-card">
-                <div className="feature-icon">{f.icon}</div>
+              <div key={i} className="feat">
+                <div className="feat-icon">{f.icon}</div>
                 <h3>{f.title}</h3>
                 <p>{f.desc}</p>
               </div>
