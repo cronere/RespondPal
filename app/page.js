@@ -368,9 +368,10 @@ export default function Home() {
           <p className="section-sub" style={{ marginTop: '1.5rem', fontSize: '0.95rem' }}>
             <strong>4+ locations or enterprise?</strong> Contact us for custom pricing — high-volume accounts welcome.
           </p>
-          <p className="section-sub" style={{ fontSize: '0.85rem', opacity: 0.7, marginTop: '0.5rem' }}>
-            Optional add-on: Profile Cleanup — we respond to every unanswered 1–3 star review from the last 180 days. $197 one-time.
-          </p>
+          <div className="pricing-addon">
+            <div className="pricing-addon-badge">Add-on</div>
+            <p><strong>Profile Cleanup — $197 one-time.</strong> We respond to every unanswered 1–3 star review from the last 180 days so your profile looks professionally managed from day one.</p>
+          </div>
         </div>
       </section>
 
