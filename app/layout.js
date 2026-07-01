@@ -15,9 +15,9 @@ const barlowCondensed = Barlow_Condensed({
 })
 
 export const metadata = {
-  title: 'RespondPal — Google & Yelp Review Responses, Done For You',
+  title: 'RespondPal — AI-Drafted, Human-Approved Review Responses',
   description:
-    'We respond to every Google and Yelp review your business receives within 24 hours. Done-for-you review management for $397/month. No contracts.',
+    'AI-drafted, human-approved responses to every Google and Yelp review — calibrated for your industry, posted within 24 hours. $397/month, no contracts.',
   metadataBase: new URL('https://respondpal.ai'),
   icons: {
     icon: [
@@ -34,17 +34,17 @@ export const metadata = {
     ],
   },
   openGraph: {
-    title: 'RespondPal — Google & Yelp Review Responses, Done For You',
+    title: 'RespondPal — AI-Drafted, Human-Approved Review Responses',
     description:
-      '95% of businesses never respond to reviews. We handle every Google and Yelp review within 24 hours — $397/month, no contracts.',
+      'Industry-calibrated AI crafts on-brand responses to every Google and Yelp review. A human approves every one. $397/month, no contracts.',
     url: 'https://respondpal.ai',
     siteName: 'RespondPal',
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'RespondPal — Google & Yelp Review Responses, Done For You',
-    description: '95% of businesses never respond to reviews. We handle every review within 24 hours so you don\'t have to.',
+    title: 'RespondPal — AI-Drafted, Human-Approved Review Responses',
+    description: 'Industry-calibrated AI + human approval on every review response. Faster, better, and cheaper than doing it yourself. $397/month.',
   },
 }
 
