@@ -1,5 +1,4 @@
 'use client'
-
 import { useState } from 'react'
 import Image from 'next/image'
 
@@ -7,46 +6,8 @@ export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [openFaq, setOpenFaq] = useState(null)
 
-  const faqs = [
-    {
-      q: 'Which review platforms do you cover?',
-      a: 'Our standard plan covers both Google Business Profile and Yelp. We get added as a Manager on Google and a Team Member on Yelp — no passwords shared on either platform.',
-    },
-    {
-      q: 'How do you get access to respond to my reviews?',
-      a: "For Google, we get added as a Manager on your Google Business Profile — takes about 2 minutes. For Yelp, you add us as a Team Member in your Yelp Business dashboard — another 2 minutes. You stay the owner on both platforms. Remove our access instantly if you ever cancel.",
-    },
-    {
-      q: 'What is the Profile Cleanup add-on?',
-      a: "When you sign up, you likely have months of unanswered reviews sitting on your profile — especially negative ones. Our one-time Profile Cleanup responds to every 1–3 star review from the last 180 days, so your profile looks professionally managed from day one, not just going forward.",
-    },
-    {
-      q: 'What if I get a really negative or complicated review?',
-      a: "That's exactly where we shine. Negative reviews get extra care — professional, measured responses that acknowledge the concern, protect your reputation, and invite resolution offline. We never argue, never get defensive, on any platform.",
-    },
-    {
-      q: 'Will the responses sound like they came from me?',
-      a: "Yes. We tailor responses to your business type, your tone, and your brand. They'll sound like you wrote them — but better, and without lifting a finger.",
-    },
-    {
-      q: 'What if I want to approve a response before it goes live?',
-      a: "By default we post within 24 hours to meet your guarantee. If you'd prefer an approval step, reach out after signing up and we'll configure that for your account.",
-    },
-    {
-      q: 'Is there a contract?',
-      a: 'No contracts. Month-to-month. Cancel anytime and your billing stops at the end of that month.',
-    },
-    {
-      q: 'Does this work for multiple locations?',
-      a: 'Yes — each location is $397/month. If you have 3 or more locations, contact us for a discounted multi-location rate.',
-    },
-  ]
-
-  const toggleFaq = (i) => setOpenFaq(openFaq === i ? null : i)
-  const closeMenu = () => setMenuOpen(false)
-
   return (
-    <>
+    <main>
       {/* NAV */}
       <nav className="nav" style={{ position: 'relative' }}>
         <div className="nav-inner">
@@ -54,7 +15,6 @@ export default function Home() {
           <div className="desktop-links">
             <a href="#how">How it works</a>
             <a href="#pricing">Pricing</a>
-            <a href="#faq">FAQ</a>
             <a href="#pricing" className="nav-cta">Get started</a>
           </div>
           <button
@@ -67,10 +27,9 @@ export default function Home() {
         </div>
         {menuOpen && (
           <div className="mobile-menu open">
-            <a href="#how" onClick={closeMenu}>How it works</a>
-            <a href="#pricing" onClick={closeMenu}>Pricing</a>
-            <a href="#faq" onClick={closeMenu}>FAQ</a>
-            <a href="#pricing" onClick={closeMenu}>Get started →</a>
+            <a href="#how" onClick={() => setMenuOpen(false)}>How it works</a>
+            <a href="#pricing" onClick={() => setMenuOpen(false)}>Pricing</a>
+            <a href="#pricing" onClick={() => setMenuOpen(false)}>Get started</a>
           </div>
         )}
       </nav>
@@ -78,15 +37,15 @@ export default function Home() {
       {/* HERO */}
       <section className="hero">
         <div className="container">
-          <div className="hero-eyebrow">Done-for-you review management</div>
+          <div className="hero-eyebrow">Intelligent review response management</div>
           <h1>
-            Every review.<br />
-            <em>Google &amp; Yelp.</em><br />
-            You do nothing.
+            AI-Drafted. Human-Approved.<br />
+            <em>Every review. Every time.</em>
           </h1>
           <p className="hero-sub">
-            We respond to every Google and Yelp review your business receives —
-            professionally, promptly, and on-brand — within 24 hours, every time.
+            Our proprietary AI crafts on-brand responses to every Google and Yelp review your
+            business receives — calibrated across dental, legal, veterinary, auto repair, the trades,
+            restaurants, and more. A human approves every response before it goes live. You do nothing.
           </p>
           <div className="hero-cta-group">
             <a href="#pricing" className="btn-orange">Get started today →</a>
@@ -94,60 +53,21 @@ export default function Home() {
           </div>
           <div className="hero-stats">
             <div className="hero-stat">
-              <div className="num">5%<sup>1</sup></div>
-              <div className="label">of businesses respond to reviews consistently</div>
-            </div>
-            <div className="hero-stat">
               <div className="num">24hr</div>
               <div className="label">response guarantee on every review</div>
-            </div>
-            <div className="hero-stat">
-              <div className="num">50%<sup>1</sup></div>
-              <div className="label">are put off by generic, templated replies</div>
             </div>
             <div className="hero-stat">
               <div className="num">89%<sup>1</sup></div>
               <div className="label">of consumers expect a business response</div>
             </div>
+            <div className="hero-stat">
+              <div className="num">50%<sup>1</sup></div>
+              <div className="label">are put off by generic, templated replies</div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* PROBLEM */}
-      <section className="problem" id="problem">
-        <div className="container">
-          <div className="section-label">The problem</div>
-          <h2 className="section-h2">Knowing matters isn&apos;t<br />the same as keeping up.</h2>
-          <p className="section-sub">
-            Most business owners know they should respond to reviews. The trouble is
-            doing it for every review, on every platform, fast — week after week. Almost
-            no one keeps that up. So reviews pile up unanswered, or get rushed,
-            templated replies that customers can spot a mile away.
-          </p>
-          <div className="stat-grid">
-            <div className="stat-box">
-              <div className="big">89%<sup>1</sup></div>
-              <div className="desc">of consumers expect businesses to respond to their reviews</div>
-              <div className="stat-source">BrightLocal Local Consumer Review Survey</div>
-            </div>
-            <div className="stat-box">
-              <div className="big">5%<sup>1</sup></div>
-              <div className="desc">of businesses actually respond to their reviews consistently</div>
-              <div className="stat-source">BrightLocal / Upfirst</div>
-            </div>
-            <div className="stat-box">
-              <div className="big">50%<sup>1</sup></div>
-              <div className="desc">of consumers are put off by generic, templated responses</div>
-              <div className="stat-source">BrightLocal Local Consumer Review Survey</div>
-            </div>
-            <div className="stat-box">
-              <div className="big">81%<sup>1</sup></div>
-              <div className="desc">of consumers expect a response within a week of leaving a review</div>
-              <div className="stat-source">BrightLocal Local Consumer Review Survey</div>
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* HOW IT WORKS */}
       <section className="how" id="how">
@@ -155,148 +75,168 @@ export default function Home() {
           <div className="section-label">How it works</div>
           <h2 className="section-h2">Live in 48 hours.<br />Hands-off forever.</h2>
           <p className="section-sub">
-            You&apos;re up and running before the week is out. After that, you
-            never think about review responses again.
+            Setup takes less than 10 minutes. We handle every review from there —
+            Google and Yelp, 1 through 5 stars, every single one.
           </p>
           <div className="steps">
             <div className="step">
               <div className="step-num">01</div>
-              <h3>You sign up</h3>
-              <p>Takes 5 minutes. You add us as a manager on Google and a team member on Yelp — we walk you through both, step by step.</p>
+              <h3>Quick setup</h3>
+              <p>Add us as a manager on Google and a team member on Yelp. We walk you through both — takes about 5 minutes.</p>
             </div>
             <div className="step">
               <div className="step-num">02</div>
-              <h3>We get to work</h3>
-              <p>Every review that comes in across Google and Yelp — 5-star praise, 1-star complaint, no text at all — gets a professional, thoughtful response from our team.</p>
+              <h3>We respond to everything</h3>
+              <p>Every review gets a professional, on-brand response — crafted by our industry-calibrated AI and reviewed by a human before it goes live.</p>
             </div>
             <div className="step">
               <div className="step-num">03</div>
-              <h3>Responses go live</h3>
-              <p>Within 24 hours of each review posting, a response publishes under your business on that platform. On-brand, on-time, every time.</p>
-            </div>
-            <div className="step">
-              <div className="step-num">04</div>
-              <h3>You stay in the loop</h3>
-              <p>Every response we post is public on your Google and Yelp profiles, so you can see our work anytime. We&apos;ll also keep you updated — and you can request a change on any response whenever you&apos;d like.</p>
+              <h3>Your reputation stays sharp</h3>
+              <p>Responses publish within 24 hours. You look responsive, professional, and engaged — without spending a minute on it.</p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* DEMO */}
+
+      {/* HOW WE'RE DIFFERENT — the AI + Human + Calibration story */}
+      <section className="ai-section" id="different">
+        <div className="container">
+          <div className="section-label">How we&apos;re different</div>
+          <h2 className="section-h2">Purpose-built AI.<br />Human-approved quality.</h2>
+          <p className="section-sub">
+            This isn&apos;t a chatbot writing your responses. Our AI has been engineered on
+            thousands of real business reviews — studying what works, what backfires, and what
+            makes customers trust you more. It&apos;s calibrated across dental, legal, veterinary,
+            auto repair, the trades, restaurants, and more.
+          </p>
+          <div className="ai-cards">
+            <div className="ai-card">
+              <div className="ai-card-icon">🧠</div>
+              <h3>AI-Drafted</h3>
+              <p>Our proprietary AI is engineered specifically for review responses — not repurposed from a generic chatbot. It knows the difference between a billing complaint, a safety concern, and a rave review, and it handles each one differently for your industry.</p>
+            </div>
+            <div className="ai-card">
+              <div className="ai-card-icon">👤</div>
+              <h3>Human-Approved</h3>
+              <p>Every response is reviewed by a human before it goes live on your profile. No auto-posting, no "set it and forget it" risk. You get the speed and consistency of AI with the judgment and trust of a real person.</p>
+            </div>
+            <div className="ai-card">
+              <div className="ai-card-icon">📈</div>
+              <h3>Gets Smarter Each Month</h3>
+              <p>We analyze every response we craft for your business and refine our AI&apos;s instructions monthly. The longer you&apos;re with us, the sharper your responses get — tuned to your brand, your industry, and your customers.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+      {/* WHAT BAD RESPONSES LOOK LIKE */}
+      <section className="compare-sec" id="bad-responses">
+        <div className="container">
+          <div className="section-label">The real problem</div>
+          <h2 className="section-h2">Most businesses respond.<br />Most responses hurt them.</h2>
+          <p className="section-sub">
+            The issue isn&apos;t silence anymore — it&apos;s what businesses actually say when they reply.
+            These are real patterns we see every day. Does any of this look familiar?
+          </p>
+          <div className="bad-examples">
+            <div className="bad-card">
+              <div className="bad-label bad-label-red">The Auto-Gush</div>
+              <div className="bad-review">
+                <span className="bad-stars">★☆☆☆☆</span>
+                <span className="bad-text">&ldquo;Pushy, rude, and overcharged me. I won&apos;t be back.&rdquo;</span>
+              </div>
+              <div className="bad-response">
+                &ldquo;Thank you so much for your wonderful review! We&apos;re thrilled you had a great experience!&rdquo;
+              </div>
+              <div className="bad-verdict">They didn&apos;t read the review. A 1-star complaint got a 5-star thank-you. Every future customer sees it.</div>
+            </div>
+            <div className="bad-card">
+              <div className="bad-label bad-label-red">The Public Fight</div>
+              <div className="bad-review">
+                <span className="bad-stars">★☆☆☆☆</span>
+                <span className="bad-text">&ldquo;The work was sloppy and they left a mess on my property...&rdquo;</span>
+              </div>
+              <div className="bad-response">
+                &ldquo;Your claims are false. We have photos proving our work was excellent. You refused to pay and were rude to our staff...&rdquo;
+              </div>
+              <div className="bad-verdict">They argued back. Every future customer now sees a business that fights with people publicly.</div>
+            </div>
+            <div className="bad-card">
+              <div className="bad-label bad-label-red">The Template Machine</div>
+              <div className="bad-review">
+                <span className="bad-stars">★☆☆☆☆</span>
+                <span className="bad-text">&ldquo;Our pet passed away during a routine visit. We are devastated...&rdquo;</span>
+              </div>
+              <div className="bad-response">
+                &ldquo;Thanks for your feedback! We hope your pet is doing well and feeling better!&rdquo;
+              </div>
+              <div className="bad-verdict">A generic template on a devastating loss. No human ever read this review before responding.</div>
+            </div>
+          </div>
+          <p className="bad-bottom">RespondPal is built to prevent every one of these mistakes — automatically.</p>
+        </div>
+      </section>
+
+
+      {/* REAL EXAMPLES / DEMO */}
       <section className="demo" id="demo">
         <div className="container">
           <div className="section-label">Real examples</div>
           <h2 className="section-h2">What your profiles<br />will look like.</h2>
-          <p className="section-sub">Professional. Specific. Human. Never templated.</p>
           <div className="demo-card">
-            <div className="review-item">
-              <div className="review-meta">
-                <div className="avatar">SR</div>
-                <div>
-                  <div className="reviewer-name">Sarah R. <span style={{fontSize:'0.7rem',color:'var(--muted2)',fontWeight:400}}>· Google</span></div>
-                  <div className="stars">★★★★★</div>
+            {[
+              { stars: '★★★★★', name: 'Sarah M.', platform: 'Google', neg: false,
+                review: 'Best experience I\'ve had in years. Everyone on the team was friendly and professional. Will definitely be back!',
+                response: 'Thank you so much, Sarah — this genuinely made our day! We\'ll pass along the kind words to the team. Can\'t wait to see you again soon.' },
+              { stars: '★★☆☆☆', name: 'David R.', platform: 'Yelp', neg: true,
+                review: 'Waited over 45 minutes past my appointment time. When I finally got in, everything felt rushed. Very frustrating.',
+                response: 'David, thank you for being upfront — that kind of wait isn\'t the experience we want for anyone. We\'d like to look into what happened and make it right. Please reach out to us directly when you have a chance.' },
+              { stars: '★★★★★', name: 'Michelle T.', platform: 'Google', neg: false,
+                review: 'So glad I found this place. They were thorough, honest, and the pricing was completely transparent. Already recommended them to two friends.',
+                response: 'Michelle, this means the world to us — especially the part about honesty and transparency. That\'s exactly what we want every visit to feel like. Thank you for the referrals, too!' },
+            ].map((r, i) => (
+              <div key={i} className="review-item">
+                <div className="review-meta">
+                  <span className={`avatar${r.neg ? ' neg' : ''}`}>{r.name[0]}</span>
+                  <div>
+                    <div className="reviewer-name">{r.name} · {r.platform}</div>
+                    <div className={`stars${r.neg ? ' low' : ''}`}>{r.stars}</div>
+                  </div>
+                </div>
+                <p className="review-text">&ldquo;{r.review}&rdquo;</p>
+                <div className="response-block">
+                  <div className="response-label">Owner response · within 24 hrs</div>
+                  <p>{r.response}</p>
                 </div>
               </div>
-              <div className="review-text">&ldquo;Absolutely love this place. Best service I&apos;ve had in years. Will definitely be back and telling all my friends!&rdquo;</div>
-              <div className="response-box">
-                <div className="response-label">Owner response · posted within 24 hrs</div>
-                <div className="response-text">Thank you so much, Sarah — this genuinely made our day! We&apos;ll make sure to pass along the kind words to the team. We can&apos;t wait to see you again soon.</div>
-              </div>
-            </div>
-            <div className="review-item">
-              <div className="review-meta">
-                <div className="avatar neg">TK</div>
-                <div>
-                  <div className="reviewer-name">Tom K. <span style={{fontSize:'0.7rem',color:'var(--muted2)',fontWeight:400}}>· Yelp</span></div>
-                  <div className="stars low">★★☆☆☆</div>
-                </div>
-              </div>
-              <div className="review-text">&ldquo;Service was slow and nobody checked in on us. The food itself was good but the experience was frustrating.&rdquo;</div>
-              <div className="response-box">
-                <div className="response-label">Owner response · posted within 24 hrs</div>
-                <div className="response-text">Tom, thank you for being honest — we&apos;re sorry we let you down on the service side. That&apos;s not the experience we work hard to deliver, and we hear you. Please reach out directly and we&apos;ll make it right on your next visit.</div>
-              </div>
-            </div>
-            <div className="demo-note">
-              <div className="dot" />
-              Responses posted directly from your Google Business Profile and Yelp Business account
-            </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* FEATURES */}
+
+      {/* WHAT'S INCLUDED */}
       <section className="features" id="features">
         <div className="container">
           <div className="section-label">What&apos;s included</div>
           <h2 className="section-h2">Everything you need.<br />Nothing you don&apos;t.</h2>
-          <div className="feat-grid">
-            <div className="feat">
-              <div className="feat-icon">⚡</div>
-              <h3>24-hour response guarantee</h3>
-              <p>Every review on every platform gets a response within 24 hours. No exceptions.</p>
-            </div>
-            <div className="feat">
-              <div className="feat-icon">🧠</div>
-              <h3>Quarterly intelligence report</h3>
-              <p>Every quarter, we send a Reputation &amp; Business Intelligence Report — your rating trend, what customers are actually saying, and the real takeaways buried in your reviews. Not just responses. Insight.</p>
-            </div>
-            <div className="feat">
-              <div className="feat-icon">✍️</div>
-              <h3>Human-reviewed responses</h3>
-              <p>5-star, 1-star, no-text — every review on Google and Yelp gets a real response, reviewed by our team before it goes live. No generic copy-paste, no AI sounding like AI.</p>
-            </div>
-            <div className="feat">
-              <div className="feat-icon">📊</div>
-              <h3>Full transparency</h3>
-              <p>Every response is posted publicly on your Google and Yelp profiles — so you can see exactly what we wrote, anytime. Want something changed? Just ask.</p>
-            </div>
-            <div className="feat">
-              <div className="feat-icon">🔒</div>
-              <h3>Secure access management</h3>
-              <p>Manager access on Google, Team Member access on Yelp — no passwords shared. You stay the owner. Cancel anytime.</p>
-            </div>
-            <div className="feat">
-              <div className="feat-icon">📍</div>
-              <h3>Any local business</h3>
-              <p>HVAC, dental office, auto repair, law firm, med spa — if customers are reviewing you, we can manage it.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* COMPARE */}
-      <section className="compare-sec">
-        <div className="container">
-          <div className="section-label">Be honest with yourself</div>
-          <h2 className="section-h2">You&apos;re not going to do<br />this yourself. That&apos;s fine.</h2>
-          <p className="section-sub">
-            Business owners know they should respond to reviews consistently. They just
-            aren&apos;t able to get to it most days. Between staff, customers, and
-            operations — it falls off the list every time.
-          </p>
-          <div className="compare-grid">
-            <div className="compare-col bad">
-              <h4>Without RespondPal</h4>
-              <ul className="clist">
-                <li>Reviews pile up unanswered on Google and Yelp</li>
-                <li>Negative reviews sit with no reply</li>
-                <li>Competitors look more engaged</li>
-                <li>It&apos;s on the to-do list. It never gets done.</li>
-                <li>You feel it every time you check your profiles</li>
-              </ul>
-            </div>
-            <div className="compare-col good">
-              <h4>With RespondPal</h4>
-              <ul className="clist">
-                <li>Every review answered within 24 hours</li>
-                <li>Negative reviews handled with care on every platform</li>
-                <li>You look more responsive than any competitor</li>
-                <li>Zero time. Zero mental load.</li>
-                <li>One flat fee. Cancel anytime.</li>
-              </ul>
-            </div>
+          <div className="feature-grid">
+            {[
+              { icon: '💬', title: 'Every review, every platform', desc: 'Google and Yelp. 1-star complaints to 5-star raves. Every single one gets a response.' },
+              { icon: '⚡', title: '24-hour response guarantee', desc: 'Every review answered within 24 hours of posting. Your profile never looks neglected.' },
+              { icon: '🧠', title: 'Industry-calibrated AI', desc: 'Purpose-built for your industry — dental, legal, trades, restaurants, and more. Not a generic chatbot.' },
+              { icon: '👤', title: 'Human-approved', desc: 'Every response reviewed by a human before it goes live. No auto-posting, no risk.' },
+              { icon: '🔒', title: 'Secure access', desc: 'Official manager/team access on Google and Yelp. No passwords shared. You stay in control.' },
+              { icon: '📊', title: 'Quarterly intelligence report', desc: 'What your customers are actually telling you — trends, patterns, and insights most owners never see.' },
+            ].map((f, i) => (
+              <div key={i} className="feature-card">
+                <div className="feature-icon">{f.icon}</div>
+                <h3>{f.title}</h3>
+                <p>{f.desc}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -308,17 +248,18 @@ export default function Home() {
           <img src="/jacob-merkley.png" alt="Jacob Merkley, Founder & CEO of RespondPal" className="founder-photo" />
           <div className="founder-label">From the founder</div>
           <blockquote className="founder-quote">
-            &ldquo;Every business owner I talk to knows review response matters. But they
-            don&apos;t have the time — there&apos;s always a customer to help or a fire to
-            put out. I built RespondPal to take that to-do list item off your plate. You
-            run your business and we&apos;ll ensure every review gets a thoughtful human
-            response within 24 hours. Your reputation stays sharp and it costs you zero
-            minutes a month.&rdquo;
+            &ldquo;Business owners are swamped — responding to reviews moves to the back
+            burner every day. I built RespondPal to take that off your plate completely.
+            Our AI has been engineered on thousands of real reviews to craft responses that
+            are on-brand and calibrated for your industry. <strong>Every response is reviewed
+            by a human before it goes live.</strong> And it gets smarter for your business
+            each month. Your reputation stays sharp — and it costs you zero time.&rdquo;
           </blockquote>
           <div className="founder-name">Jacob Merkley</div>
           <div className="founder-title">Founder &amp; CEO, RespondPal</div>
         </div>
       </section>
+
 
       {/* TESTIMONIALS */}
       <section className="testimonials-sec">
@@ -363,154 +304,143 @@ export default function Home() {
         </div>
       </section>
 
+
       {/* AI VISIBILITY */}
-      <section className="ai-section">
+      <section className="features" style={{ background: 'var(--dark2)' }}>
         <div className="container">
           <div className="section-label">The bigger picture</div>
-          <h2 className="section-h2">Reviews aren&apos;t just<br />for humans anymore.</h2>
+          <h2 className="section-h2">AI search is reading<br />your responses now.</h2>
           <p className="section-sub">
-            AI search tools like Google&apos;s AI Overviews, ChatGPT, and Perplexity
-            now synthesize your reviews to decide whether to recommend your business.
-            Response rate, recency, and sentiment all factor in. An unanswered review
-            isn&apos;t just a missed conversation — it&apos;s a signal to AI that your business is disengaged.
+            Google&apos;s AI Overviews, ChatGPT, and Perplexity now synthesize your reviews to decide
+            whether to recommend your business. Response rate, recency, and sentiment all factor in.
+            An unanswered review isn&apos;t just a missed conversation — it&apos;s a signal to AI that
+            your business is disengaged.
           </p>
-          <div className="ai-cards">
-            <div className="ai-card">
-              <div className="ai-card-icon">🤖</div>
-              <h3>AI reads your responses</h3>
-              <p>When you respond professionally to a negative review, that response becomes part of how AI characterizes your business — often neutralizing the bad review in AI-generated summaries.</p>
-            </div>
-            <div className="ai-card">
-              <div className="ai-card-icon">📈</div>
-              <h3>Response rate affects rankings</h3>
-              <p>Google&apos;s local ranking algorithm factors in review engagement. Businesses that respond consistently rank higher in Maps and get cited more favorably in AI Overviews.</p>
-            </div>
-            <div className="ai-card">
-              <div className="ai-card-icon">🔍</div>
-              <h3>Silence is now a liability</h3>
-              <p>As AI compresses local search into recommendations, unmanaged reputations are riskier than ever. One unanswered 1-star review can define you in an AI summary to thousands of potential customers.</p>
-            </div>
-          </div>
         </div>
       </section>
+
 
       {/* PRICING */}
       <section className="pricing" id="pricing">
         <div className="container">
           <div className="section-label">Pricing</div>
           <h2 className="section-h2">Simple pricing.<br />No surprises.</h2>
-          <p className="section-sub" style={{ margin: '0.5rem auto 0' }}>
-            Flat monthly rate. No setup fees. No contracts. Cancel anytime.
+          <p className="section-sub">
+            Flat monthly rate. No contracts. No setup fees. Cancel anytime.
           </p>
-
-          {/* Location tiers */}
-          <div className="location-tiers">
-            <div className="location-tier">
-              <div className="tier-locations">1 Location</div>
-              <div className="tier-price"><span>$</span>397<em>/mo</em></div>
-              {/* TODO: replace href with Stripe payment link for 1 LOCATION ($397/mo) */}
-              <a href="#" className="tier-cta">Get started →</a>
+          <div className="pricing-cards">
+            <div className="price-card">
+              <div className="price-name">1 Location</div>
+              <div className="price-amount">$397<span>/mo</span></div>
+              <div className="pricing-includes">
+                <div>✓ Google &amp; Yelp responses</div>
+                <div>✓ Unlimited reviews</div>
+                <div>✓ 24-hour guarantee</div>
+                <div>✓ Industry-calibrated AI</div>
+                <div>✓ Human-approved</div>
+                <div>✓ Quarterly intelligence report</div>
+              </div>
+              <a href="mailto:team@respondpal.ai" className="btn-orange" style={{ marginTop: 'auto' }}>Get started →</a>
             </div>
-            <div className="location-tier location-tier-featured">
-              <div className="tier-badge">Most popular</div>
-              <div className="tier-locations">2 Locations</div>
-              <div className="tier-price"><span>$</span>649<em>/mo</em></div>
-              <div className="tier-savings">Save $145/mo vs. individual</div>
-              {/* TODO: replace href with Stripe payment link for 2 LOCATIONS ($649/mo) */}
-              <a href="#" className="tier-cta">Get started →</a>
+            <div className="price-card featured">
+              <div className="price-name">2 Locations</div>
+              <div className="price-amount">$649<span>/mo</span></div>
+              <div className="price-save">Save $145/mo</div>
+              <div className="pricing-includes">
+                <div>✓ Everything in 1 Location</div>
+                <div>✓ Both locations covered</div>
+                <div>✓ Unified brand voice</div>
+              </div>
+              <a href="mailto:team@respondpal.ai" className="btn-orange" style={{ marginTop: 'auto' }}>Get started →</a>
             </div>
-            <div className="location-tier">
-              <div className="tier-locations">3 Locations</div>
-              <div className="tier-price"><span>$</span>897<em>/mo</em></div>
-              <div className="tier-savings">Save $294/mo vs. individual</div>
-              {/* TODO: replace href with Stripe payment link for 3 LOCATIONS ($897/mo) */}
-              <a href="#" className="tier-cta">Get started →</a>
-            </div>
-          </div>
-          <p className="multi-note">4+ locations or a high-volume account? <a href="mailto:jacob@respondpal.ai?subject=Enterprise%20pricing%20inquiry">Contact us for an Enterprise rate.</a></p>
-
-          {/* What's included */}
-          <div className="pricing-includes">
-            <div className="pi-label">All plans include</div>
-            <div className="pi-items">
-              <div className="pi-item">✓ Google &amp; Yelp responses</div>
-              <div className="pi-item">✓ Unlimited reviews covered</div>
-              <div className="pi-item">✓ 24-hour response guarantee</div>
-              <div className="pi-item">✓ Human-reviewed, never templated</div>
-              <div className="pi-item">✓ All star ratings (1–5 stars)</div>
-              <div className="pi-item">✓ Request changes anytime</div>
-              <div className="pi-item">✓ Dedicated account setup</div>
-              <div className="pi-item">✓ Cancel anytime, no penalty</div>
+            <div className="price-card">
+              <div className="price-name">3 Locations</div>
+              <div className="price-amount">$897<span>/mo</span></div>
+              <div className="price-save">Save $294/mo</div>
+              <div className="pricing-includes">
+                <div>✓ Everything in 1 Location</div>
+                <div>✓ All three locations covered</div>
+                <div>✓ Unified brand voice</div>
+              </div>
+              <a href="mailto:team@respondpal.ai" className="btn-orange" style={{ marginTop: 'auto' }}>Get started →</a>
             </div>
           </div>
-
-          {/* Profile Cleanup add-on */}
-          <div className="cleanup-card">
-            <div className="cleanup-left">
-              <div className="price-badge-alt">One-time add-on</div>
-              <div className="cleanup-title">Profile Cleanup</div>
-              <p className="cleanup-desc">You likely have months of unanswered negative reviews sitting on your profile. We respond to every 1–3 star review from the last 180 days so your profile looks professionally managed from day one — not just going forward.</p>
-              <ul className="cleanup-list">
-                <li>All 1–3 star reviews from last 180 days</li>
-                <li>Google and Yelp profiles covered</li>
-                <li>Completed within 5 business days</li>
-              </ul>
-            </div>
-            <div className="cleanup-right">
-              <div className="cleanup-price"><span>$</span>197</div>
-              <div className="cleanup-period">one-time</div>
-              <div className="cleanup-addon-note">Add it to any plan at checkout</div>
-              <div className="price-note">Most clients add this at signup.</div>
-            </div>
-          </div>
+          <p className="section-sub" style={{ marginTop: '1.5rem', fontSize: '0.95rem' }}>
+            <strong>4+ locations or enterprise?</strong> Contact us for custom pricing — high-volume accounts welcome.
+          </p>
+          <p className="section-sub" style={{ fontSize: '0.85rem', opacity: 0.7, marginTop: '0.5rem' }}>
+            Optional add-on: Profile Cleanup — we respond to every unanswered 1–3 star review from the last 180 days. $197 one-time.
+          </p>
         </div>
       </section>
 
+
       {/* FAQ */}
-      <section className="faq" id="faq">
+      <section className="faq">
         <div className="container">
           <div className="section-label">FAQ</div>
           <h2 className="section-h2">Questions answered.</h2>
           <div className="faq-list">
-            {faqs.map((item, i) => (
+            {[
+              { q: 'How does RespondPal write responses that sound like my business?',
+                a: 'During onboarding, you share your brand voice preferences — tone, do\'s and don\'ts, and any specifics about your business. Our AI uses these along with industry-specific calibration to craft responses that sound like you. The longer you\'re with us, the sharper it gets.' },
+              { q: 'Is a human actually reviewing every response?',
+                a: 'Yes. Every response is reviewed by a human before it goes live on your profile. We never auto-post. You get the speed and consistency of AI with the quality control of a real person.' },
+              { q: 'What if I don\'t like a response after it\'s posted?',
+                a: 'Just let us know. We\'ll revise or replace it — no questions asked. You can also submit ongoing guidance through our feedback form to refine future responses.' },
+              { q: 'How do you handle negative reviews?',
+                a: 'Carefully. Our AI is specifically engineered to handle complaints — it never argues, never gets defensive, never concedes fault inappropriately, and never uses a generic template. Every negative review gets a composed, professional response that protects your reputation.' },
+              { q: 'Do I need to give you my password?',
+                a: 'No. We use Google\'s official Manager access and Yelp\'s Team Member feature. No passwords are ever shared. You stay in complete control of your profiles.' },
+              { q: 'Can I cancel anytime?',
+                a: 'Yes. No contracts, no cancellation fees. If you cancel, you simply won\'t be charged again. We keep it simple.' },
+            ].map((item, i) => (
               <div key={i} className={`faq-item${openFaq === i ? ' open' : ''}`}>
-                <button className="faq-q" onClick={() => toggleFaq(i)}>
+                <button className="faq-q" onClick={() => setOpenFaq(openFaq === i ? null : i)}>
                   {item.q}
-                  <span className="faq-icon">+</span>
+                  <span className="faq-icon">{openFaq === i ? '−' : '+'}</span>
                 </button>
-                <div className="faq-a">{item.a}</div>
+                <div className="faq-a"><p>{item.a}</p></div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
+
       {/* SOURCES */}
       <section className="sources-sec">
-        <div className="container sources-inner">
+        <div className="container">
           <div className="sources-label">Sources</div>
           <ul className="sources-list">
-            <li><sup>1</sup> BrightLocal Local Consumer Review Survey (2026); business response-rate data via BrightLocal &amp; Upfirst (2025)</li>
+            <li><sup>1</sup> BrightLocal Local Consumer Review Survey (2026)</li>
+            <li><sup>1</sup> Business response-rate data via BrightLocal &amp; Upfirst (2025)</li>
           </ul>
         </div>
       </section>
 
+
       {/* FINAL CTA */}
       <section className="final-cta">
-        <h2>Your reviews are going<br />unanswered right now.</h2>
-        <p>Every day without a response is a day a potential customer chose someone else. Let&apos;s fix that — starting today.</p>
-        <a href="#pricing" className="btn-white">Get started for $397/month →</a>
+        <div className="container">
+          <h2>Your reviews deserve better<br />than silence — or templates.</h2>
+          <p>AI-drafted. Human-approved. Live within 48 hours. Cancel anytime.</p>
+          <a href="mailto:team@respondpal.ai" className="btn-orange">Get started today →</a>
+        </div>
       </section>
 
       {/* FOOTER */}
-      <footer>
-        <p>© 2026 RespondPal LLC · respondpal.ai · <a href="mailto:team@respondpal.ai">team@respondpal.ai</a></p>
-        <p className="footer-legal">
-          <a href="/terms">Terms of Service</a>
-          <span> · </span>
-          <a href="/privacy">Privacy Policy</a>
-        </p>
+      <footer className="site-footer">
+        <div className="container footer-inner">
+          <p>&copy; {new Date().getFullYear()} RespondPal LLC · respondpal.ai</p>
+          <div className="footer-links">
+            <a href="/terms">Terms</a>
+            <a href="/privacy">Privacy</a>
+            <a href="/details">How it works</a>
+            <a href="mailto:team@respondpal.ai">Contact</a>
+          </div>
+        </div>
       </footer>
-    </>
+    </main>
   )
 }
