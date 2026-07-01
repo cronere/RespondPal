@@ -4,7 +4,7 @@ import Image from 'next/image'
 export const metadata = {
   title: 'How RespondPal Works — Review Management, Done For You',
   description:
-    'We respond to every Google and Yelp review your business receives within 24 hours. Professional, human-reviewed responses. $397/month, no contracts.',
+    'AI-drafted, human-approved review responses for every Google and Yelp review. Industry-calibrated. 24-hour guarantee. $397/month, no contracts.',
 }
 
 export default function Details() {
@@ -31,7 +31,8 @@ export default function Details() {
           </h1>
           <p className="details-hero-sub">
             We respond to every Google and Yelp review your business receives —
-            professionally, promptly, and on-brand — within 24 hours, every time.
+            using proprietary, industry-calibrated AI with human approval on every response —
+            within 24 hours, every time.
           </p>
         </div>
       </section>
@@ -41,11 +42,12 @@ export default function Details() {
         <section className="details-section">
           <div className="details-label">The Problem</div>
           <p className="details-lead">
-            Most business owners know reviews matter — but only about 5% actually
-            respond to every review, consistently. The rest mean to, then get
-            slammed and fall behind. Every unanswered review is a signal to
-            potential customers — and now to AI search tools like Google&apos;s AI
-            Overviews — that your business doesn&apos;t engage. That costs you customers.
+            Most business owners respond to at least some reviews — but most responses
+            are hurting them. Templated replies that ignore the complaint. Defensive
+            rebuttals that make the business look combative. Generic copy-paste that
+            signals to customers (and now to AI search tools like Google&apos;s AI
+            Overviews) that nobody is actually paying attention. The problem isn&apos;t
+            silence anymore — it&apos;s quality.
           </p>
           <div className="details-stats">
             <div className="details-stat">
@@ -74,15 +76,19 @@ export default function Details() {
             <div className="details-pitch-label">The short version</div>
             <p>
               &ldquo;We respond to every Google and Yelp review your business
-              receives — within 24 hours, every time. Professional, on-brand
-              responses posted directly from your profile. You never have to
+              receives — within 24 hours, every time. Our proprietary AI crafts
+              each response on-brand and calibrated for your industry. A human
+              reviews every response before it goes live. You never have to
               think about it again.&rdquo;
             </p>
           </div>
           <p className="details-body">
-            Every response is human-reviewed before it goes live. No templates,
-            no copy-paste. Each response is written for your business, your
-            reviewer, and your brand voice.
+            No templates, no generic chatbot. Our AI has been engineered on
+            thousands of real business reviews across dental, legal, veterinary,
+            auto repair, the trades, restaurants, and more — studying what works
+            and what backfires. Each response is written for your business, your
+            reviewer, and your brand voice. And it gets smarter for your business
+            each month.
           </p>
 
           {/* Examples */}
@@ -160,11 +166,12 @@ export default function Details() {
               <li>Google <strong>and</strong> Yelp review responses</li>
               <li>Unlimited reviews covered</li>
               <li>24-hour response guarantee</li>
-              <li>Human-reviewed, never templated</li>
-              <li>Quarterly Reputation &amp; Business Intelligence Report</li>
+              <li>Industry-calibrated AI drafting</li>
+              <li>Human-approved — every response reviewed before posting</li>
             </ul>
             <ul>
-              <li>All star ratings — 1 through 5 stars</li>
+              <li>Gets smarter for your business each month</li>
+              <li>Quarterly Reputation &amp; Business Intelligence Report</li>
               <li>Request changes anytime</li>
               <li>Secure manager access — no passwords shared</li>
               <li>Cancel anytime, no penalty</li>
@@ -238,12 +245,15 @@ export default function Details() {
         <section className="details-section">
           <div className="details-label">Why This Matters More Than Ever</div>
           <p className="details-body">
-            AI search tools like Google&apos;s AI Overviews, ChatGPT, and
-            Perplexity now synthesize your reviews to decide whether to recommend
-            your business. Response rate, recency, and sentiment all factor in.
-            An unanswered review isn&apos;t just a missed conversation — it&apos;s
-            a negative signal to AI that your business is disengaged. Businesses
-            that respond consistently rank higher and get recommended more.
+            Bad review responses are more visible — and more damaging — than ever.
+            A combative rebuttal, a tone-deaf template, or a privacy slip-up lives
+            on your profile permanently. And AI search tools like Google&apos;s AI
+            Overviews, ChatGPT, and Perplexity now synthesize your reviews and
+            responses to decide whether to recommend your business. Response
+            quality, not just response rate, affects how AI characterizes you.
+            A professional, on-brand response to a tough review doesn&apos;t just
+            reassure future customers — it shapes how AI represents your business
+            to thousands of people who will never scroll your reviews themselves.
           </p>
         </section>
 
