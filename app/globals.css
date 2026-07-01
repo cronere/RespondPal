@@ -1298,8 +1298,9 @@ footer a:hover {
 }
 
 .pricing-cards .price-card {
-  max-width: 400px;
-  width: 100%;
+  max-width: 340px;
+  flex: 1;
+  min-width: 0;
   margin: 0;
   display: flex;
   flex-direction: column;
