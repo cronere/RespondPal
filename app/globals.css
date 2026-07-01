@@ -838,6 +838,36 @@ a {
   margin: 0.5rem 0 2rem;
 }
 
+.price-name {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 0.75rem;
+}
+
+.price-save {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--green, #34d399);
+  margin-top: 0.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.price-card .pricing-includes {
+  max-width: none;
+  margin: 1.25rem 0;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  text-align: left;
+  font-size: 0.85rem;
+  color: var(--muted);
+  line-height: 2;
+}
+
 .price-list {
   list-style: none;
   display: flex;
@@ -894,6 +924,69 @@ a {
 
 .multi-note a {
   color: var(--orange);
+}
+
+/* ── PRICING CARD DETAILS ── */
+.price-name {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 0.5rem;
+}
+.price-save {
+  display: inline-block;
+  background: rgba(232, 119, 46, 0.15);
+  color: var(--orange);
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+  margin-bottom: 0.75rem;
+}
+.price-card .pricing-includes {
+  max-width: none;
+  margin: 0;
+  background: none;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  text-align: left;
+  font-size: 0.85rem;
+  color: var(--muted);
+  line-height: 2;
+  margin-bottom: 1.25rem;
+}
+.pricing-addon {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.25rem 1.75rem;
+  margin-top: 2rem;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.pricing-addon-badge {
+  background: rgba(232, 119, 46, 0.15);
+  color: var(--orange);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 0.25rem 0.6rem;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+.pricing-addon p {
+  font-size: 0.88rem;
+  color: var(--muted);
+  line-height: 1.55;
+  margin: 0;
 }
 
 /* ── FAQ ── */
