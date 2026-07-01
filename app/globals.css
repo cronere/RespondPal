@@ -696,6 +696,71 @@ a {
   color: var(--green);
 }
 
+/* ── BAD RESPONSES EXAMPLES ── */
+.bad-examples {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2.5rem;
+}
+.bad-card {
+  background: var(--card);
+  border: 1px solid var(--border2);
+  border-radius: 12px;
+  padding: 1.5rem;
+  text-align: left;
+}
+.bad-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 1rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 4px;
+  display: inline-block;
+}
+.bad-label-red {
+  background: rgba(220, 60, 60, 0.15);
+  color: #e85555;
+}
+.bad-review {
+  margin-bottom: 0.75rem;
+}
+.bad-stars {
+  color: #e85555;
+  font-size: 0.85rem;
+  display: block;
+  margin-bottom: 0.3rem;
+}
+.bad-text {
+  font-size: 0.9rem;
+  color: var(--light-muted);
+  font-style: italic;
+}
+.bad-response {
+  background: rgba(220, 60, 60, 0.06);
+  border-left: 3px solid #e85555;
+  padding: 0.75rem 1rem;
+  border-radius: 0 6px 6px 0;
+  font-size: 0.88rem;
+  color: var(--light);
+  margin-bottom: 0.75rem;
+}
+.bad-verdict {
+  font-size: 0.82rem;
+  color: var(--orange);
+  font-weight: 600;
+  line-height: 1.5;
+}
+.bad-bottom {
+  text-align: center;
+  margin-top: 2rem;
+  font-size: 1.05rem;
+  color: var(--light);
+  font-weight: 600;
+}
+
 /* ── PRICING ── */
 .pricing {
   background: var(--black);
@@ -1062,6 +1127,9 @@ footer a:hover {
     grid-template-columns: 1fr;
   }
   .ai-cards {
+    grid-template-columns: 1fr;
+  }
+  .bad-examples {
     grid-template-columns: 1fr;
   }
 }
