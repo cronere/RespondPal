@@ -15,6 +15,13 @@ const EDITABLE_FIELDS = [
   'price_paid',
   'converted_client_id',
   'internal_notes',
+  'total_reviews',
+  'reviews_with_text',
+  'reviews_with_responses',
+  'response_rate_text',
+  'response_rate_all',
+  'avg_star_rating',
+  'google_url',
 ]
 
 // PATCH /api/admin/audits/[id] — update an audit record.
