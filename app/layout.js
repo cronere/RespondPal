@@ -1,57 +1,94 @@
-import { Inter, Barlow_Condensed } from 'next/font/google'
-import './globals.css'
+'use client'
 
-const inter = Inter({
-  subsets: ['latin'],
-  variable: '--font-inter',
-  display: 'swap',
-})
+import { useState, useEffect } from 'react'
+import Link from 'next/link'
+import { usePathname, useRouter } from 'next/navigation'
 
-const barlowCondensed = Barlow_Condensed({
-  subsets: ['latin'],
-  weight: ['700', '800'],
-  variable: '--font-barlow',
-  display: 'swap',
-})
+const NAV = [
+  { href: '/admin', label: 'Dashboard', exact: true },
+  { href: '/admin/clients', label: 'Clients' },
+  { href: '/admin/onboarding', label: 'Onboarding' },
+  { href: '/admin/reviews', label: 'Reviews', badgeKey: 'reviews' },
+  { href: '/admin/audits', label: 'Risk Audits', badgeKey: 'audits' },
+  { href: '/admin/feedback', label: 'Feedback', badgeKey: 'feedback' },
+  { href: '/admin/yelp-prep', label: 'Quick Draft' },
+]
 
-export const metadata = {
-  title: 'RespondPal — AI-Drafted, Human-Approved Review Responses',
-  description:
-    'AI-drafted, human-approved responses to every Google and Yelp review — calibrated for your industry, posted within 24 hours. $397/month, no contracts.',
-  metadataBase: new URL('https://respondpal.ai'),
-  icons: {
-    icon: [
-      { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
-      { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
-      { url: '/favicon.ico' },
-    ],
-    apple: [
-      { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
-    ],
-    other: [
-      { rel: 'icon', url: '/icon-192.png', sizes: '192x192', type: 'image/png' },
-      { rel: 'icon', url: '/icon-512.png', sizes: '512x512', type: 'image/png' },
-    ],
-  },
-  openGraph: {
-    title: 'RespondPal — AI-Drafted, Human-Approved Review Responses',
-    description:
-      'Industry-calibrated AI crafts on-brand responses to every Google and Yelp review. A human approves every one. $397/month, no contracts.',
-    url: 'https://respondpal.ai',
-    siteName: 'RespondPal',
-    type: 'website',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'RespondPal — AI-Drafted, Human-Approved Review Responses',
-    description: 'Industry-calibrated AI + human approval on every review response. Faster, better, and cheaper than doing it yourself. $397/month.',
-  },
-}
+export default function AdminLayout({ children }) {
+  const pathname = usePathname()
+  const router = useRouter()
+  const [counts, setCounts] = useState({ reviews: 0, feedback: 0, audits: 0 })
 
-export default function RootLayout({ children }) {
+  const isLogin = pathname === '/admin/login'
+
+  // Poll badge counts on mount, on route change, and every 60s.
+  useEffect(() => {
+    if (isLogin) return
+    let active = true
+    const fetchCounts = async () => {
+      try {
+        const res = await fetch('/api/admin/counts', { cache: 'no-store' })
+        if (!res.ok) return
+        const data = await res.json()
+        if (active) setCounts({ reviews: data.reviews || 0, feedback: data.feedback || 0, audits: data.audits || 0 })
+      } catch {
+        // ignore — badges just won't update this cycle
+      }
+    }
+    fetchCounts()
+    const interval = setInterval(fetchCounts, 60000)
+    return () => { active = false; clearInterval(interval) }
+  }, [isLogin, pathname])
+
+  // Don't wrap the login page in the shell
+  if (isLogin) {
+    return children
+  }
+
+  const handleLogout = async () => {
+    await fetch('/api/admin/auth', { method: 'DELETE' })
+    router.push('/admin/login')
+    router.refresh()
+  }
+
+  const isActive = (item) =>
+    item.exact ? pathname === item.href : pathname.startsWith(item.href)
+
   return (
-    <html lang="en" className={`${inter.variable} ${barlowCondensed.variable}`}>
-      <body>{children}</body>
-    </html>
+    <div className="admin-shell">
+      <aside className="admin-sidebar">
+        <div className="admin-brand">
+          Respond<span>Pal</span>
+          <div className="admin-brand-sub">Operations HQ</div>
+        </div>
+
+        <nav className="admin-nav">
+          {NAV.map((item) => {
+            const badge = item.badgeKey ? counts[item.badgeKey] : 0
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`admin-nav-link${isActive(item) ? ' active' : ''}`}
+              >
+                <span>{item.label}</span>
+                {badge > 0 && <span className="admin-nav-badge">{badge}</span>}
+              </Link>
+            )
+          })}
+        </nav>
+
+        <div className="admin-sidebar-footer">
+          <a href="/" className="admin-sidebar-link" target="_blank" rel="noreferrer">
+            View site ↗
+          </a>
+          <button className="admin-logout" onClick={handleLogout}>
+            Sign out
+          </button>
+        </div>
+      </aside>
+
+      <main className="admin-main">{children}</main>
+    </div>
   )
 }
