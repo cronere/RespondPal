@@ -131,6 +131,13 @@ Treat this by meaning, not just exact words. If they ask you to avoid a phrase, 
 
 export async function POST(req) {
   try {
+    // Auth — reject requests without a valid draft key
+    const draftKey = process.env.RESPONDPAL_DRAFT_KEY
+    const providedKey = req.headers.get('x-draft-key')
+    if (draftKey && providedKey !== draftKey) {
+      return NextResponse.json({ error: 'Unauthorized.' }, { status: 401 })
+    }
+
     const apiKey = process.env.ANTHROPIC_API_KEY
     if (!apiKey) {
       return NextResponse.json(
