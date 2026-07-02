@@ -40,7 +40,10 @@ export default function AdminYelpPrep() {
       }
       const res = await fetch('/api/admin/ai-draft', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'x-draft-key': process.env.NEXT_PUBLIC_DRAFT_KEY || '',
+        },
         body: JSON.stringify({ review, client: selectedClient }),
       })
       const data = await res.json()
