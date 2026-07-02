@@ -7,9 +7,10 @@ export const revalidate = 0
 // GET /api/admin/counts — badge counts for the sidebar.
 // reviews: anything not posted or skipped (matches the "Needs response" tab)
 // feedback: anything new or in_progress (matches the "Open" tab)
+// audits: leads not yet delivered (new, awaiting_input, analyzing, or ready)
 export async function GET() {
   try {
-    const [reviewsRes, feedbackRes] = await Promise.all([
+    const [reviewsRes, feedbackRes, auditsRes] = await Promise.all([
       supabaseAdmin
         .from('reviews')
         .select('id', { count: 'exact', head: true })
@@ -18,14 +19,19 @@ export async function GET() {
         .from('feedback')
         .select('id', { count: 'exact', head: true })
         .in('status', ['new', 'in_progress']),
+      supabaseAdmin
+        .from('audits')
+        .select('id', { count: 'exact', head: true })
+        .not('status', 'in', '("delivered","converted","archived")'),
     ])
 
     return NextResponse.json({
       reviews: reviewsRes.count || 0,
       feedback: feedbackRes.count || 0,
+      audits: auditsRes.count || 0,
     })
   } catch (err) {
     // Never break the layout over a count fetch — just return zeros.
-    return NextResponse.json({ reviews: 0, feedback: 0 })
+    return NextResponse.json({ reviews: 0, feedback: 0, audits: 0 })
   }
 }
