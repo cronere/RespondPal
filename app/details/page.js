@@ -227,15 +227,17 @@ export default function Details() {
           </p>
         </section>
 
-        {/* Profile Cleanup */}
+        {/* Reputation Risk Audit & Cleanup */}
         <section className="details-section">
-          <div className="details-label">Optional Add-On — Profile Cleanup ($197 one-time)</div>
+          <div className="details-label">Optional Add-On — Reputation Risk Audit &amp; Cleanup ($297 one-time)</div>
           <div className="details-cleanup">
             <p>
-              Most businesses have months of unanswered negative reviews sitting
-              on their profile right now. Our one-time Profile Cleanup responds
-              to every 1–3 star review from the last 180 days — so your profile
-              looks professionally managed from day one, not just going forward.
+              Most businesses have two problems on their profile right now: reviews
+              that were never answered, and responses that were answered badly.
+              Our one-time Risk Audit &amp; Cleanup does both. We scan every existing
+              response on your profile for red flags — privacy slip-ups, combative
+              replies, generic templates — and rewrite what needs fixing. We also
+              respond to every unanswered 1–3 star review from the last 180 days.
               Completed within 5 business days. Most clients add this at signup.
             </p>
           </div>
