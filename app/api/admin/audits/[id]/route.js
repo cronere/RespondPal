@@ -22,6 +22,15 @@ const EDITABLE_FIELDS = [
   'response_rate_all',
   'avg_star_rating',
   'google_url',
+  'negative_unresponded',
+  'yelp_total_reviews',
+  'yelp_reviews_with_text',
+  'yelp_reviews_with_responses',
+  'yelp_response_rate_text',
+  'yelp_response_rate_all',
+  'yelp_avg_star_rating',
+  'yelp_url',
+  'yelp_negative_unresponded',
 ]
 
 // PATCH /api/admin/audits/[id] — update an audit record.
