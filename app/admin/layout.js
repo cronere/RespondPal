@@ -9,6 +9,7 @@ const NAV = [
   { href: '/admin/clients', label: 'Clients' },
   { href: '/admin/onboarding', label: 'Onboarding' },
   { href: '/admin/reviews', label: 'Reviews', badgeKey: 'reviews' },
+  { href: '/admin/audits', label: 'Risk Audits', badgeKey: 'audits' },
   { href: '/admin/feedback', label: 'Feedback', badgeKey: 'feedback' },
   { href: '/admin/yelp-prep', label: 'Quick Draft' },
 ]
@@ -16,7 +17,7 @@ const NAV = [
 export default function AdminLayout({ children }) {
   const pathname = usePathname()
   const router = useRouter()
-  const [counts, setCounts] = useState({ reviews: 0, feedback: 0 })
+  const [counts, setCounts] = useState({ reviews: 0, feedback: 0, audits: 0 })
 
   const isLogin = pathname === '/admin/login'
 
@@ -29,7 +30,7 @@ export default function AdminLayout({ children }) {
         const res = await fetch('/api/admin/counts', { cache: 'no-store' })
         if (!res.ok) return
         const data = await res.json()
-        if (active) setCounts({ reviews: data.reviews || 0, feedback: data.feedback || 0 })
+        if (active) setCounts({ reviews: data.reviews || 0, feedback: data.feedback || 0, audits: data.audits || 0 })
       } catch {
         // ignore — badges just won't update this cycle
       }
