@@ -122,12 +122,23 @@ export async function POST(req, { params }) {
       return NextResponse.json({ error: 'AI returned an unexpected format. Try again.' }, { status: 502 })
     }
 
+    // Append new findings to any existing ones (supports batched audits).
+    const existingFindings = audit.findings || []
+    const newFindings = parsed.findings || []
+    const mergedFindings = [...existingFindings, ...newFindings]
+
+    const existingSummary = audit.summary || ''
+    const newSummary = parsed.summary || ''
+    const mergedSummary = existingSummary
+      ? `${existingSummary}\n\n--- Batch ${Math.ceil(existingFindings.length / 50) + 1} ---\n${newSummary}`
+      : newSummary
+
     const { data: updated, error: updateError } = await supabaseAdmin
       .from('audits')
       .update({
         status: 'ready',
-        findings: parsed.findings || [],
-        summary: parsed.summary || '',
+        findings: mergedFindings,
+        summary: mergedSummary,
       })
       .eq('id', id)
       .select()
