@@ -370,7 +370,7 @@ export default function Home() {
           </p>
           <div className="pricing-addon">
             <div className="pricing-addon-badge">Add-on</div>
-            <p><strong>Profile Cleanup — $197 one-time.</strong> We respond to every unanswered 1–3 star review from the last 180 days so your profile looks professionally managed from day one.</p>
+            <p><strong>Reputation Risk Audit &amp; Cleanup — $297 one-time.</strong> We scan every existing response on your profile for red flags — privacy slip-ups, combative replies, tone-deaf templates — and rewrite what needs fixing. We also respond to every unanswered 1–3 star review from the last 180 days. One flat fee, your profile fully cleaned up and protected.</p>
           </div>
         </div>
       </section>
