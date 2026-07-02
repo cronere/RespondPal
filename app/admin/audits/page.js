@@ -245,6 +245,13 @@ function AuditDrawer({ audit, onClose, onUpdate, onDelete }) {
     reviews_with_responses: audit.reviews_with_responses || '',
     avg_star_rating: audit.avg_star_rating || '',
     google_url: audit.google_url || '',
+    negative_unresponded: audit.negative_unresponded || '',
+    yelp_total_reviews: audit.yelp_total_reviews || '',
+    yelp_reviews_with_text: audit.yelp_reviews_with_text || '',
+    yelp_reviews_with_responses: audit.yelp_reviews_with_responses || '',
+    yelp_avg_star_rating: audit.yelp_avg_star_rating || '',
+    yelp_url: audit.yelp_url || '',
+    yelp_negative_unresponded: audit.yelp_negative_unresponded || '',
   })
   const [saving, setSaving] = useState(false)
   const [analyzing, setAnalyzing] = useState(false)
@@ -279,6 +286,19 @@ function AuditDrawer({ audit, onClose, onUpdate, onDelete }) {
       response_rate_all: total > 0 ? parseFloat(((withResp / total) * 100).toFixed(1)) : null,
       avg_star_rating: parseFloat(stats.avg_star_rating) || null,
       google_url: stats.google_url || null,
+      negative_unresponded: parseInt(stats.negative_unresponded) || null,
+      yelp_total_reviews: parseInt(stats.yelp_total_reviews) || null,
+      yelp_reviews_with_text: parseInt(stats.yelp_reviews_with_text) || null,
+      yelp_reviews_with_responses: parseInt(stats.yelp_reviews_with_responses) || null,
+      yelp_response_rate_text: (parseInt(stats.yelp_reviews_with_text) || 0) > 0
+        ? parseFloat(((parseInt(stats.yelp_reviews_with_responses) / parseInt(stats.yelp_reviews_with_text)) * 100).toFixed(1))
+        : null,
+      yelp_response_rate_all: (parseInt(stats.yelp_total_reviews) || 0) > 0
+        ? parseFloat(((parseInt(stats.yelp_reviews_with_responses) / parseInt(stats.yelp_total_reviews)) * 100).toFixed(1))
+        : null,
+      yelp_avg_star_rating: parseFloat(stats.yelp_avg_star_rating) || null,
+      yelp_url: stats.yelp_url || null,
+      yelp_negative_unresponded: parseInt(stats.yelp_negative_unresponded) || null,
     }, 'Saved.')
   }
 
@@ -357,7 +377,7 @@ function AuditDrawer({ audit, onClose, onUpdate, onDelete }) {
 
         <div className="drawer-body">
           <div className="drawer-section">
-            <div className="drawer-section-label">Profile stats (from your CSV — fill in before running audit)</div>
+            <div className="drawer-section-label">Google profile stats</div>
             <div className="drawer-grid">
               <label className="field">
                 <span className="field-label">Total reviews (visible)</span>
@@ -374,21 +394,72 @@ function AuditDrawer({ audit, onClose, onUpdate, onDelete }) {
                 <input type="number" value={stats.reviews_with_responses} onChange={(e) => setStat('reviews_with_responses', e.target.value)} placeholder="e.g. 28" />
               </label>
               <label className="field">
+                <span className="field-label">1-3★ NOT responded to</span>
+                <input type="number" value={stats.negative_unresponded} onChange={(e) => setStat('negative_unresponded', e.target.value)} placeholder="e.g. 22" />
+              </label>
+            </div>
+            <div className="drawer-grid">
+              <label className="field">
                 <span className="field-label">Avg star rating</span>
                 <input type="number" step="0.1" value={stats.avg_star_rating} onChange={(e) => setStat('avg_star_rating', e.target.value)} placeholder="e.g. 3.8" />
               </label>
+              <label className="field">
+                <span className="field-label">Google Maps URL</span>
+                <input value={stats.google_url} onChange={(e) => setStat('google_url', e.target.value)} placeholder="https://maps.google.com/..." />
+              </label>
             </div>
-            <label className="field">
-              <span className="field-label">Google Maps URL</span>
-              <input value={stats.google_url} onChange={(e) => setStat('google_url', e.target.value)} placeholder="https://maps.google.com/..." />
-            </label>
             {stats.total_reviews && stats.reviews_with_responses && (
               <div className="qd-voice" style={{ marginTop: '0.5rem' }}>
-                <strong>Response rate:</strong>{' '}
+                <strong>Google response rate:</strong>{' '}
                 {stats.reviews_with_text
                   ? `${((stats.reviews_with_responses / stats.reviews_with_text) * 100).toFixed(1)}% of text reviews, `
                   : ''}
                 {((stats.reviews_with_responses / stats.total_reviews) * 100).toFixed(1)}% of all reviews
+                {stats.negative_unresponded ? ` · ${stats.negative_unresponded} negative reviews unanswered` : ''}
+              </div>
+            )}
+          </div>
+
+          <div className="drawer-section">
+            <div className="drawer-section-label">Yelp profile stats</div>
+            <div className="drawer-grid">
+              <label className="field">
+                <span className="field-label">Total reviews</span>
+                <input type="number" value={stats.yelp_total_reviews} onChange={(e) => setStat('yelp_total_reviews', e.target.value)} placeholder="e.g. 85" />
+              </label>
+              <label className="field">
+                <span className="field-label">Reviews with text</span>
+                <input type="number" value={stats.yelp_reviews_with_text} onChange={(e) => setStat('yelp_reviews_with_text', e.target.value)} placeholder="e.g. 72" />
+              </label>
+            </div>
+            <div className="drawer-grid">
+              <label className="field">
+                <span className="field-label">Reviews with a response</span>
+                <input type="number" value={stats.yelp_reviews_with_responses} onChange={(e) => setStat('yelp_reviews_with_responses', e.target.value)} placeholder="e.g. 10" />
+              </label>
+              <label className="field">
+                <span className="field-label">1-3★ NOT responded to</span>
+                <input type="number" value={stats.yelp_negative_unresponded} onChange={(e) => setStat('yelp_negative_unresponded', e.target.value)} placeholder="e.g. 15" />
+              </label>
+            </div>
+            <div className="drawer-grid">
+              <label className="field">
+                <span className="field-label">Avg star rating</span>
+                <input type="number" step="0.1" value={stats.yelp_avg_star_rating} onChange={(e) => setStat('yelp_avg_star_rating', e.target.value)} placeholder="e.g. 3.5" />
+              </label>
+              <label className="field">
+                <span className="field-label">Yelp URL</span>
+                <input value={stats.yelp_url} onChange={(e) => setStat('yelp_url', e.target.value)} placeholder="https://yelp.com/biz/..." />
+              </label>
+            </div>
+            {stats.yelp_total_reviews && stats.yelp_reviews_with_responses && (
+              <div className="qd-voice" style={{ marginTop: '0.5rem' }}>
+                <strong>Yelp response rate:</strong>{' '}
+                {stats.yelp_reviews_with_text
+                  ? `${((stats.yelp_reviews_with_responses / stats.yelp_reviews_with_text) * 100).toFixed(1)}% of text reviews, `
+                  : ''}
+                {((stats.yelp_reviews_with_responses / stats.yelp_total_reviews) * 100).toFixed(1)}% of all reviews
+                {stats.yelp_negative_unresponded ? ` · ${stats.yelp_negative_unresponded} negative reviews unanswered` : ''}
               </div>
             )}
           </div>
