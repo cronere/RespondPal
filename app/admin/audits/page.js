@@ -239,6 +239,13 @@ function AddAuditModal({ onClose, onAdded }) {
 
 function AuditDrawer({ audit, onClose, onUpdate, onDelete }) {
   const [rawInput, setRawInput] = useState(audit.raw_input || '')
+  const [stats, setStats] = useState({
+    total_reviews: audit.total_reviews || '',
+    reviews_with_text: audit.reviews_with_text || '',
+    reviews_with_responses: audit.reviews_with_responses || '',
+    avg_star_rating: audit.avg_star_rating || '',
+    google_url: audit.google_url || '',
+  })
   const [saving, setSaving] = useState(false)
   const [analyzing, setAnalyzing] = useState(false)
   const [msg, setMsg] = useState('')
@@ -258,7 +265,24 @@ function AuditDrawer({ audit, onClose, onUpdate, onDelete }) {
     setSaving(false)
   }
 
-  const saveInput = () => patch({ raw_input: rawInput, status: 'awaiting_input' }, 'Saved.')
+  const saveInput = () => {
+    const total = parseInt(stats.total_reviews) || 0
+    const withText = parseInt(stats.reviews_with_text) || 0
+    const withResp = parseInt(stats.reviews_with_responses) || 0
+    patch({
+      raw_input: rawInput,
+      status: 'awaiting_input',
+      total_reviews: total || null,
+      reviews_with_text: withText || null,
+      reviews_with_responses: withResp || null,
+      response_rate_text: withText > 0 ? parseFloat(((withResp / withText) * 100).toFixed(1)) : null,
+      response_rate_all: total > 0 ? parseFloat(((withResp / total) * 100).toFixed(1)) : null,
+      avg_star_rating: parseFloat(stats.avg_star_rating) || null,
+      google_url: stats.google_url || null,
+    }, 'Saved.')
+  }
+
+  const setStat = (k, v) => setStats((s) => ({ ...s, [k]: v }))
 
   const runAnalysis = async () => {
     if (!rawInput.trim()) { setMsg('Paste their existing responses first.'); return }
@@ -332,6 +356,43 @@ function AuditDrawer({ audit, onClose, onUpdate, onDelete }) {
         </div>
 
         <div className="drawer-body">
+          <div className="drawer-section">
+            <div className="drawer-section-label">Profile stats (from your CSV — fill in before running audit)</div>
+            <div className="drawer-grid">
+              <label className="field">
+                <span className="field-label">Total reviews (visible)</span>
+                <input type="number" value={stats.total_reviews} onChange={(e) => setStat('total_reviews', e.target.value)} placeholder="e.g. 534" />
+              </label>
+              <label className="field">
+                <span className="field-label">Reviews with text</span>
+                <input type="number" value={stats.reviews_with_text} onChange={(e) => setStat('reviews_with_text', e.target.value)} placeholder="e.g. 389" />
+              </label>
+            </div>
+            <div className="drawer-grid">
+              <label className="field">
+                <span className="field-label">Reviews with a response</span>
+                <input type="number" value={stats.reviews_with_responses} onChange={(e) => setStat('reviews_with_responses', e.target.value)} placeholder="e.g. 28" />
+              </label>
+              <label className="field">
+                <span className="field-label">Avg star rating</span>
+                <input type="number" step="0.1" value={stats.avg_star_rating} onChange={(e) => setStat('avg_star_rating', e.target.value)} placeholder="e.g. 3.8" />
+              </label>
+            </div>
+            <label className="field">
+              <span className="field-label">Google Maps URL</span>
+              <input value={stats.google_url} onChange={(e) => setStat('google_url', e.target.value)} placeholder="https://maps.google.com/..." />
+            </label>
+            {stats.total_reviews && stats.reviews_with_responses && (
+              <div className="qd-voice" style={{ marginTop: '0.5rem' }}>
+                <strong>Response rate:</strong>{' '}
+                {stats.reviews_with_text
+                  ? `${((stats.reviews_with_responses / stats.reviews_with_text) * 100).toFixed(1)}% of text reviews, `
+                  : ''}
+                {((stats.reviews_with_responses / stats.total_reviews) * 100).toFixed(1)}% of all reviews
+              </div>
+            )}
+          </div>
+
           <div className="drawer-section">
             <div className="drawer-section-label">Their existing review responses</div>
             <p className="admin-page-sub" style={{ marginBottom: '0.6rem' }}>
