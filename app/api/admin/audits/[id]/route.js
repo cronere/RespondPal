@@ -33,6 +33,24 @@ const EDITABLE_FIELDS = [
   'yelp_negative_unresponded',
 ]
 
+// GET /api/admin/audits/[id] — fetch a single audit record.
+export async function GET(req, { params }) {
+  try {
+    const { id } = params
+    const { data, error } = await supabaseAdmin
+      .from('audits')
+      .select('*')
+      .eq('id', id)
+      .single()
+    if (error || !data) {
+      return NextResponse.json({ error: 'Audit not found.' }, { status: 404 })
+    }
+    return NextResponse.json({ audit: data })
+  } catch (err) {
+    return NextResponse.json({ error: 'Failed to load audit.' }, { status: 500 })
+  }
+}
+
 // PATCH /api/admin/audits/[id] — update an audit record.
 export async function PATCH(req, { params }) {
   try {
