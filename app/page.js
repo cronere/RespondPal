@@ -340,7 +340,7 @@ export default function Home() {
                 <div>✓ Human-approved</div>
                 <div>✓ Quarterly intelligence report</div>
               </div>
-              <a href="mailto:team@respondpal.ai" className="btn-orange" style={{ marginTop: 'auto' }}>Get started →</a>
+              <a href="https://buy.stripe.com/00w7sNfC78JR3ndeo9ebu00" className="btn-orange" style={{ marginTop: 'auto' }}>Get started →</a>
             </div>
             <div className="price-card featured">
               <div className="price-name">2 Locations</div>
@@ -351,7 +351,7 @@ export default function Home() {
                 <div>✓ Both locations covered</div>
                 <div>✓ Unified brand voice</div>
               </div>
-              <a href="mailto:team@respondpal.ai" className="btn-orange" style={{ marginTop: 'auto' }}>Get started →</a>
+              <a href="https://buy.stripe.com/28E5kF89FbW3g9Z2Frebu01" className="btn-orange" style={{ marginTop: 'auto' }}>Get started →</a>
             </div>
             <div className="price-card">
               <div className="price-name">3 Locations</div>
@@ -362,11 +362,11 @@ export default function Home() {
                 <div>✓ All three locations covered</div>
                 <div>✓ Unified brand voice</div>
               </div>
-              <a href="mailto:team@respondpal.ai" className="btn-orange" style={{ marginTop: 'auto' }}>Get started →</a>
+              <a href="https://buy.stripe.com/00w3cx89F2lt8Hxeo9ebu02" className="btn-orange" style={{ marginTop: 'auto' }}>Get started →</a>
             </div>
           </div>
           <p className="section-sub" style={{ marginTop: '1.5rem', fontSize: '0.95rem' }}>
-            <strong>4+ locations or enterprise?</strong> Contact us for custom pricing — high-volume accounts welcome.
+            <strong>4+ locations or enterprise?</strong> <a href="mailto:team@respondpal.ai" style={{ color: '#C2410C', fontWeight: 600 }}>Contact us</a> for custom pricing — high-volume accounts welcome.
           </p>
           <div className="pricing-addon">
             <div className="pricing-addon-badge">Add-on</div>
@@ -426,7 +426,7 @@ export default function Home() {
         <div className="container">
           <h2>Your reviews deserve better<br />than silence — or templates.</h2>
           <p>AI-drafted. Human-approved. Live within 48 hours. Cancel anytime.</p>
-          <a href="mailto:team@respondpal.ai" className="btn-orange">Get started today →</a>
+          <a href="#pricing" className="btn-outline" style={{ background: 'white', color: '#111827', borderColor: 'white', fontWeight: 700 }}>See pricing →</a>
         </div>
       </section>
 
