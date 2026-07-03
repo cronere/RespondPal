@@ -438,7 +438,7 @@ export default function Home() {
             <a href="/terms">Terms</a>
             <a href="/privacy">Privacy</a>
             <a href="/details">How it works</a>
-            <a href="mailto:team@respondpal.ai">Contact</a>
+            <a href="/contact">Contact</a>
           </div>
         </div>
       </footer>
