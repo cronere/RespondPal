@@ -78,6 +78,21 @@ export default function Onboarding() {
 
   return (
     <div className="ob-wrap">
+      {/* Payment confirmation banner */}
+      <div style={{
+        background: 'rgba(21, 128, 61, 0.15)',
+        border: '1px solid rgba(21, 128, 61, 0.3)',
+        borderRadius: 8,
+        padding: '0.75rem 1.25rem',
+        textAlign: 'center',
+        marginBottom: '1.25rem',
+        color: '#4ade80',
+        fontSize: '0.95rem',
+        fontWeight: 600,
+      }}>
+        ✓ Payment received — thank you! Complete your setup below to get started.
+      </div>
+
       {/* Header */}
       <div className="ob-header">
         <Image src="/logo-white.png" alt="RespondPal" className="ob-logo" width={180} height={36} />
