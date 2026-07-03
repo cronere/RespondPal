@@ -158,6 +158,7 @@ export default function AuditLanding() {
       {/* TRUST */}
       <section className="founder-sec">
         <div className="container founder-inner">
+          <img src="/jacob-merkley.png" alt="Jacob Merkley, Founder & CEO of RespondPal" className="founder-photo" />
           <div className="founder-label">From the founder</div>
           <blockquote className="founder-quote" style={{ fontSize: '1rem' }}>
             &ldquo;I built this audit after studying thousands of real business review responses
