@@ -44,15 +44,6 @@ export default function Contact() {
               <div style={{ color: '#C2410C', fontWeight: 700, fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.3rem' }}>
                 Email
               </div>
-              <a href="mailto:jacob@respondpal.ai" style={{ color: 'white', fontSize: '1.05rem', textDecoration: 'none' }}>
-                jacob@respondpal.ai
-              </a>
-            </div>
-
-            <div style={{ marginBottom: '1.25rem' }}>
-              <div style={{ color: '#C2410C', fontWeight: 700, fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.3rem' }}>
-                General inquiries
-              </div>
               <a href="mailto:team@respondpal.ai" style={{ color: 'white', fontSize: '1.05rem', textDecoration: 'none' }}>
                 team@respondpal.ai
               </a>
