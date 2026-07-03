@@ -528,6 +528,17 @@ function AuditDrawer({ audit, onClose, onUpdate, onDelete }) {
 
         <div className="drawer-foot rev-foot">
           <button className="rev-del-btn" onClick={del} disabled={saving}>Delete</button>
+          {(audit.status === 'ready' || audit.status === 'delivered') && (
+            <a
+              href={`/admin/audits/${audit.id}/report`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="rev-mini-btn"
+              style={{ padding: '0.6rem 1rem', textDecoration: 'none' }}
+            >
+              View Report ↗
+            </a>
+          )}
           {audit.status === 'ready' && (
             <button className="drawer-btn-secondary" onClick={markDelivered} disabled={saving}>Mark delivered</button>
           )}
