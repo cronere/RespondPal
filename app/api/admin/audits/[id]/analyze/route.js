@@ -46,11 +46,12 @@ Respond ONLY with valid JSON in this exact structure, no other text:
   "summary": "2-3 sentence plain-English summary of what you found, written for a business owner who isn't familiar with any of this terminology",
   "findings": [
     {
-      "original_excerpt": "a short excerpt or paraphrase identifying which response this is (first ~15 words)",
+      "review_summary": "star rating + 6-10 word summary of what the reviewer complained about, e.g. '1★ — Patient says she was overcharged and staff was rude'",
+      "original_excerpt": "the 2-3 MOST DAMAGING sentences from the business's response — the lines that would make a business owner cringe if they saw them quoted back. Not the opening pleasantries, the worst part. Include enough context to be visceral (30-60 words).",
       "severity": "critical" | "moderate" | "minor" | "clean",
       "issues": ["short label(s) from the list above, e.g. Privacy violation, Combative tone"],
       "explanation": "1-2 sentences on why this is a problem, written for a business owner",
-      "rewrite": "the full rewritten response, or null if severity is clean"
+      "rewrite": "the full rewritten response — ONLY for CRITICAL findings, null for moderate/minor/clean"
     }
   ]
 }
