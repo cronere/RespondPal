@@ -16,7 +16,7 @@ export default function Details() {
           <Link href="/">
             <Image src="/logo-white.png" alt="RespondPal" className="details-nav-logo" width={180} height={36} />
           </Link>
-          <a href="mailto:team@respondpal.ai" className="details-nav-cta">Get started</a>
+          <a href="/#pricing" className="details-nav-cta">Get started</a>
         </div>
       </nav>
 
@@ -289,7 +289,7 @@ export default function Details() {
           <h2>Ready to get started?</h2>
           <p>Setup takes less than 10 minutes. Live within 48 hours. No contract.</p>
           <div className="details-cta-buttons">
-            <a href="mailto:team@respondpal.ai" className="details-btn-primary">
+            <a href="/#pricing" className="details-btn-primary">
               Get started today
             </a>
             <Link href="/" className="details-btn-outline">
