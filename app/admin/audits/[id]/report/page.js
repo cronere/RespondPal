@@ -117,7 +117,7 @@ export default function AuditReport() {
         .reco-section { margin-top: 1rem; }
         .reco-h2 { font-size: 15pt; font-weight: 700; color: #111827; margin-bottom: 8px; }
         .reco-step { font-size: 9.5pt; margin-bottom: 6px; }
-        .cta-box { background: #FFF7ED; border: 2px solid #C2410C; padding: 20px; text-align: center; margin: 16px 0; }
+        .cta-box { background: #FFF7ED; border: 2px solid #C2410C; padding: 20px; text-align: center; margin: 16px 0; border-radius: 8px; }
         .cta-head { font-size: 15pt; font-weight: 700; color: #111827; margin-bottom: 6px; }
         .cta-body { font-size: 10pt; color: #374151; margin-bottom: 8px; }
         .cta-price { font-size: 13pt; font-weight: 700; color: #C2410C; margin-bottom: 4px; }
@@ -280,7 +280,14 @@ export default function AuditReport() {
             We'll rewrite every flagged response, respond to all unanswered negatives, and clean up your entire profile.
           </div>
           <div className="cta-price">Reputation Cleanup — $197 one-time</div>
-          <div className="cta-body">
+          <div style={{ marginTop: 10, marginBottom: 8 }}>
+            <a href="https://buy.stripe.com/9B6fZj61x2lt7Dt7ZLebu04" style={{
+              display: 'inline-block', background: '#111827', color: 'white',
+              padding: '10px 28px', borderRadius: 6, fontWeight: 700, fontSize: '11pt',
+              textDecoration: 'none'
+            }}>Get your cleanup →</a>
+          </div>
+          <div className="cta-body" style={{ marginTop: 10 }}>
             And if you want it handled permanently — every new review, every platform, within 24 hours — our monthly service starts at $397/mo.
           </div>
         </div>
