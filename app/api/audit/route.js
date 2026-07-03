@@ -30,7 +30,10 @@ export async function POST(req) {
       contact_phone,
       industry,
       source, // e.g. 'facebook_ad'
-      promo_code, // e.g. 'AUDIT97'
+      promo_code, // e.g. 'AUDIT47'
+      google_url,
+      yelp_url,
+      notes,
     } = body
 
     if (!business_name || !business_name.trim()) {
@@ -48,6 +51,9 @@ export async function POST(req) {
       industry: (industry || '').trim() || null,
       source: (source || 'direct').trim(),
       promo_code: (promo_code || '').trim() || null,
+      google_url: (google_url || '').trim() || null,
+      yelp_url: (yelp_url || '').trim() || null,
+      internal_notes: (notes || '').trim() || null,
       status: 'new',
     }
 
@@ -84,8 +90,11 @@ export async function POST(req) {
             <p><strong>Industry:</strong> ${escapeHtml(industry) || '<em>not specified</em>'}</p>
             <p><strong>Source:</strong> ${escapeHtml(insert.source)}</p>
             <p><strong>Promo code:</strong> ${escapeHtml(promo_code) || '<em>none</em>'}</p>
+            <p><strong>Google Maps:</strong> ${google_url ? `<a href="${escapeHtml(google_url)}">${escapeHtml(google_url)}</a>` : '<em>not provided</em>'}</p>
+            <p><strong>Yelp:</strong> ${yelp_url ? `<a href="${escapeHtml(yelp_url)}">${escapeHtml(yelp_url)}</a>` : '<em>not provided</em>'}</p>
+            ${notes ? `<p><strong>Notes:</strong> ${escapeHtml(notes)}</p>` : ''}
             <hr style="border:none;border-top:1px solid #e3e6eb">
-            <p style="color:#6b7280;font-size:13px">Next step: reach out to collect their existing Google/Yelp review responses (screenshots or copy/paste), then run the audit from the admin.</p>
+            <p style="color:#6b7280;font-size:13px">Next step: scrape their reviews via Apify, run the audit in the admin, generate the PDF, and deliver within 48 hours.</p>
           </div>
         `,
       })
