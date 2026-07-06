@@ -62,6 +62,13 @@ export default function AuditReport() {
   const platforms = hasYelp ? 'Google & Yelp' : 'Google'
   const now = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
 
+  const ind = (audit.industry || '').toLowerCase()
+  const hipaaKeywords = ['dental', 'dentist', 'orthodont', 'medical', 'doctor', 'physician',
+    'chiropractic', 'chiropractor', 'med spa', 'medspa', 'dermatology', 'dermatologist',
+    'cosmetic surg', 'plastic surg', 'optometry', 'behavioral health', 'mental health',
+    'urgent care', 'clinic', 'healthcare', 'health care']
+  const isHipaa = hipaaKeywords.some(kw => ind.includes(kw))
+
   return (
     <>
       <style>{`
@@ -177,6 +184,20 @@ export default function AuditReport() {
         <p className="body">
           <b>Why this matters:</b> Google's AI Overviews, ChatGPT, and Perplexity now read your review responses to decide whether to recommend your business. Response quality directly shapes how AI represents you. A combative or privacy-violating response doesn't just hurt you with the one person who reads it — it trains AI to characterize your business negatively.
         </p>
+
+        {isHipaa && critical.length > 0 && (
+          <div style={{
+            background: '#fef2f2', border: '1px solid #fca5a5', borderRadius: 6,
+            padding: '0.75rem 1rem', margin: '0.5rem 0 0.75rem', fontSize: '8.5pt', color: '#7f1d1d',
+          }}>
+            <b>HIPAA enforcement context:</b> The privacy violations flagged in this report are the same patterns
+            that have resulted in federal enforcement actions against other healthcare practices — including a
+            $23,000 fine against a California dental practice (New Vision Dental, 2022), a $50,000 fine against
+            a North Carolina dental practice (2022), and a $30,000 settlement with a New Jersey healthcare provider
+            (Manasa Health Center, 2023) — all for disclosing protected health information in online review responses.
+            Even confirming someone is a patient is a violation under the HIPAA Privacy Rule.
+          </div>
+        )}
 
         {gTotal > 0 && (
           <>
