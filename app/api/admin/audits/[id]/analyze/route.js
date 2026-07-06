@@ -12,13 +12,27 @@ export const revalidate = 0
 
 const MODEL = 'claude-sonnet-4-6' // analysis task — use Sonnet, not Haiku
 
-const AUDIT_PROMPT = `You are conducting a "Reputation Risk Audit" for a local business — reviewing responses they have ALREADY posted publicly to Google and Yelp reviews. Your job is to flag anything risky, damaging, or low-quality, and provide a better rewrite for each flagged item.
+const HIPAA_KEYWORDS = ['dental', 'dentist', 'orthodont', 'medical', 'doctor', 'physician',
+  'chiropractic', 'chiropractor', 'med spa', 'medspa', 'dermatology', 'dermatologist',
+  'cosmetic surg', 'plastic surg', 'optometry', 'optometrist', 'ophthalmol',
+  'behavioral health', 'mental health', 'psychiatr', 'psycholog', 'therapy',
+  'physical therapy', 'urgent care', 'clinic', 'healthcare', 'health care',
+  'oral surg', 'periodon', 'endodont', 'pediatric', 'obgyn', 'ob-gyn']
+
+function buildAuditPrompt(industry) {
+  const ind = (industry || '').toLowerCase()
+  const isHipaa = HIPAA_KEYWORDS.some(kw => ind.includes(kw))
+
+  let prompt = `You are conducting a "Reputation Risk Audit" for a local business — reviewing responses they have ALREADY posted publicly to Google and Yelp reviews. Your job is to flag anything risky, damaging, or low-quality, and provide a better rewrite for each flagged item.
+
+BUSINESS INDUSTRY: ${industry || 'Not specified'}
+${isHipaa ? 'THIS IS A HIPAA-COVERED HEALTHCARE BUSINESS. Privacy violations in responses carry federal enforcement risk ($10,000-$50,000+ per violation). Treat ALL privacy issues as CRITICAL severity.' : ''}
 
 Screen every response against these failure patterns, drawn from analysis of thousands of real business review responses across ten industries:
 
-1. PRIVACY VIOLATIONS — publicly confirming/denying someone is a customer/patient/client, referencing their visit/case/treatment history, or disclosing billing/account specifics in the response. (Critical severity — especially for medical, dental, legal, or financial businesses. This is the single most damaging category — e.g. "we haven't seen you since 2021" or "your invoice shows...")
+1. PRIVACY VIOLATIONS — publicly confirming/denying someone is a customer/patient/client, referencing their visit/case/treatment history, or disclosing billing/account specifics in the response.${isHipaa ? ' FOR THIS HEALTHCARE BUSINESS: Even confirming someone IS a patient is a HIPAA violation — including phrases like "thank you for coming in," "sorry about your experience with us," or referencing any detail from their review that connects them to care. HHS has fined dental practices $10,000-$50,000 for exactly this. ALWAYS flag as CRITICAL.' : ' Flag as moderate for non-healthcare businesses, critical for healthcare.'}
 
-2. COMBATIVE / ARGUMENTATIVE — publicly disputing the reviewer's account, calling them wrong or lying, rebutting point-by-point, or "setting the record straight." Never wins the reader over; makes the business look defensive.
+2. COMBATIVE / ARGUMENTATIVE — publicly disputing the reviewer\'s account, calling them wrong or lying, rebutting point-by-point, or "setting the record straight." Never wins the reader over; makes the business look defensive.
 
 3. TEMPLATED / GENERIC — a response that could be pasted onto any review regardless of content (warm-but-empty phrases repeated verbatim, no specific reference to what the reviewer actually said).
 
@@ -30,24 +44,33 @@ Screen every response against these failure patterns, drawn from analysis of tho
 
 7. THROWING STAFF UNDER THE BUS — publicly blaming or exposing an individual employee by name in a negative light.
 
-8. NAME ERRORS — using an invented nickname or guessed name variant instead of the reviewer's actual stated name, or addressing a handle/username as if it were a real name.
+8. NAME ERRORS — using an invented nickname or guessed name variant instead of the reviewer\'s actual stated name, or addressing a handle/username as if it were a real name.
 
 9. ASKING FOR REVIEW REMOVAL — requesting the reviewer take down, delete, or edit their review. Reads as suppression.
 
-10. BILLING DEFENSIVENESS — publicly justifying or arguing pricing/charges rather than acknowledging the customer's frustration and moving specifics to a private conversation.
+10. BILLING DEFENSIVENESS — publicly justifying or arguing pricing/charges rather than acknowledging the customer\'s frustration and moving specifics to a private conversation.
 
 For EACH response provided, determine:
 - Whether it has ANY issues from the list above
-- If yes: which issue(s), a brief explanation of why it's a problem, a SEVERITY rating (critical / moderate / minor), and a rewritten version that fixes it while preserving what the response was trying to accomplish
+- If yes: which issue(s), a brief explanation of why it is a problem, a SEVERITY rating (critical / moderate / minor), and a rewritten version that fixes it while preserving what the response was trying to accomplish
 - If no issues: mark it as clean (no rewrite needed)
-
+${isHipaa ? `
+CRITICAL REWRITE RULES FOR THIS HEALTHCARE BUSINESS:
+All rewrites MUST be HIPAA-compliant. This means:
+- Never confirm or deny the reviewer is a patient (no "thank you for coming in," no "sorry about your experience with us")
+- Never reference specific details from the review (no treatment names, billing amounts, visit dates, clinical details)
+- Never use "you/your" connected to specific care ("your visit," "your treatment," "your concerns about the procedure")
+- Use general practice-value statements: "We take all feedback seriously" / "We strive for the highest standard of care"
+- Invite private communication with "please reach out to our office directly" — NOT "please call us to discuss your concerns"
+- Be warm and empathetic through TONE, not through SPECIFICITY
+` : ''}
 Respond ONLY with valid JSON in this exact structure, no other text:
 {
-  "summary": "2-3 sentence plain-English summary of what you found, written for a business owner who isn't familiar with any of this terminology",
+  "summary": "2-3 sentence plain-English summary of what you found, written for a business owner who isn\'t familiar with any of this terminology",
   "findings": [
     {
-      "review_summary": "star rating + 6-10 word summary of what the reviewer complained about, e.g. '1★ — Patient says she was overcharged and staff was rude'",
-      "original_excerpt": "the 2-3 MOST DAMAGING sentences from the business's response — the lines that would make a business owner cringe if they saw them quoted back. Not the opening pleasantries, the worst part. Include enough context to be visceral (30-60 words).",
+      "review_summary": "star rating + 6-10 word summary of what the reviewer complained about, e.g. \'1★ — Patient says she was overcharged and staff was rude\'",
+      "original_excerpt": "the 2-3 MOST DAMAGING sentences from the business\'s response — the lines that would make a business owner cringe if they saw them quoted back. Not the opening pleasantries, the worst part. Include enough context to be visceral (30-60 words).",
       "severity": "critical" | "moderate" | "minor" | "clean",
       "issues": ["short label(s) from the list above, e.g. Privacy violation, Combative tone"],
       "explanation": "1-2 sentences on why this is a problem, written for a business owner",
@@ -56,9 +79,11 @@ Respond ONLY with valid JSON in this exact structure, no other text:
   ]
 }
 
-Here are the business's existing responses to audit:
+Here are the business\'s existing responses to audit:
 
 `
+  return prompt
+}
 
 export async function POST(req, { params }) {
   try {
@@ -94,7 +119,7 @@ export async function POST(req, { params }) {
       body: JSON.stringify({
         model: MODEL,
         max_tokens: 8000,
-        messages: [{ role: 'user', content: AUDIT_PROMPT + audit.raw_input.trim() }],
+        messages: [{ role: 'user', content: buildAuditPrompt(audit.industry) + audit.raw_input.trim() }],
       }),
     })
 
