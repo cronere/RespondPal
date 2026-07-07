@@ -140,26 +140,32 @@ HIPAA COMPLIANCE — MANDATORY FOR THIS HEALTHCARE BUSINESS
 ═══════════════════════════════════════════════════════════
 This business is a HIPAA-covered entity. Federal law (the HIPAA Privacy Rule) prohibits disclosing Protected Health Information (PHI) in any public response — and PHI includes the mere fact that someone IS or WAS a patient. Dental practices have been fined $10,000 to $50,000 by HHS for violating these rules in review responses. These rules are NON-NEGOTIABLE and override tone, warmth, and specificity goals when they conflict:
 
-1. NEVER confirm or deny the reviewer is a patient, client, or has received care — even if they identify themselves. Do NOT say "thank you for coming in," "sorry about your experience with us," or anything that implies a care relationship. Instead use language like "we appreciate this feedback" or "thank you for sharing this."
+1. NEVER confirm or deny the reviewer is a patient, client, or has received care — even if they identify themselves.
 
 2. NEVER reference any specific detail from the review — no treatment names, procedures, diagnoses, billing amounts, insurance details, appointment dates, visit history, clinical findings, or staff interactions that connect to this specific reviewer.
 
-3. NEVER use "you" or "your" in a way that connects to specific care — no "your visit," "your treatment," "your appointment," "your concerns about the procedure." Instead use general practice-value statements.
+3. NEVER use "you" or "your" in a way that connects to specific care — no "your visit," "your treatment," "your appointment," "your concerns about the procedure."
 
-4. NEVER reference the reviewer by name if doing so connects them to care. A simple "Thank you" is fine; "Thank you, Sarah, for trusting us with your care" is a violation.
+4. NEVER reference the reviewer by name if doing so connects them to care.
 
-5. NEVER deny someone is a patient or say you searched records — "we looked through our database and couldn't find you" is itself a disclosure that a records search was conducted.
+5. NEVER deny someone is a patient or say you searched records.
 
-6. DO be warm, empathetic, and professional through TONE — not through SPECIFICITY. You can convey genuine care without confirming anything. Use general practice-value statements: "We take all feedback about the quality of care very seriously" / "We strive for the highest standard of patient experience."
+FORBIDDEN phrases (DO NOT USE):
+- "your visit" / "this visit" / "your experience with us" / "your appointment"
+- "thank you for coming in" / "thank you for choosing us" / "thank you for trusting us"
+- "sorry about your experience" / "sorry this visit" / "sorry your visit fell short"
+- "patient experience" / "patient care" directed at the reviewer with "your"
+- "your treatment" / "your procedure" / "your care" / "your records"
+- "your concerns about [anything]" — this confirms they had concerns as a patient
+- "we'd like to make this right" / "make it right" — implies something went wrong with THEIR care specifically
+- "please call us to discuss your concerns" — confirms they had concerns as a patient
 
-7. DO invite private communication — but use "please reach out to our office" or "please contact us directly." NOT "please call us to discuss your concerns" (that confirms they had concerns as a patient).
+REQUIRED patterns:
+- General practice-value statements: "We take all feedback seriously" / "We hold ourselves to the highest standard of care" / "Every person who contacts our office deserves to be treated with respect"
+- Generic private-communication invitations: "Please reach out to our office directly" / "We welcome anyone with questions to contact us"
+- Express care through VALUES: "Quality of care is our highest priority" — NOT "we're sorry the care you received fell short"
 
-SAFE RESPONSE PATTERNS:
-- "Thank you for sharing this feedback. We take all concerns seriously and would welcome the opportunity to discuss this further. Please reach out to our office directly."
-- "We appreciate you taking the time to share this. Our practice is committed to the highest standard of care, and we encourage anyone with questions to contact us privately."
-- "Feedback like this helps us continuously improve. We would be happy to connect with you directly — please give our office a call."
-
-Before finalizing: reread the response one more time specifically for HIPAA compliance. If ANY phrase could be read as confirming the reviewer is a patient or referencing their specific care, rewrite it to be general. When in doubt, be more general, not less.`
+SELF-CHECK: Before finalizing, reread the response and ask: "Could a reasonable person reading this determine that the reviewer IS or WAS a patient?" If YES — even slightly — rewrite it to be more general. When in doubt, be MORE general.`
   }
 
   prompt += `\n\nBefore finalizing: reread your response once. Confirm it (a) matches the right register and length for this review, (b) doesn't argue, concede disputed fault, fabricate, or breach privacy, and (c) sounds like a specific human, not a template. Then write ONLY the response text itself — no preamble, no quotation marks around it, no explanation. Just the response exactly as it should be posted.`
