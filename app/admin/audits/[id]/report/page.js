@@ -77,6 +77,9 @@ export default function AuditReport() {
           .no-print { display: none !important; }
           .report { padding: 0; }
           .page-break { page-break-before: always; }
+          @page {
+            margin: 0.5in 0.6in;
+          }
         }
         .report {
           font-family: Helvetica, Arial, sans-serif;
@@ -88,7 +91,7 @@ export default function AuditReport() {
           line-height: 1.5;
         }
         .top-bar { height: 6px; background: #C2410C; margin: -1.5rem -1.5rem 1.5rem -1.5rem; }
-        .logo { height: 22px; margin-bottom: 1rem; }
+        .logo { height: 26px; margin-bottom: 1rem; display: block; }
         .label { font-size: 8pt; font-weight: 700; color: #C2410C; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 3px; }
         .title { font-size: 22pt; font-weight: 700; color: #111827; margin: 0 0 2px 0; }
         .subtitle { font-size: 11pt; color: #6b7280; margin-bottom: 1rem; }
@@ -141,12 +144,16 @@ export default function AuditReport() {
         <button className="print-btn" onClick={() => window.print()}>
           Save as PDF (Ctrl+P / Cmd+P)
         </button>
+        <p style={{ fontSize: '11px', color: '#6b7280', margin: '0.5rem 0 0', maxWidth: 500, marginLeft: 'auto', marginRight: 'auto' }}>
+          In the print dialog: select <b>"Save as PDF"</b> as the destination, then click <b>"More settings"</b> and <b>uncheck "Headers and footers"</b> for a clean output.
+        </p>
       </div>
 
       <div className="report">
         <div className="top-bar" />
 
-        <img src="/logo-dark.png" alt="RespondPal" className="logo" />
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/logo-dark.png" alt="RespondPal" style={{ height: 26, marginBottom: '1rem', display: 'block' }} />
 
         <div className="label">Reputation Risk Audit</div>
         <h1 className="title">{audit.business_name}</h1>
