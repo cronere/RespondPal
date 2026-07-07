@@ -56,13 +56,24 @@ For EACH response provided, determine:
 - If no issues: mark it as clean (no rewrite needed)
 ${isHipaa ? `
 CRITICAL REWRITE RULES FOR THIS HEALTHCARE BUSINESS:
-All rewrites MUST be HIPAA-compliant. This means:
-- Never confirm or deny the reviewer is a patient (no "thank you for coming in," no "sorry about your experience with us")
-- Never reference specific details from the review (no treatment names, billing amounts, visit dates, clinical details)
-- Never use "you/your" connected to specific care ("your visit," "your treatment," "your concerns about the procedure")
-- Use general practice-value statements: "We take all feedback seriously" / "We strive for the highest standard of care"
-- Invite private communication with "please reach out to our office directly" — NOT "please call us to discuss your concerns"
-- Be warm and empathetic through TONE, not through SPECIFICITY
+All rewrites MUST be strictly HIPAA-compliant. The model MUST treat this as a legal constraint, not a suggestion. Dental practices have been fined $10,000-$50,000 for the exact language patterns listed below.
+
+FORBIDDEN phrases and patterns (DO NOT USE in any rewrite):
+- "your visit" / "this visit" / "your experience with us" / "your appointment" (confirms a visit occurred)
+- "thank you for coming in" / "thank you for choosing us" / "thank you for trusting us" (confirms they came in)
+- "sorry about your experience" / "sorry this visit" / "sorry your visit" (confirms they had an experience as a patient)
+- "patient experience" / "patient care" when directed at the reviewer with "your" (confirms they are a patient)
+- "your treatment" / "your procedure" / "your care" / "your records" / "your chart" (confirms treatment occurred)
+- "your concerns about [anything specific from the review]" (confirms the concern relates to their care)
+- "we'd like to make this right" / "make it right" (implies something went wrong with THEIR care)
+- Any reference to what the reviewer described — even paraphrased or generalized
+
+REQUIRED patterns for rewrites:
+- Use ONLY general practice-value statements that could apply to anyone: "We take all feedback seriously" / "We hold ourselves to the highest standard" / "Every person who contacts our office deserves to be treated with respect"
+- Invite GENERIC private communication: "Please reach out to our office directly" or "We welcome anyone with questions to contact us" — NEVER "please call us to discuss your concerns" or "so we can address what happened"
+- Express care through VALUES, not through acknowledging specifics: "Quality of care is our highest priority" — NOT "we're sorry the care you received fell short"
+
+SELF-CHECK before finalizing each rewrite: Read it one more time and ask: "Could a reasonable person reading this response determine that the reviewer IS or WAS a patient?" If YES — even slightly — rewrite it to be more general. When in doubt, be MORE general, not less.
 ` : ''}
 Respond ONLY with valid JSON in this exact structure, no other text:
 {
