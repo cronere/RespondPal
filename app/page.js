@@ -14,7 +14,10 @@ export default function Home() {
           <Image src="/logo-white.png" alt="RespondPal" className="nav-logo" width={180} height={36} />
           <div className="desktop-links">
             <a href="#how">How it works</a>
+            <a href="#different">Our AI</a>
+            <a href="#features">What&apos;s included</a>
             <a href="#pricing">Pricing</a>
+            <a href="/details">Details</a>
             <a href="#pricing" className="nav-cta">Get started</a>
           </div>
           <button
@@ -28,7 +31,10 @@ export default function Home() {
         {menuOpen && (
           <div className="mobile-menu open">
             <a href="#how" onClick={() => setMenuOpen(false)}>How it works</a>
+            <a href="#different" onClick={() => setMenuOpen(false)}>Our AI</a>
+            <a href="#features" onClick={() => setMenuOpen(false)}>What&apos;s included</a>
             <a href="#pricing" onClick={() => setMenuOpen(false)}>Pricing</a>
+            <a href="/details" onClick={() => setMenuOpen(false)}>Details</a>
             <a href="#pricing" onClick={() => setMenuOpen(false)}>Get started</a>
           </div>
         )}
