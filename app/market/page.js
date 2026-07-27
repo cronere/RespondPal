@@ -43,7 +43,7 @@ export default function Market() {
             <li>Our proprietary AI — the three-layer architecture that creates the moat</li>
             <li>The competitive landscape and why we win</li>
             <li>The HIPAA compliance advantage for healthcare verticals</li>
-            <li>Business model, unit economics, and growth path</li>
+            <li>Business model, unit economics, 1099 sales engine, and growth path</li>
           </ul>
         </section>
 
@@ -289,6 +289,45 @@ export default function Market() {
           </p>
         </div>
 
+        <div className="market-callout">
+          <div className="market-callout-label">1099 Sales Engine (Phase 2 growth lever)</div>
+          <p>
+            Once the founder-led sales motion is validated (15–20 retail clients), the next growth
+            lever is a network of 1099 independent sales reps who run the exact same playbook:
+            identify practices with compliance violations, deliver the audit report, record the Loom
+            walkthrough, and close the sale. The rep never touches fulfillment — all response drafting,
+            quality review, and client management stays centralized.
+          </p>
+          <div className="market-table-wrap" style={{ marginTop: '0.75rem' }}>
+            <table className="market-table">
+              <thead>
+                <tr><th>Commission</th><th>Amount</th><th>Notes</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>First month</td><td>$200</td><td>Highest payout to incentivize closing</td></tr>
+                <tr><td>Months 2–3</td><td>$100/mo</td><td>Rewards reps for selling clients who stick</td></tr>
+                <tr><td>Months 4–12</td><td>$50/mo</td><td>Passive residual — rewards quality over volume</td></tr>
+                <tr><td>Month 13+</td><td>$0</td><td>Commission sunsets — client value returns fully to the company</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p className="market-p" style={{ marginTop: '0.75rem' }}>
+            <b>Total commission per client over 12 months: $800.</b> Against $4,764 in annual revenue,
+            that&apos;s an 83% margin after commission — and the commission sunsets entirely after month 12.
+            The residual structure (months 4–12 at $50/month) means reps are financially incentivized
+            to sell clients who actually stay, not churn-and-burn. A rep who closes 5 clients per month
+            earns $1,000/month in new commissions plus growing residuals from prior months — creating
+            a genuine income opportunity that attracts quality salespeople without requiring W-2
+            overhead, benefits, or management.
+          </p>
+          <p className="market-p">
+            At 5 reps each closing 3 clients/month, the sales engine adds 15 new clients/month — scaling
+            from 50 to 200+ clients within 12 months without increasing the founder&apos;s direct sales time.
+            The entire playbook (cold email templates, qualifying criteria, audit workflow, Loom script,
+            and follow-up sequences) is already documented and ready to hand to reps on day one.
+          </p>
+        </div>
+
         {/* Bottom line */}
         <div className="market-bottomline">
           <div className="market-bottomline-label">The bottom line</div>
@@ -296,8 +335,10 @@ export default function Market() {
             A massive market of businesses responding badly to reviews — or not responding at all.
             A proprietary AI system calibrated on thousands of real reviews with a HIPAA compliance
             layer that no competitor offers. 95%+ gross margins with a product that gets stickier
-            over time. A clear path from founder-led sales to agency-partnered scale. And the hardest
-            part — building the intelligence engine — is already done.
+            over time. A clear path from founder-led sales to a scalable 1099 sales engine and
+            agency-partnered whitelabel growth. The entire sales playbook is already documented
+            and ready to replicate. And the hardest part — building the intelligence engine — is
+            already done.
           </p>
         </div>
 
