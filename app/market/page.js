@@ -299,25 +299,32 @@ export default function Market() {
             never touches fulfillment — all response drafting, quality review, and client
             management stays centralized.
           </p>
+          <p style={{ marginTop: '0.5rem' }}>
+            <b>The headline: reps keep 100% of the first month&apos;s revenue on every client they close.</b>{' '}
+            That signals confidence in the service&apos;s retention and immediately separates
+            this opportunity from every other 1099 gig a salesperson is evaluating.
+          </p>
           <div className="market-table-wrap" style={{ marginTop: '0.75rem' }}>
             <table className="market-table">
               <thead>
                 <tr><th>Period</th><th>Rep earns</th><th>Business keeps</th><th>Notes</th></tr>
               </thead>
               <tbody>
-                <tr><td>Month 1</td><td>$297</td><td>$100</td><td>High upfront payout to incentivize closing</td></tr>
-                <tr><td>Months 2–3</td><td>$197/mo</td><td>$200/mo</td><td>Strong early earnings reward fast starts</td></tr>
-                <tr><td>Months 4–12</td><td>$100/mo</td><td>$297/mo</td><td>Passive residual — rewards selling sticky clients</td></tr>
-                <tr><td>Month 13+</td><td>$50/mo</td><td>$347/mo</td><td>Indefinite residual (requires 10+ new sales/year)</td></tr>
+                <tr><td>Month 1</td><td><b>100%</b></td><td>0%</td><td>Full first month — rep keeps everything</td></tr>
+                <tr><td>Month 2</td><td>75%</td><td>25%</td><td>Strong early earnings reward fast starts</td></tr>
+                <tr><td>Month 3</td><td>50%</td><td>50%</td><td>Even split as client relationship establishes</td></tr>
+                <tr><td>Months 4–12</td><td>25%</td><td>75%</td><td>Passive residual — client stays, rep keeps earning</td></tr>
+                <tr><td>Months 13–24</td><td>15%</td><td>85%</td><td>Reduced residual as business value compounds</td></tr>
+                <tr><td>Month 25+</td><td>10%</td><td>90%</td><td>Indefinite residual (requires 10+ new sales/year)</td></tr>
               </tbody>
             </table>
           </div>
 
           <p className="market-p" style={{ marginTop: '0.75rem' }}>
-            <b>Year 1 per client: rep earns $1,591 (33% of revenue).</b> Right at the industry-standard
-            30% cost-per-acquisition benchmark — competitive enough to attract quality salespeople, not
-            so high that it erodes margins. Year 2+ the rep earns $600/year (13%) as a passive residual
-            for zero ongoing effort.
+            <b>Year 1 per client ($397/mo): rep earns $1,786 (37.5% of revenue).</b> Year 2: $715 (15%).
+            Year 3+: $476/year (10%) as indefinite passive residual. The percentage model scales cleanly
+            across all pricing tiers — a rep who closes a 3-location client at $897/month earns $897 on
+            day one with no separate commission table needed.
           </p>
 
           <div className="market-callout-label" style={{ marginTop: '1rem' }}>5-year commission horizon — per rep with a book of 50 clients</div>
@@ -327,22 +334,22 @@ export default function Market() {
                 <tr><th>Period</th><th>Total revenue</th><th>Rep earns</th><th>Business keeps</th></tr>
               </thead>
               <tbody>
-                <tr><td>Month 1</td><td>$19,850</td><td>$14,850</td><td>$5,000</td></tr>
-                <tr><td>Month 2</td><td>$19,850</td><td>$9,850</td><td>$10,000</td></tr>
-                <tr><td>Month 3</td><td>$19,850</td><td>$9,850</td><td>$10,000</td></tr>
-                <tr><td>Months 4–12</td><td>$178,650</td><td>$45,000</td><td>$133,650</td></tr>
-                <tr><td>Months 13–60</td><td>$952,800</td><td>$120,000</td><td>$832,800</td></tr>
-                <tr className="market-row-highlight"><td><b>5-year total</b></td><td><b>$1,191,000</b></td><td><b>$199,550 (17%)</b></td><td><b>$991,450 (83%)</b></td></tr>
+                <tr><td>Month 1</td><td>$19,850</td><td>$19,850</td><td>$0</td></tr>
+                <tr><td>Month 2</td><td>$19,850</td><td>$14,888</td><td>$4,963</td></tr>
+                <tr><td>Month 3</td><td>$19,850</td><td>$9,925</td><td>$9,925</td></tr>
+                <tr><td>Months 4–12</td><td>$178,650</td><td>$44,663</td><td>$133,988</td></tr>
+                <tr><td>Months 13–24</td><td>$238,200</td><td>$35,730</td><td>$202,470</td></tr>
+                <tr><td>Months 25–60</td><td>$714,600</td><td>$71,460</td><td>$643,140</td></tr>
+                <tr className="market-row-highlight"><td><b>5-year total</b></td><td><b>$1,191,000</b></td><td><b>$196,515 (16.5%)</b></td><td><b>$994,485 (83.5%)</b></td></tr>
               </tbody>
             </table>
           </div>
 
           <p className="market-p" style={{ marginTop: '0.75rem' }}>
-            The business retains 83% of all revenue over 5 years — and that percentage improves annually
-            as the early heavy-commission months become a smaller proportion of total revenue. From year 2
-            onward, the business keeps 87% of each year&apos;s revenue from rep-sourced clients. The 10-sales-per-year
-            floor on the indefinite residual prevents reps from coasting on passive income without
-            continuing to produce new business.
+            The business retains 83.5% of all revenue over 5 years. From year 3 onward, the business
+            keeps 90% of each year&apos;s revenue from rep-sourced clients. The 10-sales-per-year floor
+            on the indefinite residual prevents reps from coasting on passive income without continuing
+            to produce new business.
           </p>
 
           <p className="market-p">
