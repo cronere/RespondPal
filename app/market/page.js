@@ -339,8 +339,8 @@ export default function Market() {
 
           <p className="market-p" style={{ marginTop: '0.75rem' }}>
             The business retains 83% of all revenue over 5 years — and that percentage improves annually
-            as the early heavy-commission months become a smaller proportion of total revenue. By year 5,
-            the business keeps 93% of that year&apos;s revenue from rep-sourced clients. The 10-sales-per-year
+            as the early heavy-commission months become a smaller proportion of total revenue. From year 2
+            onward, the business keeps 87% of each year&apos;s revenue from rep-sourced clients. The 10-sales-per-year
             floor on the indefinite residual prevents reps from coasting on passive income without
             continuing to produce new business.
           </p>
