@@ -290,41 +290,66 @@ export default function Market() {
         </div>
 
         <div className="market-callout">
-          <div className="market-callout-label">1099 Sales Engine (Phase 2 growth lever)</div>
+          <div className="market-callout-label">1099 Sales Engine</div>
           <p>
-            Once the founder-led sales motion is validated (15–20 retail clients), the next growth
-            lever is a network of 1099 independent sales reps who run the exact same playbook:
-            identify practices with compliance violations, deliver the audit report, record the Loom
-            walkthrough, and close the sale. The rep never touches fulfillment — all response drafting,
-            quality review, and client management stays centralized.
+            A network of 1099 independent sales reps who run a proven, documented playbook:
+            identify businesses with poor review responses, deliver an audit report, record a
+            personalized Loom walkthrough, and close the sale. Reps can target any industry —
+            healthcare, dental, legal, restaurants, auto repair, the trades, and more. The rep
+            never touches fulfillment — all response drafting, quality review, and client
+            management stays centralized.
           </p>
           <div className="market-table-wrap" style={{ marginTop: '0.75rem' }}>
             <table className="market-table">
               <thead>
-                <tr><th>Commission</th><th>Amount</th><th>Notes</th></tr>
+                <tr><th>Period</th><th>Rep earns</th><th>Business keeps</th><th>Notes</th></tr>
               </thead>
               <tbody>
-                <tr><td>First month</td><td>$200</td><td>Highest payout to incentivize closing</td></tr>
-                <tr><td>Months 2–3</td><td>$100/mo</td><td>Rewards reps for selling clients who stick</td></tr>
-                <tr><td>Months 4–12</td><td>$50/mo</td><td>Passive residual — rewards quality over volume</td></tr>
-                <tr><td>Month 13+</td><td>$0</td><td>Commission sunsets — client value returns fully to the company</td></tr>
+                <tr><td>Month 1</td><td>$297</td><td>$100</td><td>High upfront payout to incentivize closing</td></tr>
+                <tr><td>Months 2–3</td><td>$197/mo</td><td>$200/mo</td><td>Strong early earnings reward fast starts</td></tr>
+                <tr><td>Months 4–12</td><td>$100/mo</td><td>$297/mo</td><td>Passive residual — rewards selling sticky clients</td></tr>
+                <tr><td>Month 13+</td><td>$50/mo</td><td>$347/mo</td><td>Indefinite residual (requires 10+ new sales/year)</td></tr>
               </tbody>
             </table>
           </div>
+
           <p className="market-p" style={{ marginTop: '0.75rem' }}>
-            <b>Total commission per client over 12 months: $800.</b> Against $4,764 in annual revenue,
-            that&apos;s an 83% margin after commission — and the commission sunsets entirely after month 12.
-            The residual structure (months 4–12 at $50/month) means reps are financially incentivized
-            to sell clients who actually stay, not churn-and-burn. A rep who closes 5 clients per month
-            earns $1,000/month in new commissions plus growing residuals from prior months — creating
-            a genuine income opportunity that attracts quality salespeople without requiring W-2
-            overhead, benefits, or management.
+            <b>Year 1 per client: rep earns $1,591 (33% of revenue).</b> Right at the industry-standard
+            30% cost-per-acquisition benchmark — competitive enough to attract quality salespeople, not
+            so high that it erodes margins. Year 2+ the rep earns $600/year (13%) as a passive residual
+            for zero ongoing effort.
           </p>
+
+          <div className="market-callout-label" style={{ marginTop: '1rem' }}>5-year commission horizon — per rep with a book of 50 clients</div>
+          <div className="market-table-wrap" style={{ marginTop: '0.75rem' }}>
+            <table className="market-table">
+              <thead>
+                <tr><th>Period</th><th>Total revenue</th><th>Rep earns</th><th>Business keeps</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Month 1</td><td>$19,850</td><td>$14,850</td><td>$5,000</td></tr>
+                <tr><td>Month 2</td><td>$19,850</td><td>$9,850</td><td>$10,000</td></tr>
+                <tr><td>Month 3</td><td>$19,850</td><td>$9,850</td><td>$10,000</td></tr>
+                <tr><td>Months 4–12</td><td>$178,650</td><td>$45,000</td><td>$133,650</td></tr>
+                <tr><td>Months 13–60</td><td>$952,800</td><td>$120,000</td><td>$832,800</td></tr>
+                <tr className="market-row-highlight"><td><b>5-year total</b></td><td><b>$1,191,000</b></td><td><b>$199,550 (17%)</b></td><td><b>$991,450 (83%)</b></td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <p className="market-p" style={{ marginTop: '0.75rem' }}>
+            The business retains 83% of all revenue over 5 years — and that percentage improves annually
+            as the early heavy-commission months become a smaller proportion of total revenue. By year 5,
+            the business keeps 93% of that year&apos;s revenue from rep-sourced clients. The 10-sales-per-year
+            floor on the indefinite residual prevents reps from coasting on passive income without
+            continuing to produce new business.
+          </p>
+
           <p className="market-p">
-            At 5 reps each closing 3 clients/month, the sales engine adds 15 new clients/month — scaling
-            from 50 to 200+ clients within 12 months without increasing the founder&apos;s direct sales time.
-            The entire playbook (cold email templates, qualifying criteria, audit workflow, Loom script,
-            and follow-up sequences) is already documented and ready to hand to reps on day one.
+            <b>At scale:</b> 5 reps each closing 3 clients/month adds 15 new clients/month — scaling
+            from 50 to 200+ clients within 12 months. The entire sales playbook (cold email templates,
+            qualifying criteria, audit workflow, Loom script, and follow-up sequences) is fully documented
+            and ready to hand to reps immediately.
           </p>
         </div>
 
