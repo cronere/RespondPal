@@ -248,24 +248,6 @@ export default function Home() {
       </section>
 
 
-      {/* FOUNDER */}
-      <section className="founder-sec">
-        <div className="container founder-inner">
-          <img src="/jacob-merkley.png" alt="Jacob Merkley, Founder & CEO of RespondPal" className="founder-photo" />
-          <div className="founder-label">From the founder</div>
-          <blockquote className="founder-quote">
-            &ldquo;Business owners are swamped — responding to reviews moves to the back
-            burner every day. I built RespondPal to take that off your plate completely.
-            Our AI has been engineered on thousands of real reviews to craft responses that
-            are on-brand and calibrated for your industry. <strong>Every response is reviewed
-            by a human before it goes live.</strong> And it gets smarter for your business
-            each month. Your reputation stays sharp — and it costs you zero time.&rdquo;
-          </blockquote>
-          <div className="founder-name">Jacob Merkley</div>
-          <div className="founder-title">Founder &amp; CEO, RespondPal</div>
-        </div>
-      </section>
-
 
       {/* TESTIMONIALS */}
       <section className="testimonials-sec">
