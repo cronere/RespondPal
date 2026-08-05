@@ -307,8 +307,33 @@ function AuditDrawer({ audit, onClose, onUpdate, onDelete }) {
   const runAnalysis = async () => {
     if (!rawInput.trim()) { setMsg('Paste their existing responses first.'); return }
     setAnalyzing(true); setMsg('')
-    // Save the input first so it's not lost if analysis fails.
-    await patch({ raw_input: rawInput })
+    // Save input AND stats first so nothing is lost if analysis fails.
+    const total = parseInt(stats.total_reviews) || 0
+    const withText = parseInt(stats.reviews_with_text) || 0
+    const withResp = parseInt(stats.reviews_with_responses) || 0
+    await patch({
+      raw_input: rawInput,
+      total_reviews: total || null,
+      reviews_with_text: withText || null,
+      reviews_with_responses: withResp || null,
+      response_rate_text: withText > 0 ? parseFloat(((withResp / withText) * 100).toFixed(1)) : null,
+      response_rate_all: total > 0 ? parseFloat(((withResp / total) * 100).toFixed(1)) : null,
+      avg_star_rating: parseFloat(stats.avg_star_rating) || null,
+      google_url: stats.google_url || null,
+      negative_unresponded: parseInt(stats.negative_unresponded) || null,
+      yelp_total_reviews: parseInt(stats.yelp_total_reviews) || null,
+      yelp_reviews_with_text: parseInt(stats.yelp_reviews_with_text) || null,
+      yelp_reviews_with_responses: parseInt(stats.yelp_reviews_with_responses) || null,
+      yelp_response_rate_text: (parseInt(stats.yelp_reviews_with_text) || 0) > 0
+        ? parseFloat(((parseInt(stats.yelp_reviews_with_responses) / parseInt(stats.yelp_reviews_with_text)) * 100).toFixed(1))
+        : null,
+      yelp_response_rate_all: (parseInt(stats.yelp_total_reviews) || 0) > 0
+        ? parseFloat(((parseInt(stats.yelp_reviews_with_responses) / parseInt(stats.yelp_total_reviews)) * 100).toFixed(1))
+        : null,
+      yelp_avg_star_rating: parseFloat(stats.yelp_avg_star_rating) || null,
+      yelp_url: stats.yelp_url || null,
+      yelp_negative_unresponded: parseInt(stats.yelp_negative_unresponded) || null,
+    })
     try {
       const res = await fetch(`/api/admin/audits/${audit.id}/analyze`, { method: 'POST' })
       const data = await res.json()
