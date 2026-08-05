@@ -70,16 +70,8 @@ export default function CleanupConfirmed() {
             <strong style={{ color: 'white' }}>5 business days</strong>.
           </p>
           <p className="hero-sub" style={{ fontSize: '0.9rem', maxWidth: 500, marginTop: '0.75rem' }}>
-            Need help with any of these steps? Just reply to your confirmation email or reach out directly — happy to walk you through it.
-          </p>
-          <p className="hero-sub" style={{ fontSize: '1rem', marginTop: '1.5rem' }}>
-            <img src="/jacob-merkley.png" alt="Jacob Merkley" style={{
-              width: 60, height: 60, borderRadius: '50%', objectFit: 'cover',
-              display: 'block', margin: '0 auto 0.75rem',
-            }} />
-            <strong style={{ color: 'white' }}>Jacob Merkley</strong><br />
-            <span style={{ fontSize: '0.9rem' }}>Founder, RespondPal</span><br />
-            <a href="mailto:jacob@respondpal.ai" style={{ color: '#C2410C' }}>jacob@respondpal.ai</a>
+            Need help with any of these steps? Reach out to us at{' '}
+            <a href="mailto:team@respondpal.ai" style={{ color: '#C2410C' }}>team@respondpal.ai</a> — happy to walk you through it.
           </p>
           <a
             href="/"
