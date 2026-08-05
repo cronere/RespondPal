@@ -1,13 +1,16 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useParams } from 'next/navigation'
+import Script from 'next/script'
 
 export default function AuditReport() {
   const { id } = useParams()
   const [audit, setAudit] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [generating, setGenerating] = useState(false)
+  const reportRef = useRef(null)
 
   useEffect(() => {
     async function load() {
@@ -140,16 +143,28 @@ export default function AuditReport() {
         .print-btn:hover { background: #a3360a; }
       `}</style>
 
+      <Script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" strategy="beforeInteractive" />
+
       <div className="no-print" style={{ textAlign: 'center', padding: '1rem', background: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
-        <button className="print-btn" onClick={() => window.print()}>
-          Save as PDF (Ctrl+P / Cmd+P)
+        <button className="print-btn" disabled={generating} onClick={() => {
+          if (!reportRef.current || !window.html2pdf) return
+          setGenerating(true)
+          const filename = `${(audit.business_name || 'Audit').replace(/[^a-zA-Z0-9]/g, '_')}_Reputation_Risk_Audit.pdf`
+          const opt = {
+            margin: [0.4, 0.5, 0.4, 0.5],
+            filename,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2, useCORS: true, letterRendering: true },
+            jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' },
+            pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+          }
+          window.html2pdf().set(opt).from(reportRef.current).save().then(() => setGenerating(false))
+        }}>
+          {generating ? 'Generating PDF...' : 'Download PDF'}
         </button>
-        <p style={{ fontSize: '11px', color: '#6b7280', margin: '0.5rem 0 0', maxWidth: 500, marginLeft: 'auto', marginRight: 'auto' }}>
-          In the print dialog: select <b>"Save as PDF"</b> as the destination, then click <b>"More settings"</b> and <b>uncheck "Headers and footers"</b> for a clean output.
-        </p>
       </div>
 
-      <div className="report">
+      <div className="report" ref={reportRef}>
         <div className="top-bar" />
 
         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -308,12 +323,15 @@ export default function AuditReport() {
             We'll rewrite every flagged response, respond to all unanswered negatives, and clean up your entire profile.
           </div>
           <div className="cta-price">Reputation Cleanup — $197 one-time</div>
-          <div style={{ marginTop: 10, marginBottom: 8 }}>
+          <div style={{ marginTop: 10, marginBottom: 4 }}>
             <a href="https://buy.stripe.com/9B6fZj61x2lt7Dt7ZLebu04" style={{
               display: 'inline-block', background: '#111827', color: 'white',
               padding: '10px 28px', borderRadius: 6, fontWeight: 700, fontSize: '11pt',
               textDecoration: 'none'
             }}>Get your cleanup →</a>
+          </div>
+          <div style={{ fontSize: '7.5pt', color: '#6b7280', marginBottom: 8 }}>
+            respondpal.ai/audit/cleanup-confirmed
           </div>
           <div className="cta-body" style={{ marginTop: 10 }}>
             And if you want it handled permanently — every new review, every platform, within 24 hours — our monthly service starts at $397/mo.
