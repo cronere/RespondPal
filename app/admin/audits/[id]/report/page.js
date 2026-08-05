@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { useParams } from 'next/navigation'
-import Script from 'next/script'
 
 export default function AuditReport() {
   const { id } = useParams()
@@ -10,7 +9,20 @@ export default function AuditReport() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [generating, setGenerating] = useState(false)
+  const [scriptLoaded, setScriptLoaded] = useState(false)
   const reportRef = useRef(null)
+
+  useEffect(() => {
+    // Load html2pdf.js dynamically
+    if (typeof window !== 'undefined' && !window.html2pdf) {
+      const script = document.createElement('script')
+      script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js'
+      script.onload = () => setScriptLoaded(true)
+      document.head.appendChild(script)
+    } else if (window.html2pdf) {
+      setScriptLoaded(true)
+    }
+  }, [])
 
   useEffect(() => {
     async function load() {
@@ -143,10 +155,8 @@ export default function AuditReport() {
         .print-btn:hover { background: #a3360a; }
       `}</style>
 
-      <Script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" strategy="beforeInteractive" />
-
       <div className="no-print" style={{ textAlign: 'center', padding: '1rem', background: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
-        <button className="print-btn" disabled={generating} onClick={() => {
+        <button className="print-btn" disabled={generating || !scriptLoaded} onClick={() => {
           if (!reportRef.current || !window.html2pdf) return
           setGenerating(true)
           const filename = `${(audit.business_name || 'Audit').replace(/[^a-zA-Z0-9]/g, '_')}_Reputation_Risk_Audit.pdf`
@@ -158,9 +168,9 @@ export default function AuditReport() {
             jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' },
             pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
           }
-          window.html2pdf().set(opt).from(reportRef.current).save().then(() => setGenerating(false))
+          window.html2pdf().set(opt).from(reportRef.current).save().then(() => setGenerating(false)).catch(() => setGenerating(false))
         }}>
-          {generating ? 'Generating PDF...' : 'Download PDF'}
+          {generating ? 'Generating PDF...' : scriptLoaded ? 'Download PDF' : 'Loading...'}
         </button>
       </div>
 
