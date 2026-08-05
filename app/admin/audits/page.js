@@ -302,6 +302,34 @@ function AuditDrawer({ audit, onClose, onUpdate, onDelete }) {
     }, 'Saved.')
   }
 
+  const saveStats = () => {
+    const total = parseInt(stats.total_reviews) || 0
+    const withText = parseInt(stats.reviews_with_text) || 0
+    const withResp = parseInt(stats.reviews_with_responses) || 0
+    patch({
+      total_reviews: total || null,
+      reviews_with_text: withText || null,
+      reviews_with_responses: withResp || null,
+      response_rate_text: withText > 0 ? parseFloat(((withResp / withText) * 100).toFixed(1)) : null,
+      response_rate_all: total > 0 ? parseFloat(((withResp / total) * 100).toFixed(1)) : null,
+      avg_star_rating: parseFloat(stats.avg_star_rating) || null,
+      google_url: stats.google_url || null,
+      negative_unresponded: parseInt(stats.negative_unresponded) || null,
+      yelp_total_reviews: parseInt(stats.yelp_total_reviews) || null,
+      yelp_reviews_with_text: parseInt(stats.yelp_reviews_with_text) || null,
+      yelp_reviews_with_responses: parseInt(stats.yelp_reviews_with_responses) || null,
+      yelp_response_rate_text: (parseInt(stats.yelp_reviews_with_text) || 0) > 0
+        ? parseFloat(((parseInt(stats.yelp_reviews_with_responses) / parseInt(stats.yelp_reviews_with_text)) * 100).toFixed(1))
+        : null,
+      yelp_response_rate_all: (parseInt(stats.yelp_total_reviews) || 0) > 0
+        ? parseFloat(((parseInt(stats.yelp_reviews_with_responses) / parseInt(stats.yelp_total_reviews)) * 100).toFixed(1))
+        : null,
+      yelp_avg_star_rating: parseFloat(stats.yelp_avg_star_rating) || null,
+      yelp_url: stats.yelp_url || null,
+      yelp_negative_unresponded: parseInt(stats.yelp_negative_unresponded) || null,
+    }, 'Stats saved.')
+  }
+
   const setStat = (k, v) => setStats((s) => ({ ...s, [k]: v }))
 
   const runAnalysis = async () => {
@@ -487,6 +515,15 @@ function AuditDrawer({ audit, onClose, onUpdate, onDelete }) {
                 {stats.yelp_negative_unresponded ? ` · ${stats.yelp_negative_unresponded} negative reviews unanswered` : ''}
               </div>
             )}
+            <button
+              className="rev-mini-btn"
+              style={{ marginTop: '0.75rem', background: '#C2410C', color: 'white', border: 'none' }}
+              onClick={saveStats}
+              disabled={saving}
+            >
+              {saving ? 'Saving…' : 'Save Stats'}
+            </button>
+            {msg && <span style={{ marginLeft: '0.75rem', fontSize: '0.85rem', color: '#6b7280' }}>{msg}</span>}
           </div>
 
           <div className="drawer-section">
