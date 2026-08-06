@@ -85,6 +85,8 @@ SELF-CHECK before finalizing each rewrite: Read it one more time and ask three q
 
 SELF-CHECK for violating_phrase: before finalizing, verify the violating_phrase value is copied EXACTLY character-for-character from original_excerpt — not paraphrased, not summarized. If it doesn't match exactly, the highlighting in the report will silently fail to display. Double-check spelling, punctuation, and capitalization match precisely.
 ` : ''}
+LENGTH: violating_phrase should almost always be under 12 words — a single clause or short phrase, not a full sentence and never multiple sentences. If you find yourself selecting more than one sentence, you have not narrowed it down enough — go back and pick the single clause within that sentence that does the actual damage. Good examples of the right length: "since your last visit" / "that is exactly what Dr. Fisher did" / "do not have you as a patient of record" / "marked your chart" / "two years or longer after the treatment was completed." A highlighted phrase that's nearly as long as the whole excerpt defeats the purpose — it should be short enough to jump out visually against the surrounding text.
+
 HOW TO SELECT violating_phrase (applies to every finding where severity is critical or moderate):
 
 The violating_phrase is what gets bolded and highlighted in the client-facing report — it must be the single most incriminating piece of evidence, not just any true statement from the response. Selecting the wrong phrase (a generic greeting instead of the real violation) undermines the entire report's credibility.
