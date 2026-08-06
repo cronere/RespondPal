@@ -161,7 +161,7 @@ export async function POST(req, { params }) {
       },
       body: JSON.stringify({
         model: MODEL,
-        max_tokens: 16000,
+        max_tokens: 8192,
         messages: [{ role: 'user', content: buildAuditPrompt(audit.industry) + textToAnalyze }],
       }),
     })
@@ -170,7 +170,18 @@ export async function POST(req, { params }) {
       const errText = await res.text()
       console.error('Anthropic API error:', res.status, errText)
       await supabaseAdmin.from('audits').update({ status: 'awaiting_input' }).eq('id', id)
-      return NextResponse.json({ error: `AI service error (${res.status}).` }, { status: 502 })
+      // Surface the actual error detail so it's visible without digging through
+      // server logs — this is an internal admin endpoint, safe to expose.
+      let detail = errText
+      try {
+        const parsedErr = JSON.parse(errText)
+        detail = parsedErr?.error?.message || errText
+      } catch {
+        // errText wasn't JSON — use as-is.
+      }
+      return NextResponse.json({
+        error: `AI service error (${res.status}): ${detail}`
+      }, { status: 502 })
     }
 
     const data = await res.json()
