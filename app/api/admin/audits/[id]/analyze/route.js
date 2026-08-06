@@ -31,6 +31,7 @@ ${isHipaa ? 'THIS IS A HIPAA-COVERED HEALTHCARE BUSINESS. Privacy violations in 
 Screen every response against these failure patterns, drawn from analysis of thousands of real business review responses across ten industries:
 
 1. PRIVACY VIOLATIONS — publicly confirming/denying someone is a customer/patient/client, referencing their visit/case/treatment history, or disclosing billing/account specifics in the response.${isHipaa ? ' FOR THIS HEALTHCARE BUSINESS: Even confirming someone IS a patient is a HIPAA violation — including phrases like "thank you for coming in," "sorry about your experience with us," or referencing any detail from their review that connects them to care. HHS has fined dental practices $10,000-$50,000 for exactly this. ALWAYS flag as CRITICAL.' : ' Flag as moderate for non-healthcare businesses, critical for healthcare.'}
+   IMPORTANT EXCEPTION — do NOT flag a response as a Privacy Violation solely for using the reviewer's own first name back to them. The reviewer already made that name public by posting under it — reflecting it back ("Thank you, Amy" / "Thanks for the feedback, Michael") discloses nothing new and is NOT a HIPAA or privacy issue on its own. A genuine Privacy Violation requires confirming/denying patient or visit status, referencing specific treatment, care, diagnosis, or billing details, or referencing whether they are or are not found in the practice's records. A bare "thank you, [Name]" with no other content has ZERO privacy risk — if that is the ENTIRE issue with the response, flag it under Templated/Generic and/or Read-the-whole-review failure instead, never Privacy violation.
 
 2. COMBATIVE / ARGUMENTATIVE — publicly disputing the reviewer\'s account, calling them wrong or lying, rebutting point-by-point, or "setting the record straight." Never wins the reader over; makes the business look defensive.
 
@@ -57,6 +58,7 @@ IMPORTANT — this rule applies ONLY to rewrites you generate. It does NOT mean 
 For EACH response provided, determine:
 - Whether it has ANY issues from the list above
 - If yes: which issue(s), a brief explanation of why it is a problem, a SEVERITY rating (critical / moderate / minor), and a rewritten version that fixes it while preserving what the response was trying to accomplish
+- Before assigning "Privacy violation" to ANY response, self-check: "Does this response confirm/deny patient status, reference specific treatment/care/diagnosis/billing details, or reference a records search — beyond simply using the reviewer's own self-disclosed name?" If the only thing present is a name and generic pleasantries with no other substance, do NOT use "Privacy violation" — use "Templated / generic" and/or "Read-the-whole-review failure" instead.
 - If no issues: mark it as clean (no rewrite needed)
 ${isHipaa ? `
 CRITICAL REWRITE RULES FOR THIS HEALTHCARE BUSINESS:
