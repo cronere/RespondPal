@@ -31,6 +31,7 @@ const EDITABLE_FIELDS = [
   'yelp_avg_star_rating',
   'yelp_url',
   'yelp_negative_unresponded',
+  'loom_talking_points',
 ]
 
 // GET /api/admin/audits/[id] — fetch a single audit record.
