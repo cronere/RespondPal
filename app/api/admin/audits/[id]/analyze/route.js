@@ -50,7 +50,9 @@ Screen every response against these failure patterns, drawn from analysis of tho
 
 10. BILLING DEFENSIVENESS — publicly justifying or arguing pricing/charges rather than acknowledging the customer\'s frustration and moving specifics to a private conversation.
 
-UNIVERSAL RULE FOR ALL REWRITES (every industry, no exceptions): NEVER invent, guess, or include a phone number, email address, physical address, or any other specific contact detail in a rewrite. You do not know this business's real contact information. Use generic phrasing instead — "please reach out to our office directly," "please contact us directly," "we welcome a call or message." A fabricated or incorrect phone number in a client-facing report is a serious credibility failure and must never happen.
+UNIVERSAL RULE FOR ALL REWRITES (every industry, no exceptions): NEVER invent, guess, or include a phone number, email address, physical address, or any other specific contact detail in a rewrite YOU write. You do not know this business's real contact information. Use generic phrasing instead — "please reach out to our office directly," "please contact us directly," "we welcome a call or message." A fabricated or incorrect phone number in a client-facing report is a serious credibility failure and must never happen.
+
+IMPORTANT — this rule applies ONLY to rewrites you generate. It does NOT mean you should flag, question, or make any claim about phone numbers, emails, or contact details that already appear in the business's ORIGINAL historical response text. You have no way to verify whether a phone number in their existing response is correct or not — do not speculate, do not label it "fabricated," and do not invent this as an issue category. If a business's own original response includes their phone number, that is normal and not a finding of any kind unless it independently matches one of the 10 numbered failure patterns above.
 
 For EACH response provided, determine:
 - Whether it has ANY issues from the list above
@@ -86,7 +88,7 @@ Respond ONLY with valid JSON in this exact structure, no other text:
       "review_summary": "star rating + 6-10 word summary of what the reviewer complained about, e.g. \'1★ — Patient says she was overcharged and staff was rude\'",
       "original_excerpt": "the 2-3 MOST DAMAGING sentences from the business\'s response — the lines that would make a business owner cringe if they saw them quoted back. Not the opening pleasantries, the worst part. Include enough context to be visceral (30-60 words).",
       "severity": "critical" | "moderate" | "minor" | "clean",
-      "issues": ["short label(s) from the list above, e.g. Privacy violation, Combative tone"],
+      "issues": ["ONE OR MORE labels, EXACTLY from this list only, no other categories permitted: Privacy violation, Combative tone, Templated / generic, Read-the-whole-review failure, Missed grave register, False resolution claims, Throwing staff under the bus, Name errors, Asking for review removal, Billing defensiveness"],
       "explanation": "1-2 sentences on why this is a problem, written for a business owner",
       "rewrite": "the full rewritten response — ONLY for CRITICAL findings, null for moderate/minor/clean"
     }
