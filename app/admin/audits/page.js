@@ -336,13 +336,27 @@ function AuditDrawer({ audit, onClose, onUpdate, onDelete }) {
 
   const runAnalysis = async (mode = 'fresh') => {
     if (!rawInput.trim()) { setMsg('Paste their existing responses first.'); return }
+    if (mode === 'fresh' && (audit.findings || []).length > 0) {
+      const ok = window.confirm(
+        `This audit already has ${audit.findings.length} findings saved. "Run audit" will REPLACE all of them with a fresh analysis of only what's currently in the text box below.\n\nIf you're adding MORE reviews on top of what's already been analyzed, click Cancel and use "+ Append as new batch" instead.\n\nContinue and replace all existing findings?`
+      )
+      if (!ok) return
+    }
     setAnalyzing(true); setMsg('')
+    // In append mode, ACCUMULATE stored raw_input (old + new) so the full
+    // pasted history is preserved for reference and future fresh re-runs —
+    // but this accumulated text is never sent to the AI in this same call
+    // (see batch_text below), which prevents re-analyzing old reviews and
+    // creating duplicate findings.
+    const savedRawInput = mode === 'append' && audit.raw_input
+      ? `${audit.raw_input}\n\n--- New batch pasted ${new Date().toLocaleString()} ---\n\n${rawInput}`
+      : rawInput
     // Save input AND stats first so nothing is lost if analysis fails.
     const total = parseInt(stats.total_reviews) || 0
     const withText = parseInt(stats.reviews_with_text) || 0
     const withResp = parseInt(stats.reviews_with_responses) || 0
     await patch({
-      raw_input: rawInput,
+      raw_input: savedRawInput,
       total_reviews: total || null,
       reviews_with_text: withText || null,
       reviews_with_responses: withResp || null,
@@ -368,12 +382,21 @@ function AuditDrawer({ audit, onClose, onUpdate, onDelete }) {
       const res = await fetch(`/api/admin/audits/${audit.id}/analyze`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mode }),
+        body: JSON.stringify({ mode, batch_text: rawInput }),
       })
       const data = await res.json()
       if (res.ok) {
         onUpdate(data.audit)
-        setMsg(mode === 'append' ? 'Batch added to existing findings.' : 'Analysis complete — previous findings replaced.')
+        if (mode === 'append') {
+          // Clear the textarea so the next paste starts clean — otherwise the
+          // accumulated history now stored in raw_input would get re-sent as
+          // batch_text on the next Append click, re-analyzing old reviews
+          // and creating duplicate findings.
+          setRawInput('')
+          setMsg('Batch added to existing findings. Text box cleared — paste the next batch when ready.')
+        } else {
+          setMsg('Analysis complete — previous findings replaced.')
+        }
       }
       else setMsg(data.error || 'Analysis failed.')
     } catch {
