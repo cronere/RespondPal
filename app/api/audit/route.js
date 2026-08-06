@@ -113,8 +113,7 @@ export async function POST(req) {
           <div style="font-family:Arial,sans-serif;max-width:600px;color:#1a1a1a">
             <h2 style="color:#C2410C;margin-bottom:4px">Thanks, ${escapeHtml(contact_name) || 'there'}!</h2>
             <p>We received your request for a Reputation Risk Audit for <strong>${escapeHtml(business_name)}</strong>.</p>
-            <p>Next step: reply to this email with a few screenshots (or copy/paste) of your existing Google and Yelp review responses — the ones you or your team have already posted. We'll scan them for red flags and send back a full report within 2 business days.</p>
-            <p>No login access needed. Just the text of your existing responses.</p>
+            <p>We're pulling your Google and Yelp review history now and scanning your existing responses for privacy, compliance, and reputation red flags. No action needed on your end — your full report will be delivered to this email within 48 hours.</p>
             <p style="margin-top:24px">Talk soon,<br>The RespondPal Team</p>
           </div>
         `,
