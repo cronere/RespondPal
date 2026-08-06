@@ -84,6 +84,7 @@ SELF-CHECK before finalizing each rewrite: Read it one more time and ask three q
 Respond ONLY with valid JSON in this exact structure, no other text:
 {
   "summary": "2-3 sentence plain-English summary of what you found, written for a business owner who isn\'t familiar with any of this terminology",
+  "loom_talking_points": ["3-5 short, punchy talking points for the person delivering this audit to say OUT LOUD on a screen-recorded video walkthrough. These are FOR THE SALESPERSON, not for the report. Each one should be a specific, non-obvious insight from THIS audit that adds credibility or context beyond what's already visible in the findings — e.g. explaining WHY a specific phrase is a violation when it doesn\'t look like one on its surface (like confirming vs. denying patient status being the same violation), pointing out a pattern across multiple findings, or flagging the single most damaging finding to lead with. Keep each one to 1-2 sentences, conversational, ready to say out loud. Do NOT restate the findings themselves — add insight the findings don\'t already show."],
   "findings": [
     {
       "review_summary": "star rating + 6-10 word summary of what the reviewer complained about, e.g. \'1★ — Patient says she was overcharged and staff was rude\'",
@@ -182,12 +183,18 @@ export async function POST(req, { params }) {
       ? `${existingSummary}\n\n--- Batch ${Math.ceil(existingFindings.length / 50) + 1} ---\n${newSummary}`
       : newSummary
 
+    // Talking points aren't cumulative across batches — each batch's points
+    // are specific to what was just analyzed, so the latest batch replaces
+    // (rather than appends to) the prior set to keep this list short and usable.
+    const talkingPoints = parsed.loom_talking_points || audit.loom_talking_points || []
+
     const { data: updated, error: updateError } = await supabaseAdmin
       .from('audits')
       .update({
         status: 'ready',
         findings: mergedFindings,
         summary: mergedSummary,
+        loom_talking_points: talkingPoints,
       })
       .eq('id', id)
       .select()
