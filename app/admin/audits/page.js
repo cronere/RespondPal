@@ -396,9 +396,27 @@ function AuditDrawer({ audit, onClose, onUpdate, onDelete }) {
     setSaving(false)
   }
 
-  const findings = (audit.findings || []).slice().sort(
-    (a, b) => (SEVERITY_ORDER[a.severity] ?? 9) - (SEVERITY_ORDER[b.severity] ?? 9)
-  )
+  // Same impact heuristic used on the client-facing report — ranks the most
+  // damning findings first within each severity tier, so what's reviewed here
+  // in HQ matches what surfaces at the top of the report.
+  const impactScore = (f) => {
+    const issues = (f.issues || []).map(i => i.toLowerCase())
+    let score = issues.length * 10
+    if (issues.some(i => i.includes('privacy'))) score += 15
+    if (issues.some(i => i.includes('grave') || i.includes('grief'))) score += 20
+    if (issues.some(i => i.includes('combative'))) score += 8
+    if (issues.some(i => i.includes('billing'))) score += 5
+    if (issues.some(i => i.includes('staff'))) score += 5
+    if (issues.some(i => i.includes('false resolution'))) score += 5
+    score += Math.min((f.original_excerpt || '').length / 50, 5)
+    return score
+  }
+
+  const findings = (audit.findings || []).slice().sort((a, b) => {
+    const sevDiff = (SEVERITY_ORDER[a.severity] ?? 9) - (SEVERITY_ORDER[b.severity] ?? 9)
+    if (sevDiff !== 0) return sevDiff
+    return impactScore(b) - impactScore(a)
+  })
 
   const copyRewrite = (text) => {
     navigator.clipboard?.writeText(text)
