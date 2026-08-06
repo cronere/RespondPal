@@ -334,7 +334,7 @@ function AuditDrawer({ audit, onClose, onUpdate, onDelete }) {
 
   const setStat = (k, v) => setStats((s) => ({ ...s, [k]: v }))
 
-  const runAnalysis = async () => {
+  const runAnalysis = async (mode = 'fresh') => {
     if (!rawInput.trim()) { setMsg('Paste their existing responses first.'); return }
     setAnalyzing(true); setMsg('')
     // Save input AND stats first so nothing is lost if analysis fails.
@@ -365,9 +365,16 @@ function AuditDrawer({ audit, onClose, onUpdate, onDelete }) {
       yelp_negative_unresponded: parseInt(stats.yelp_negative_unresponded) || null,
     })
     try {
-      const res = await fetch(`/api/admin/audits/${audit.id}/analyze`, { method: 'POST' })
+      const res = await fetch(`/api/admin/audits/${audit.id}/analyze`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mode }),
+      })
       const data = await res.json()
-      if (res.ok) { onUpdate(data.audit); setMsg('Analysis complete.') }
+      if (res.ok) {
+        onUpdate(data.audit)
+        setMsg(mode === 'append' ? 'Batch added to existing findings.' : 'Analysis complete — previous findings replaced.')
+      }
       else setMsg(data.error || 'Analysis failed.')
     } catch {
       setMsg('Analysis failed.')
@@ -542,10 +549,25 @@ function AuditDrawer({ audit, onClose, onUpdate, onDelete }) {
             />
             <div className="rev-draft-actions">
               <button className="rev-mini-btn" onClick={saveInput} disabled={saving || !rawInput.trim()}>Save</button>
-              <button className="rev-ai-btn" onClick={runAnalysis} disabled={analyzing || saving || !rawInput.trim()}>
+              <button className="rev-ai-btn" onClick={() => runAnalysis('fresh')} disabled={analyzing || saving || !rawInput.trim()}>
                 {analyzing ? 'Analyzing…' : '🔍 Run audit'}
               </button>
+              {(audit.findings || []).length > 0 && (
+                <button
+                  className="rev-mini-btn"
+                  onClick={() => runAnalysis('append')}
+                  disabled={analyzing || saving || !rawInput.trim()}
+                  title="Keeps existing findings and adds this run's results on top — only use this when continuing a large batch you haven't finished pasting yet."
+                >
+                  + Append as new batch
+                </button>
+              )}
             </div>
+            {(audit.findings || []).length > 0 && (
+              <p style={{ fontSize: '0.75rem', color: '#6b7280', marginTop: '0.35rem' }}>
+                &quot;Run audit&quot; replaces all existing findings with a fresh analysis. Use &quot;Append as new batch&quot; only if you&apos;re deliberately adding more reviews on top of what&apos;s already been analyzed.
+              </p>
+            )}
           </div>
 
           {(audit.summary || editingSummary) && (
