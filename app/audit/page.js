@@ -188,7 +188,7 @@ export default function AuditLanding() {
             <a href="/terms">Terms</a>
             <a href="/privacy">Privacy</a>
             <a href="/">Home</a>
-            <a href="mailto:jacob@respondpal.ai">Contact</a>
+            <a href="mailto:team@respondpal.ai">Contact</a>
           </div>
         </div>
       </footer>
