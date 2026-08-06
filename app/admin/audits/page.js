@@ -239,6 +239,8 @@ function AddAuditModal({ onClose, onAdded }) {
 
 function AuditDrawer({ audit, onClose, onUpdate, onDelete }) {
   const [rawInput, setRawInput] = useState(audit.raw_input || '')
+  const [summaryDraft, setSummaryDraft] = useState(audit.summary || '')
+  const [editingSummary, setEditingSummary] = useState(false)
   const [stats, setStats] = useState({
     total_reviews: audit.total_reviews || '',
     reviews_with_text: audit.reviews_with_text || '',
@@ -546,10 +548,50 @@ function AuditDrawer({ audit, onClose, onUpdate, onDelete }) {
             </div>
           </div>
 
-          {audit.summary && (
+          {(audit.summary || editingSummary) && (
             <div className="drawer-section">
-              <div className="drawer-section-label">Summary</div>
-              <p className="rev-review-text">{audit.summary}</p>
+              <div className="rev-response-head">
+                <div className="drawer-section-label">Summary</div>
+                {!editingSummary && (
+                  <button className="rev-mini-btn" onClick={() => { setSummaryDraft(audit.summary || ''); setEditingSummary(true) }}>
+                    Edit
+                  </button>
+                )}
+              </div>
+              {editingSummary ? (
+                <>
+                  <textarea
+                    className="rev-textarea"
+                    style={{ minHeight: 140 }}
+                    value={summaryDraft}
+                    onChange={(e) => setSummaryDraft(e.target.value)}
+                    placeholder="Top summary paragraph shown at the top of the client-facing report…"
+                  />
+                  <div className="rev-draft-actions">
+                    <button
+                      className="rev-mini-btn"
+                      onClick={() => { setSummaryDraft(audit.summary || ''); setEditingSummary(false) }}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      className="rev-ai-btn"
+                      onClick={async () => {
+                        await patch({ summary: summaryDraft }, 'Summary saved.')
+                        setEditingSummary(false)
+                      }}
+                      disabled={saving}
+                    >
+                      {saving ? 'Saving…' : 'Save Summary'}
+                    </button>
+                  </div>
+                  <p style={{ fontSize: '0.75rem', color: '#6b7280', marginTop: '0.4rem' }}>
+                    Tip: if this audit was run in multiple batches, clean up any &quot;--- Batch 2 ---&quot; dividers here so the report reads as one cohesive paragraph.
+                  </p>
+                </>
+              ) : (
+                <p className="rev-review-text">{audit.summary}</p>
+              )}
             </div>
           )}
 
