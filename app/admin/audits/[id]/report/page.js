@@ -123,15 +123,46 @@ export default function AuditReport() {
 
   // Bold the specific violating phrase within an excerpt, if the AI provided
   // an exact substring match. Falls back to plain text if no match found.
+  // Normalizes smart quotes/dashes and collapses whitespace so minor
+  // formatting differences between the AI's excerpt and phrase don't cause
+  // the highlight to silently fail to render at all.
+  const normalizeForMatch = (s) =>
+    (s || '')
+      .replace(/[\u2018\u2019]/g, "'")
+      .replace(/[\u201C\u201D]/g, '"')
+      .replace(/[\u2013\u2014]/g, '-')
+      .replace(/\s+/g, ' ')
+      .trim()
+
   const highlightExcerpt = (text, phrase) => {
     if (!text) return null
-    if (!phrase || !text.includes(phrase)) return text
-    const idx = text.indexOf(phrase)
+    if (!phrase) return text
+    // Try an exact match first (fast path, preserves original text exactly).
+    let idx = text.indexOf(phrase)
+    let matchLen = phrase.length
+    if (idx === -1) {
+      // Fall back to a normalized, whitespace-insensitive search so smart
+      // quotes, en-dashes, or extra spacing don't cause a total miss.
+      const normText = normalizeForMatch(text)
+      const normPhrase = normalizeForMatch(phrase)
+      if (normPhrase && normText.includes(normPhrase)) {
+        // Map the match position back onto the ORIGINAL text as closely as
+        // possible using a whitespace-flexible regex built from the phrase.
+        const escaped = normPhrase.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/ /g, '\\s+')
+        const re = new RegExp(escaped, 'i')
+        const match = text.match(re)
+        if (match) {
+          idx = match.index
+          matchLen = match[0].length
+        }
+      }
+    }
+    if (idx === -1) return text
     return (
       <>
         {text.slice(0, idx)}
-        <b style={{ background: '#FEE2E2', padding: '0 2px' }}>{phrase}</b>
-        {text.slice(idx + phrase.length)}
+        <b style={{ background: '#FEE2E2', padding: '0 2px' }}>{text.slice(idx, idx + matchLen)}</b>
+        {text.slice(idx + matchLen)}
       </>
     )
   }
