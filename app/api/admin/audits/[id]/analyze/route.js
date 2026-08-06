@@ -50,6 +50,8 @@ Screen every response against these failure patterns, drawn from analysis of tho
 
 10. BILLING DEFENSIVENESS — publicly justifying or arguing pricing/charges rather than acknowledging the customer\'s frustration and moving specifics to a private conversation.
 
+UNIVERSAL RULE FOR ALL REWRITES (every industry, no exceptions): NEVER invent, guess, or include a phone number, email address, physical address, or any other specific contact detail in a rewrite. You do not know this business's real contact information. Use generic phrasing instead — "please reach out to our office directly," "please contact us directly," "we welcome a call or message." A fabricated or incorrect phone number in a client-facing report is a serious credibility failure and must never happen.
+
 For EACH response provided, determine:
 - Whether it has ANY issues from the list above
 - If yes: which issue(s), a brief explanation of why it is a problem, a SEVERITY rating (critical / moderate / minor), and a rewritten version that fixes it while preserving what the response was trying to accomplish
@@ -72,8 +74,9 @@ REQUIRED patterns for rewrites:
 - Use ONLY general practice-value statements that could apply to anyone: "We take all feedback seriously" / "We hold ourselves to the highest standard" / "Every person who contacts our office deserves to be treated with respect"
 - Invite GENERIC private communication: "Please reach out to our office directly" or "We welcome anyone with questions to contact us" — NEVER "please call us to discuss your concerns" or "so we can address what happened"
 - Express care through VALUES, not through acknowledging specifics: "Quality of care is our highest priority" — NOT "we're sorry the care you received fell short"
+- NEVER invent or include a phone number, email address, physical address, or any other contact detail in a rewrite. You do not know the business's real contact information. Say "please reach out to our office directly" or "please contact us through our website" — NEVER fabricate a phone number or email. A wrong or made-up phone number in a client-facing report is a serious credibility failure.
 
-SELF-CHECK before finalizing each rewrite: Read it one more time and ask: "Could a reasonable person reading this response determine that the reviewer IS or WAS a patient?" If YES — even slightly — rewrite it to be more general. When in doubt, be MORE general, not less.
+SELF-CHECK before finalizing each rewrite: Read it one more time and ask: "Could a reasonable person reading this response determine that the reviewer IS or WAS a patient?" If YES — even slightly — rewrite it to be more general. When in doubt, be MORE general, not less. Also confirm: does this rewrite contain any phone number, email, or address? If yes, remove it — you do not have this business's real contact information.
 ` : ''}
 Respond ONLY with valid JSON in this exact structure, no other text:
 {
