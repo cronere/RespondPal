@@ -69,6 +69,7 @@ FORBIDDEN phrases and patterns (DO NOT USE in any rewrite):
 - "patient experience" / "patient care" when directed at the reviewer with "your" (confirms they are a patient)
 - "your treatment" / "your procedure" / "your care" / "your records" / "your chart" (confirms treatment occurred)
 - "your concerns about [anything specific from the review]" (confirms the concern relates to their care)
+- ANY variation of confirming, denying, or hedging around a records search — "we don't have a patient by that name," "we couldn't find you in our system," "we weren't able to connect your comments to a specific experience," "we're unable to locate a record matching your details," "we don't see you in our charts." These are all the SAME violation just phrased more softly — the act of referencing a records search result, in ANY direction (found, not found, "couldn't connect," "couldn't match"), discloses that the practice searched their patient database in relation to this specific person. NEVER reference whether a record was found, not found, matched, or connected. The rewrite must not imply a records lookup happened at all.
 - "we'd like to make this right" / "make it right" (implies something went wrong with THEIR care)
 - Any reference to what the reviewer described — even paraphrased or generalized
 
@@ -78,7 +79,7 @@ REQUIRED patterns for rewrites:
 - Express care through VALUES, not through acknowledging specifics: "Quality of care is our highest priority" — NOT "we're sorry the care you received fell short"
 - NEVER invent or include a phone number, email address, physical address, or any other contact detail in a rewrite. You do not know the business's real contact information. Say "please reach out to our office directly" or "please contact us through our website" — NEVER fabricate a phone number or email. A wrong or made-up phone number in a client-facing report is a serious credibility failure.
 
-SELF-CHECK before finalizing each rewrite: Read it one more time and ask: "Could a reasonable person reading this response determine that the reviewer IS or WAS a patient?" If YES — even slightly — rewrite it to be more general. When in doubt, be MORE general, not less. Also confirm: does this rewrite contain any phone number, email, or address? If yes, remove it — you do not have this business's real contact information.
+SELF-CHECK before finalizing each rewrite: Read it one more time and ask three questions: (1) "Could a reasonable person reading this determine that the reviewer IS or WAS a patient?" (2) "Does this rewrite reference a records search in ANY way — found, not found, connected, matched, or unable to locate?" (3) "Does this rewrite contain any phone number, email, or address?" If the answer to ANY of these is yes, rewrite it to remove that element entirely. When in doubt, be MORE general, not less.
 ` : ''}
 Respond ONLY with valid JSON in this exact structure, no other text:
 {
