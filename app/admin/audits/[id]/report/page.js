@@ -49,7 +49,29 @@ export default function AuditReport() {
   if (!audit) return null
 
   const findings = audit.findings || []
-  const critical = findings.filter(f => (f.severity || '').toLowerCase() === 'critical')
+
+  // Findings are stored in whatever order the AI produced them, which roughly
+  // tracks the order reviews were pasted in — NOT severity. Score each finding
+  // so the most damning ones surface first, rather than whichever happened to
+  // be pasted first. More issue tags + certain high-impact categories rank higher.
+  const impactScore = (f) => {
+    const issues = (f.issues || []).map(i => i.toLowerCase())
+    let score = issues.length * 10 // more simultaneous issues = more damning
+    if (issues.some(i => i.includes('privacy'))) score += 15
+    if (issues.some(i => i.includes('grave') || i.includes('grief'))) score += 20
+    if (issues.some(i => i.includes('combative'))) score += 8
+    if (issues.some(i => i.includes('billing'))) score += 5
+    if (issues.some(i => i.includes('staff'))) score += 5
+    if (issues.some(i => i.includes('false resolution'))) score += 5
+    // Longer original_excerpt often means a more substantive, specific violation
+    // rather than a one-line brush-off — small tiebreaker weight only.
+    score += Math.min((f.original_excerpt || '').length / 50, 5)
+    return score
+  }
+
+  const critical = findings
+    .filter(f => (f.severity || '').toLowerCase() === 'critical')
+    .sort((a, b) => impactScore(b) - impactScore(a))
   const moderate = findings.filter(f => (f.severity || '').toLowerCase() === 'moderate')
   const minor = findings.filter(f => (f.severity || '').toLowerCase() === 'minor')
 
