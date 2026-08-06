@@ -595,6 +595,24 @@ function AuditDrawer({ audit, onClose, onUpdate, onDelete }) {
             </div>
           )}
 
+          {audit.loom_talking_points && audit.loom_talking_points.length > 0 && (
+            <div className="drawer-section" style={{ background: '#FFF7ED', border: '1px solid #FDBA74', borderRadius: 8, padding: '0.85rem 1rem' }}>
+              <div className="drawer-section-label" style={{ color: '#C2410C' }}>
+                🎥 Loom Talking Points <span style={{ fontWeight: 400, fontSize: '0.75rem', color: '#9A3412' }}>(internal only — not shown to the client)</span>
+              </div>
+              <p style={{ fontSize: '0.8rem', color: '#9A3412', marginTop: '0.2rem', marginBottom: '0.6rem' }}>
+                Insights worth saying out loud on the walkthrough video — context the report itself doesn&apos;t spell out.
+              </p>
+              <ul style={{ margin: 0, paddingLeft: '1.1rem' }}>
+                {audit.loom_talking_points.map((point, i) => (
+                  <li key={i} style={{ fontSize: '0.85rem', color: '#1a1a1a', marginBottom: '0.5rem', lineHeight: 1.5 }}>
+                    {point}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
           {findings.length > 0 && (
             <div className="drawer-section">
               <div className="rev-response-head">
