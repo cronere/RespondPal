@@ -72,7 +72,7 @@ export default function AuditReport() {
   const overflow = critical.length - shown.length
 
   const summary = (audit.summary || '').split('--- Batch')[0].trim()
-  const firstRewrite = critical.find(f => f.rewrite)
+  const rewrites = critical.filter(f => f.rewrite).slice(0, 2)
 
   const hasYelp = yTotal > 0
   const platforms = hasYelp ? 'Google & Yelp' : 'Google'
@@ -298,18 +298,31 @@ export default function AuditReport() {
           </p>
         )}
 
-        {/* ── EXAMPLE REWRITE ── */}
-        {firstRewrite && (
+        {/* ── EXAMPLE REWRITES ── */}
+        {rewrites.length > 0 && (
           <div className="example-section">
-            <div className="label">Example: How we'd fix it</div>
-            <div className="platform-line">Here's what the first finding above would look like with a professional, on-brand rewrite:</div>
-            <div className="rewrite-card">
-              <div className="rewrite-bar" />
-              <div className="rewrite-content">
-                <div className="rewrite-label">Rewritten Response</div>
-                <div className="rewrite-text">{firstRewrite.rewrite}</div>
-              </div>
+            <div className="label">Example{rewrites.length > 1 ? 's' : ''}: How we'd fix {rewrites.length > 1 ? 'them' : 'it'}</div>
+            <div className="platform-line">
+              {rewrites.length > 1
+                ? 'Here\'s what two of the findings above would look like with professional, on-brand rewrites — each one calibrated to the tone of the original complaint:'
+                : 'Here\'s what the first finding above would look like with a professional, on-brand rewrite:'}
             </div>
+            {rewrites.map((r, i) => (
+              <div key={i} style={{ marginBottom: i < rewrites.length - 1 ? 14 : 0 }}>
+                {rewrites.length > 1 && (
+                  <div style={{ fontSize: '8.5pt', color: '#6b7280', marginBottom: 4, fontStyle: 'italic' }}>
+                    Re: {r.review_summary}
+                  </div>
+                )}
+                <div className="rewrite-card">
+                  <div className="rewrite-bar" />
+                  <div className="rewrite-content">
+                    <div className="rewrite-label">Rewritten Response</div>
+                    <div className="rewrite-text">{r.rewrite}</div>
+                  </div>
+                </div>
+              </div>
+            ))}
             <p className="rewrite-note">
               Recommended rewrites for all {critical.length} critical findings are included with our Reputation Cleanup.
             </p>
@@ -321,17 +334,48 @@ export default function AuditReport() {
         <div className="reco-section">
           <h2 className="reco-h2">What I'd Recommend</h2>
           <p className="body">
-            The critical responses flagged above carry real risk — privacy violations and combative tone that are visible to every potential customer and to AI search tools right now. Here's what I'd do:
+            {critical.length > 0
+              ? 'The critical responses flagged above carry real risk — privacy violations and combative tone that are visible to every potential customer and to AI search tools right now. Here\'s what I\'d do:'
+              : 'Your profile is in solid shape overall. Here\'s what I\'d focus on to keep it that way and sharpen it further:'}
           </p>
-          <p className="reco-step">1. <b>Rewrite the flagged responses.</b> Each critical finding has a recommended rewrite that fixes the problem while preserving what the response was trying to accomplish. These should be updated as soon as possible.</p>
-          <p className="reco-step">2. <b>Respond to the {combinedNeg} unanswered negatives.</b> Every one is an opportunity to show future customers and AI that your business engages professionally.</p>
-          <p className="reco-step">3. <b>Protect it going forward.</b> A clean profile doesn't stay clean on its own. New reviews need timely, on-brand responses.</p>
+          {(() => {
+            const steps = []
+            if (critical.length > 0) {
+              steps.push({
+                lead: 'Rewrite the flagged responses.',
+                rest: ' Each critical finding has a recommended rewrite that fixes the problem while preserving what the response was trying to accomplish. These should be updated as soon as possible.'
+              })
+            }
+            if (combinedNeg > 0) {
+              steps.push({
+                lead: `Respond to the ${combinedNeg} unanswered negative${combinedNeg === 1 ? '' : 's'}.`,
+                rest: ' Every one is an opportunity to show future customers and AI that your business engages professionally.'
+              })
+            }
+            if (moderate.length > 0) {
+              steps.push({
+                lead: `Clean up the ${moderate.length} moderate finding${moderate.length === 1 ? '' : 's'}.`,
+                rest: ' Tone and consistency issues that are worth fixing even though they\'re lower risk than the critical items.'
+              })
+            }
+            steps.push({
+              lead: 'Protect it going forward.',
+              rest: ' A clean profile doesn\'t stay clean on its own — new reviews need timely, on-brand responses every time.'
+            })
+            return steps.map((step, i) => (
+              <p className="reco-step" key={i}>{i + 1}. <b>{step.lead}</b>{step.rest}</p>
+            ))
+          })()}
         </div>
 
         <div className="cta-box">
           <div className="cta-head">Want us to handle this for you?</div>
           <div className="cta-body">
-            We'll rewrite every flagged response, respond to all unanswered negatives, and clean up your entire profile.
+            {critical.length > 0
+              ? 'We\'ll rewrite every flagged response, respond to all unanswered negatives, and clean up your entire profile.'
+              : combinedNeg > 0
+                ? 'We\'ll respond to every unanswered negative and keep your profile sharp going forward.'
+                : 'We\'ll take every future review off your plate — responded to within 24 hours, every time.'}
           </div>
           <div className="cta-price">Reputation Cleanup — $197 one-time</div>
           <div style={{ marginTop: 10, marginBottom: 4 }}>
