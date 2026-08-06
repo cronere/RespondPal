@@ -95,30 +95,46 @@ export default function AuditReport() {
 
   const summary = (audit.summary || '').split('--- Batch')[0].trim()
 
-  // Pick two rewrites that showcase different tones/categories rather than
-  // just the first two — e.g. one emotionally-charged clinical finding and
-  // one billing/business finding, so the examples demonstrate range.
-  const rewritable = critical.filter(f => f.rewrite)
-  const pickDiverse = (list) => {
-    if (list.length <= 2) return list
-    const categoryOf = (f) => {
-      const issues = (f.issues || []).map(i => i.toLowerCase())
-      if (issues.some(i => i.includes('grave') || i.includes('grief'))) return 'grave'
-      if (issues.some(i => i.includes('staff'))) return 'staff'
-      if (issues.some(i => i.includes('combative'))) return 'combative'
-      if (issues.some(i => i.includes('billing'))) return 'billing'
-      if (issues.some(i => i.includes('false resolution'))) return 'resolution'
-      return 'privacy'
-    }
-    // Prefer the highest-emotional-register finding first (grave > combative > staff > resolution),
-    // then a billing/business one for contrast. Fall back to first two if no clean split found.
-    const priority = ['grave', 'combative', 'staff', 'resolution', 'privacy', 'billing']
-    const first = [...list].sort((a, b) => priority.indexOf(categoryOf(a)) - priority.indexOf(categoryOf(b)))[0]
-    const firstCat = categoryOf(first)
-    const second = list.find(f => f !== first && categoryOf(f) !== firstCat) || list.find(f => f !== first)
-    return [first, second].filter(Boolean)
+  // Pick two of the SHOWN findings (already top-5 by impact) to inline a
+  // rewrite directly beneath — prefer two different categories so the pair
+  // demonstrates range (e.g. one emotionally-charged clinical finding and
+  // one billing/business finding) rather than two similar-sounding ones.
+  const categoryOf = (f) => {
+    const issues = (f.issues || []).map(i => i.toLowerCase())
+    if (issues.some(i => i.includes('grave') || i.includes('grief'))) return 'grave'
+    if (issues.some(i => i.includes('staff'))) return 'staff'
+    if (issues.some(i => i.includes('combative'))) return 'combative'
+    if (issues.some(i => i.includes('billing'))) return 'billing'
+    if (issues.some(i => i.includes('false resolution'))) return 'resolution'
+    return 'privacy'
   }
-  const rewrites = pickDiverse(rewritable)
+  const rewritableShown = shown.filter(f => f.rewrite)
+  const priority = ['grave', 'combative', 'staff', 'resolution', 'privacy', 'billing']
+  const inlineRewriteIds = (() => {
+    if (rewritableShown.length === 0) return new Set()
+    if (rewritableShown.length === 1) return new Set([shown.indexOf(rewritableShown[0])])
+    const first = [...rewritableShown].sort((a, b) => priority.indexOf(categoryOf(a)) - priority.indexOf(categoryOf(b)))[0]
+    const firstCat = categoryOf(first)
+    const second = rewritableShown.find(f => f !== first && categoryOf(f) !== firstCat) || rewritableShown.find(f => f !== first)
+    const idxs = [shown.indexOf(first)]
+    if (second) idxs.push(shown.indexOf(second))
+    return new Set(idxs)
+  })()
+
+  // Bold the specific violating phrase within an excerpt, if the AI provided
+  // an exact substring match. Falls back to plain text if no match found.
+  const highlightExcerpt = (text, phrase) => {
+    if (!text) return null
+    if (!phrase || !text.includes(phrase)) return text
+    const idx = text.indexOf(phrase)
+    return (
+      <>
+        {text.slice(0, idx)}
+        <b style={{ background: '#FEE2E2', padding: '0 2px' }}>{phrase}</b>
+        {text.slice(idx + phrase.length)}
+      </>
+    )
+  }
 
   const hasYelp = yTotal > 0
   const platforms = hasYelp ? 'Google & Yelp' : 'Google'
@@ -322,10 +338,19 @@ export default function AuditReport() {
                   )}
                   {f.original_excerpt && (
                     <p className="finding-response">
-                      <b>Your response:</b> &ldquo;{f.original_excerpt}&rdquo;
+                      <b>Your response:</b> &ldquo;{highlightExcerpt(f.original_excerpt, f.violating_phrase)}&rdquo;
                     </p>
                   )}
                 </div>
+                {inlineRewriteIds.has(i) && f.rewrite && (
+                  <div className="rewrite-card" style={{ margin: '10px 0 4px' }}>
+                    <div className="rewrite-bar" />
+                    <div className="rewrite-content">
+                      <div className="rewrite-label">How we'd fix it</div>
+                      <div className="rewrite-text">{f.rewrite}</div>
+                    </div>
+                  </div>
+                )}
               </div>
             ))}
 
@@ -344,35 +369,10 @@ export default function AuditReport() {
           </p>
         )}
 
-        {/* ── EXAMPLE REWRITES ── */}
-        {rewrites.length > 0 && (
-          <div className="example-section">
-            <div className="label">Example{rewrites.length > 1 ? 's' : ''}: How we'd fix {rewrites.length > 1 ? 'them' : 'it'}</div>
-            <div className="platform-line">
-              {rewrites.length > 1
-                ? 'Here\'s what two of the findings above would look like with professional, on-brand rewrites — each one calibrated to the tone of the original complaint:'
-                : 'Here\'s what the first finding above would look like with a professional, on-brand rewrite:'}
-            </div>
-            {rewrites.map((r, i) => (
-              <div key={i} style={{ marginBottom: i < rewrites.length - 1 ? 14 : 0 }}>
-                {rewrites.length > 1 && (
-                  <div style={{ fontSize: '8.5pt', color: '#6b7280', marginBottom: 4, fontStyle: 'italic' }}>
-                    Re: {r.review_summary}
-                  </div>
-                )}
-                <div className="rewrite-card">
-                  <div className="rewrite-bar" />
-                  <div className="rewrite-content">
-                    <div className="rewrite-label">Rewritten Response</div>
-                    <div className="rewrite-text">{r.rewrite}</div>
-                  </div>
-                </div>
-              </div>
-            ))}
-            <p className="rewrite-note">
-              Recommended rewrites for all {critical.length} critical findings are included with our Reputation Cleanup.
-            </p>
-          </div>
+        {critical.length > 0 && (
+          <p className="rewrite-note" style={{ marginTop: 10 }}>
+            The highlighted text above shows the exact language creating risk. Recommended rewrites for all {critical.length} critical findings are included with our Reputation Cleanup.
+          </p>
         )}
 
         {/* ── RECOMMENDATION + CTA ── */}
