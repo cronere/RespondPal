@@ -85,6 +85,24 @@ SELF-CHECK before finalizing each rewrite: Read it one more time and ask three q
 
 SELF-CHECK for violating_phrase: before finalizing, verify the violating_phrase value is copied EXACTLY character-for-character from original_excerpt — not paraphrased, not summarized. If it doesn't match exactly, the highlighting in the report will silently fail to display. Double-check spelling, punctuation, and capitalization match precisely.
 ` : ''}
+HOW TO SELECT violating_phrase (applies to every finding where severity is critical or moderate):
+
+The violating_phrase is what gets bolded and highlighted in the client-facing report — it must be the single most incriminating piece of evidence, not just any true statement from the response. Selecting the wrong phrase (a generic greeting instead of the real violation) undermines the entire report's credibility.
+
+NEVER select a generic opener or pleasantry as violating_phrase, even if it happens to appear early in the excerpt or is easy to grab. These are NEVER acceptable choices on their own:
+- "thank you for taking the time to share your experience" / "thank you for sharing your feedback" / "thank you for your review"
+- "we're sorry to hear about your experience" (without a more specific confirming detail attached)
+- General principle statements that don't reference this specific reviewer's situation — e.g. "sometimes the treatment a patient needs and wants don't match" (this is a generic policy statement, not evidence tying THIS reviewer to patient status)
+
+INSTEAD, scan the full original_excerpt and select the phrase that does ONE of the following, in this priority order:
+1. Names a specific provider, staff member, or specialist in connection with THIS reviewer's care (e.g. "that is exactly what Dr. Fisher did," "Dr. Fisher recommended")
+2. States or implies a specific treatment, procedure, diagnosis, or clinical action taken for this reviewer (e.g. "the treatment was completed," "we have addressed the team")
+3. References specific billing, insurance, timeline, or account details tied to this reviewer (e.g. "two years or longer after the treatment was completed")
+4. Confirms an ongoing or past visit/appointment/relationship specific to this reviewer (e.g. "since your last visit," "we fell short of that for you" when tied to an earlier specific claim)
+5. Only if NONE of the above exist in the excerpt, select the most specific available sentence — but this should be rare for anything flagged as a genuine Privacy violation.
+
+SELF-CHECK for violating_phrase: Before finalizing, ask "If someone read ONLY this highlighted phrase in isolation, with no other context, would it clearly demonstrate why this is a privacy violation?" If the phrase could apply to literally any reviewer regardless of what they experienced (a generic greeting or general principle), it fails this test — go back and find a more specific phrase in the same excerpt instead.
+
 Respond ONLY with valid JSON in this exact structure, no other text:
 {
   "summary": "2-3 sentence plain-English summary of what you found, written for a business owner who isn\'t familiar with any of this terminology",
@@ -93,7 +111,7 @@ Respond ONLY with valid JSON in this exact structure, no other text:
     {
       "review_summary": "star rating + 6-10 word summary of what the reviewer complained about, e.g. \'1★ — Patient says she was overcharged and staff was rude\'",
       "original_excerpt": "the 2-3 MOST DAMAGING sentences from the business\'s response — the lines that would make a business owner cringe if they saw them quoted back. Not the opening pleasantries, the worst part. Include enough context to be visceral (30-60 words).",
-      "violating_phrase": "the SHORTEST exact substring of original_excerpt (copy it verbatim, word-for-word, character-for-character) that is THE specific phrase confirming patient status, treatment, or the core violation — for a HIPAA/privacy finding this should be the precise words that cross the line (e.g. \'we have addressed the team\' or \'fell short of that for you\'), NOT the whole sentence. For non-privacy findings (combative tone, billing defensiveness, etc.) pick the single most damaging clause. Must be an EXACT substring of original_excerpt so it can be highlighted — do not paraphrase. null if severity is not critical or moderate.",
+      "violating_phrase": "the SHORTEST exact substring of original_excerpt (copy it verbatim, word-for-word, character-for-character), selected per the priority order and self-check defined above. Must be an EXACT substring of original_excerpt so it can be highlighted — do not paraphrase. null if severity is not critical or moderate.",
       "severity": "critical" | "moderate" | "minor" | "clean",
       "issues": ["ONE OR MORE labels, EXACTLY from this list only, no other categories permitted: Privacy violation, Combative tone, Templated / generic, Read-the-whole-review failure, Missed grave register, False resolution claims, Throwing staff under the bus, Name errors, Asking for review removal, Billing defensiveness"],
       "explanation": "1-2 sentences on why this is a problem, written for a business owner",
