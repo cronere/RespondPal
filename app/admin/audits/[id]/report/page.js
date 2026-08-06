@@ -183,7 +183,8 @@ export default function AuditReport() {
         .body { font-size: 9.5pt; color: #374151; margin-bottom: 8px; }
         .platform-line { font-size: 8pt; color: #6b7280; margin-bottom: 4px; }
         .divider { border: none; border-top: 1px solid #e5e7eb; margin: 16px 0; }
-        .finding { display: flex; margin-bottom: 8px; border: 1px solid #e5e7eb; }
+        .finding-wrap { margin-bottom: 8px; border: 1px solid #e5e7eb; }
+        .finding { display: flex; }
         .finding-bar { width: 4px; background: #b91c1c; flex-shrink: 0; }
         .finding-content { padding: 8px 12px; flex: 1; }
         .finding-header { font-size: 9pt; font-weight: 700; margin-bottom: 4px; }
@@ -326,24 +327,26 @@ export default function AuditReport() {
             </h2>
 
             {shown.map((f, i) => (
-              <div key={i} className="finding">
-                <div className="finding-bar" />
-                <div className="finding-content">
-                  <div className="finding-header">
-                    <span className="crit">CRITICAL</span>
-                    <span className="tags">{(f.issues || []).join(', ')}</span>
+              <div key={i} className="finding-wrap">
+                <div className="finding">
+                  <div className="finding-bar" />
+                  <div className="finding-content">
+                    <div className="finding-header">
+                      <span className="crit">CRITICAL</span>
+                      <span className="tags">{(f.issues || []).join(', ')}</span>
+                    </div>
+                    {f.review_summary && (
+                      <div className="finding-review">{f.review_summary}</div>
+                    )}
+                    {f.original_excerpt && (
+                      <p className="finding-response">
+                        <b>Your response:</b> &ldquo;{highlightExcerpt(f.original_excerpt, f.violating_phrase)}&rdquo;
+                      </p>
+                    )}
                   </div>
-                  {f.review_summary && (
-                    <div className="finding-review">{f.review_summary}</div>
-                  )}
-                  {f.original_excerpt && (
-                    <p className="finding-response">
-                      <b>Your response:</b> &ldquo;{highlightExcerpt(f.original_excerpt, f.violating_phrase)}&rdquo;
-                    </p>
-                  )}
                 </div>
                 {inlineRewriteIds.has(i) && f.rewrite && (
-                  <div className="rewrite-card" style={{ margin: '10px 0 4px' }}>
+                  <div className="rewrite-card" style={{ margin: '0' }}>
                     <div className="rewrite-bar" />
                     <div className="rewrite-content">
                       <div className="rewrite-label">How we'd fix it</div>
