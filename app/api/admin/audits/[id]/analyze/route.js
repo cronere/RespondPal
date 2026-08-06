@@ -122,11 +122,13 @@ export async function POST(req, { params }) {
     // use this ONLY when deliberately continuing a large review set across
     // multiple batches in the same sitting.
     let mode = 'fresh'
+    let batchText = ''
     try {
       const body = await req.json()
       if (body && body.mode === 'append') mode = 'append'
+      if (body && typeof body.batch_text === 'string') batchText = body.batch_text
     } catch {
-      // No body provided — default to fresh, which is correct for the normal case.
+      // No body provided — default to fresh with no explicit batch text.
     }
 
     const { data: audit, error: fetchError } = await supabaseAdmin
@@ -138,7 +140,13 @@ export async function POST(req, { params }) {
     if (fetchError || !audit) {
       return NextResponse.json({ error: 'Audit not found.' }, { status: 404 })
     }
-    if (!audit.raw_input || !audit.raw_input.trim()) {
+    // Prefer the explicit batch_text sent for THIS run (what's currently in the
+    // textarea) over the stored raw_input — in append mode these can differ,
+    // since stored raw_input may accumulate full history while batch_text is
+    // only the new chunk to analyze right now. Falls back to stored raw_input
+    // for backward compatibility if no batch_text was sent.
+    const textToAnalyze = (batchText || audit.raw_input || '').trim()
+    if (!textToAnalyze) {
       return NextResponse.json({ error: 'No responses have been pasted in yet for this audit.' }, { status: 400 })
     }
 
@@ -154,7 +162,7 @@ export async function POST(req, { params }) {
       body: JSON.stringify({
         model: MODEL,
         max_tokens: 16000,
-        messages: [{ role: 'user', content: buildAuditPrompt(audit.industry) + audit.raw_input.trim() }],
+        messages: [{ role: 'user', content: buildAuditPrompt(audit.industry) + textToAnalyze }],
       }),
     })
 
