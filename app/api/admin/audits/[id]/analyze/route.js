@@ -113,6 +113,18 @@ export async function POST(req, { params }) {
     }
 
     const { id } = params
+    // mode: 'fresh' (default) clears any prior findings/summary before this run —
+    // use this for re-running after edits, prompt fixes, or corrected input.
+    // mode: 'append' keeps prior findings and adds this run's results on top —
+    // use this ONLY when deliberately continuing a large review set across
+    // multiple batches in the same sitting.
+    let mode = 'fresh'
+    try {
+      const body = await req.json()
+      if (body && body.mode === 'append') mode = 'append'
+    } catch {
+      // No body provided — default to fresh, which is correct for the normal case.
+    }
 
     const { data: audit, error: fetchError } = await supabaseAdmin
       .from('audits')
@@ -174,21 +186,22 @@ export async function POST(req, { params }) {
       }, { status: 502 })
     }
 
-    // Append new findings to any existing ones (supports batched audits).
-    const existingFindings = audit.findings || []
+    // In 'fresh' mode (the default), discard any prior findings/summary before
+    // merging — this run replaces them entirely. In 'append' mode, prior
+    // findings/summary are kept and this run's results are added on top,
+    // for deliberately continuing a large review set across multiple batches.
+    const existingFindings = mode === 'append' ? (audit.findings || []) : []
     const newFindings = parsed.findings || []
     const mergedFindings = [...existingFindings, ...newFindings]
 
-    const existingSummary = audit.summary || ''
+    const existingSummary = mode === 'append' ? (audit.summary || '') : ''
     const newSummary = parsed.summary || ''
     const mergedSummary = existingSummary
       ? `${existingSummary}\n\n--- Batch ${Math.ceil(existingFindings.length / 50) + 1} ---\n${newSummary}`
       : newSummary
 
-    // Talking points aren't cumulative across batches — each batch's points
-    // are specific to what was just analyzed, so the latest batch replaces
-    // (rather than appends to) the prior set to keep this list short and usable.
-    const talkingPoints = parsed.loom_talking_points || audit.loom_talking_points || []
+    // Talking points always reflect the latest run.
+    const talkingPoints = parsed.loom_talking_points || []
 
     const { data: updated, error: updateError } = await supabaseAdmin
       .from('audits')
