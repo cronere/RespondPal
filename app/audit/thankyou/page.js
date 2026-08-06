@@ -42,10 +42,10 @@ export default function AuditThankYou() {
       if (res.ok) {
         setSubmitted(true)
       } else {
-        setError(data.error || 'Something went wrong. Please email us at jacob@respondpal.ai.')
+        setError(data.error || 'Something went wrong. Please email us at team@respondpal.ai.')
       }
     } catch {
-      setError('Something went wrong. Please email us at jacob@respondpal.ai.')
+      setError('Something went wrong. Please email us at team@respondpal.ai.')
     }
     setSubmitting(false)
   }
@@ -192,7 +192,7 @@ export default function AuditThankYou() {
               </p>
               <p className="hero-sub" style={{ fontSize: '0.95rem', maxWidth: 500, marginTop: '1rem' }}>
                 Questions? Reach out anytime at{' '}
-                <a href="mailto:jacob@respondpal.ai" style={{ color: '#C2410C' }}>jacob@respondpal.ai</a>
+                <a href="mailto:team@respondpal.ai" style={{ color: '#C2410C' }}>team@respondpal.ai</a>
               </p>
               <a
                 href="/"
@@ -212,7 +212,7 @@ export default function AuditThankYou() {
           <div className="footer-links">
             <a href="/terms">Terms</a>
             <a href="/privacy">Privacy</a>
-            <a href="mailto:jacob@respondpal.ai">Contact</a>
+            <a href="mailto:team@respondpal.ai">Contact</a>
           </div>
         </div>
       </footer>
