@@ -82,6 +82,8 @@ REQUIRED patterns for rewrites:
 - NEVER invent or include a phone number, email address, physical address, or any other contact detail in a rewrite. You do not know the business's real contact information. Say "please reach out to our office directly" or "please contact us through our website" — NEVER fabricate a phone number or email. A wrong or made-up phone number in a client-facing report is a serious credibility failure.
 
 SELF-CHECK before finalizing each rewrite: Read it one more time and ask three questions: (1) "Could a reasonable person reading this determine that the reviewer IS or WAS a patient?" (2) "Does this rewrite reference a records search in ANY way — found, not found, connected, matched, or unable to locate?" (3) "Does this rewrite contain any phone number, email, or address?" If the answer to ANY of these is yes, rewrite it to remove that element entirely. When in doubt, be MORE general, not less.
+
+SELF-CHECK for violating_phrase: before finalizing, verify the violating_phrase value is copied EXACTLY character-for-character from original_excerpt — not paraphrased, not summarized. If it doesn't match exactly, the highlighting in the report will silently fail to display. Double-check spelling, punctuation, and capitalization match precisely.
 ` : ''}
 Respond ONLY with valid JSON in this exact structure, no other text:
 {
@@ -91,6 +93,7 @@ Respond ONLY with valid JSON in this exact structure, no other text:
     {
       "review_summary": "star rating + 6-10 word summary of what the reviewer complained about, e.g. \'1★ — Patient says she was overcharged and staff was rude\'",
       "original_excerpt": "the 2-3 MOST DAMAGING sentences from the business\'s response — the lines that would make a business owner cringe if they saw them quoted back. Not the opening pleasantries, the worst part. Include enough context to be visceral (30-60 words).",
+      "violating_phrase": "the SHORTEST exact substring of original_excerpt (copy it verbatim, word-for-word, character-for-character) that is THE specific phrase confirming patient status, treatment, or the core violation — for a HIPAA/privacy finding this should be the precise words that cross the line (e.g. \'we have addressed the team\' or \'fell short of that for you\'), NOT the whole sentence. For non-privacy findings (combative tone, billing defensiveness, etc.) pick the single most damaging clause. Must be an EXACT substring of original_excerpt so it can be highlighted — do not paraphrase. null if severity is not critical or moderate.",
       "severity": "critical" | "moderate" | "minor" | "clean",
       "issues": ["ONE OR MORE labels, EXACTLY from this list only, no other categories permitted: Privacy violation, Combative tone, Templated / generic, Read-the-whole-review failure, Missed grave register, False resolution claims, Throwing staff under the bus, Name errors, Asking for review removal, Billing defensiveness"],
       "explanation": "1-2 sentences on why this is a problem, written for a business owner",
