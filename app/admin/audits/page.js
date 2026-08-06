@@ -418,6 +418,19 @@ function AuditDrawer({ audit, onClose, onUpdate, onDelete }) {
     return impactScore(b) - impactScore(a)
   })
 
+  const highlightExcerpt = (text, phrase) => {
+    if (!text) return null
+    if (!phrase || !text.includes(phrase)) return text
+    const idx = text.indexOf(phrase)
+    return (
+      <>
+        {text.slice(0, idx)}
+        <b style={{ background: '#FEE2E2', padding: '0 2px' }}>{phrase}</b>
+        {text.slice(idx + phrase.length)}
+      </>
+    )
+  }
+
   const copyRewrite = (text) => {
     navigator.clipboard?.writeText(text)
     setMsg('Rewrite copied to clipboard.')
@@ -670,7 +683,7 @@ function AuditDrawer({ audit, onClose, onUpdate, onDelete }) {
                         <span key={j} className="pill audit-issue-pill">{iss}</span>
                       ))}
                     </div>
-                    <p className="audit-finding-excerpt">&ldquo;{f.original_excerpt}&rdquo;</p>
+                    <p className="audit-finding-excerpt">&ldquo;{highlightExcerpt(f.original_excerpt, f.violating_phrase)}&rdquo;</p>
                     <p className="audit-finding-explanation">{f.explanation}</p>
                     {f.rewrite && (
                       <div className="audit-rewrite">
