@@ -441,15 +441,38 @@ function AuditDrawer({ audit, onClose, onUpdate, onDelete }) {
     return impactScore(b) - impactScore(a)
   })
 
+  const normalizeForMatch = (s) =>
+    (s || '')
+      .replace(/[\u2018\u2019]/g, "'")
+      .replace(/[\u201C\u201D]/g, '"')
+      .replace(/[\u2013\u2014]/g, '-')
+      .replace(/\s+/g, ' ')
+      .trim()
+
   const highlightExcerpt = (text, phrase) => {
     if (!text) return null
-    if (!phrase || !text.includes(phrase)) return text
-    const idx = text.indexOf(phrase)
+    if (!phrase) return text
+    let idx = text.indexOf(phrase)
+    let matchLen = phrase.length
+    if (idx === -1) {
+      const normText = normalizeForMatch(text)
+      const normPhrase = normalizeForMatch(phrase)
+      if (normPhrase && normText.includes(normPhrase)) {
+        const escaped = normPhrase.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/ /g, '\\s+')
+        const re = new RegExp(escaped, 'i')
+        const match = text.match(re)
+        if (match) {
+          idx = match.index
+          matchLen = match[0].length
+        }
+      }
+    }
+    if (idx === -1) return text
     return (
       <>
         {text.slice(0, idx)}
-        <b style={{ background: '#FEE2E2', padding: '0 2px' }}>{phrase}</b>
-        {text.slice(idx + phrase.length)}
+        <b style={{ background: '#FEE2E2', padding: '0 2px' }}>{text.slice(idx, idx + matchLen)}</b>
+        {text.slice(idx + matchLen)}
       </>
     )
   }
