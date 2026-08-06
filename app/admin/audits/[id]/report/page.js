@@ -65,7 +65,8 @@ export default function AuditReport() {
   const combinedTotal = gTotal + yTotal
   const combinedResp = gResp + yResp
   const combinedNeg = gNeg + yNeg
-  const combinedRate = combinedTotal > 0 ? ((combinedResp / combinedTotal) * 100).toFixed(1) + '%' : 'N/A'
+  const combinedText = gText + yText
+  const combinedRate = combinedText > 0 ? ((combinedResp / combinedText) * 100).toFixed(1) + '%' : 'N/A'
 
   const shown = critical.slice(0, 5)
   const overflow = critical.length - shown.length
@@ -236,7 +237,7 @@ export default function AuditReport() {
             <div className="label" style={{ marginTop: 12 }}>Google Business Profile</div>
             <div className="platform-line">
               {gTotal} visible reviews &nbsp;|&nbsp; {gText} with text &nbsp;|&nbsp;{' '}
-              {gResp} responded to ({gTotal > 0 ? ((gResp / gTotal) * 100).toFixed(1) : 0}%) &nbsp;|&nbsp;{' '}
+              {gResp} responded to ({gText > 0 ? ((gResp / gText) * 100).toFixed(1) : 0}% of reviews with text) &nbsp;|&nbsp;{' '}
               {gNeg} negative unanswered
             </div>
           </>
@@ -247,7 +248,7 @@ export default function AuditReport() {
             <div className="label" style={{ marginTop: 8 }}>Yelp Business Profile</div>
             <div className="platform-line">
               {yTotal} visible reviews &nbsp;|&nbsp; {yText} with text &nbsp;|&nbsp;{' '}
-              {yResp} responded to ({yTotal > 0 ? ((yResp / yTotal) * 100).toFixed(1) : 0}%) &nbsp;|&nbsp;{' '}
+              {yResp} responded to ({yText > 0 ? ((yResp / yText) * 100).toFixed(1) : 0}% of reviews with text) &nbsp;|&nbsp;{' '}
               {yNeg} negative unanswered
             </div>
           </>
