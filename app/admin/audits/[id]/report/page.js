@@ -72,7 +72,31 @@ export default function AuditReport() {
   const overflow = critical.length - shown.length
 
   const summary = (audit.summary || '').split('--- Batch')[0].trim()
-  const rewrites = critical.filter(f => f.rewrite).slice(0, 2)
+
+  // Pick two rewrites that showcase different tones/categories rather than
+  // just the first two — e.g. one emotionally-charged clinical finding and
+  // one billing/business finding, so the examples demonstrate range.
+  const rewritable = critical.filter(f => f.rewrite)
+  const pickDiverse = (list) => {
+    if (list.length <= 2) return list
+    const categoryOf = (f) => {
+      const issues = (f.issues || []).map(i => i.toLowerCase())
+      if (issues.some(i => i.includes('grave') || i.includes('grief'))) return 'grave'
+      if (issues.some(i => i.includes('staff'))) return 'staff'
+      if (issues.some(i => i.includes('combative'))) return 'combative'
+      if (issues.some(i => i.includes('billing'))) return 'billing'
+      if (issues.some(i => i.includes('false resolution'))) return 'resolution'
+      return 'privacy'
+    }
+    // Prefer the highest-emotional-register finding first (grave > combative > staff > resolution),
+    // then a billing/business one for contrast. Fall back to first two if no clean split found.
+    const priority = ['grave', 'combative', 'staff', 'resolution', 'privacy', 'billing']
+    const first = [...list].sort((a, b) => priority.indexOf(categoryOf(a)) - priority.indexOf(categoryOf(b)))[0]
+    const firstCat = categoryOf(first)
+    const second = list.find(f => f !== first && categoryOf(f) !== firstCat) || list.find(f => f !== first)
+    return [first, second].filter(Boolean)
+  }
+  const rewrites = pickDiverse(rewritable)
 
   const hasYelp = yTotal > 0
   const platforms = hasYelp ? 'Google & Yelp' : 'Google'
