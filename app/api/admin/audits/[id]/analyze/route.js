@@ -129,7 +129,7 @@ export async function POST(req, { params }) {
       },
       body: JSON.stringify({
         model: MODEL,
-        max_tokens: 8000,
+        max_tokens: 16000,
         messages: [{ role: 'user', content: buildAuditPrompt(audit.industry) + audit.raw_input.trim() }],
       }),
     })
@@ -154,9 +154,15 @@ export async function POST(req, { params }) {
       const cleaned = raw.replace(/^```json\s*/i, '').replace(/```\s*$/, '').trim()
       parsed = JSON.parse(cleaned)
     } catch (parseErr) {
-      console.error('Audit JSON parse error:', parseErr, raw)
+      const stopReason = data.stop_reason
+      const likelyTruncated = stopReason === 'max_tokens'
+      console.error('Audit JSON parse error:', parseErr.message, '| stop_reason:', stopReason, '| response length:', raw.length)
       await supabaseAdmin.from('audits').update({ status: 'awaiting_input' }).eq('id', id)
-      return NextResponse.json({ error: 'AI returned an unexpected format. Try again.' }, { status: 502 })
+      return NextResponse.json({
+        error: likelyTruncated
+          ? 'The AI response was cut off because the batch was too large. Try splitting your input into smaller batches (15-20 reviews at a time).'
+          : 'AI returned an unexpected format. Try again.'
+      }, { status: 502 })
     }
 
     // Append new findings to any existing ones (supports batched audits).
