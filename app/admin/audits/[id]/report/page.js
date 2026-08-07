@@ -93,7 +93,12 @@ export default function AuditReport() {
   const shown = critical.slice(0, 5)
   const overflow = critical.length - shown.length
 
-  const summary = (audit.summary || '').split('--- Batch')[0].trim()
+  // Summaries are always replaced (never concatenated) as of the latest
+  // analyze logic. This split/fallback only matters for older audits that
+  // still have legacy "--- Batch N ---" dividers stored from before that
+  // change — for those, show the LATEST segment since it's the most complete.
+  const summaryParts = (audit.summary || '').split('--- Batch')
+  const summary = summaryParts[summaryParts.length - 1].replace(/^\d+\s*---\s*/, '').trim()
 
   // Pick two of the SHOWN findings (already top-5 by impact) to inline a
   // rewrite directly beneath — prefer two different categories so the pair
