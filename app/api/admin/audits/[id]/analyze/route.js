@@ -142,13 +142,11 @@ export async function POST(req, { params }) {
     // use this ONLY when deliberately continuing a large review set across
     // multiple batches in the same sitting.
     let mode = 'fresh'
-    let batchText = ''
     try {
       const body = await req.json()
       if (body && body.mode === 'append') mode = 'append'
-      if (body && typeof body.batch_text === 'string') batchText = body.batch_text
     } catch {
-      // No body provided — default to fresh with no explicit batch text.
+      // No body provided — default to fresh.
     }
 
     const { data: audit, error: fetchError } = await supabaseAdmin
@@ -160,12 +158,11 @@ export async function POST(req, { params }) {
     if (fetchError || !audit) {
       return NextResponse.json({ error: 'Audit not found.' }, { status: 404 })
     }
-    // Prefer the explicit batch_text sent for THIS run (what's currently in the
-    // textarea) over the stored raw_input — in append mode these can differ,
-    // since stored raw_input may accumulate full history while batch_text is
-    // only the new chunk to analyze right now. Falls back to stored raw_input
-    // for backward compatibility if no batch_text was sent.
-    const textToAnalyze = (batchText || audit.raw_input || '').trim()
+    // raw_input is the single source of truth for what gets analyzed — always
+    // exactly what's currently saved for this audit, no separate history or
+    // batch-text tracking. Simple and predictable: what you see in the text
+    // box is what gets sent to the AI, every time.
+    const textToAnalyze = (audit.raw_input || '').trim()
     if (!textToAnalyze) {
       return NextResponse.json({ error: 'No responses have been pasted in yet for this audit.' }, { status: 400 })
     }
@@ -234,7 +231,24 @@ export async function POST(req, { params }) {
     // for deliberately continuing a large review set across multiple batches.
     const existingFindings = mode === 'append' ? (audit.findings || []) : []
     const newFindings = parsed.findings || []
-    const mergedFindings = [...existingFindings, ...newFindings]
+
+    // Deduplicate by normalized response text — if the same underlying review
+    // response appears more than once (duplicate rows in pasted input, an
+    // overlapping append batch, or any other source), only the first
+    // occurrence is kept. This is a structural safeguard independent of WHY
+    // a duplicate might occur, rather than trying to prevent every possible
+    // path that could produce one.
+    const normalize = (s) => (s || '').toLowerCase().replace(/\s+/g, ' ').trim()
+    const seen = new Set(existingFindings.map((f) => normalize(f.original_excerpt)))
+    const dedupedNewFindings = []
+    for (const f of newFindings) {
+      const key = normalize(f.original_excerpt)
+      if (key && seen.has(key)) continue
+      if (key) seen.add(key)
+      dedupedNewFindings.push(f)
+    }
+
+    const mergedFindings = [...existingFindings, ...dedupedNewFindings]
 
     const existingSummary = mode === 'append' ? (audit.summary || '') : ''
     const newSummary = parsed.summary || ''
