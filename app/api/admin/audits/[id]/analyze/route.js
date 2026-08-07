@@ -107,7 +107,7 @@ SELF-CHECK for violating_phrase: Before finalizing, ask "If someone read ONLY th
 
 Respond ONLY with valid JSON in this exact structure, no other text:
 {
-  "summary": "2-3 sentence plain-English summary of what you found, written for a business owner who isn\'t familiar with any of this terminology",
+  "summary": "2-3 sentence plain-English summary of what you found, written for a business owner who isn\'t familiar with any of this terminology. IMPORTANT: do NOT state a specific number of responses/reviews reviewed or analyzed (e.g. never write \'this audit reviewed 16 responses\') — you cannot reliably know the true total across the business\'s full profile, and an inaccurate count undermines credibility. Instead describe findings qualitatively (\'several responses,\' \'multiple responses,\' \'a pattern across negative reviews\') or refer to specific named findings. The accurate review counts are displayed separately elsewhere in the report from data the business owner provided directly.",
   "loom_talking_points": ["3-5 short, punchy talking points for the person delivering this audit to say OUT LOUD on a screen-recorded video walkthrough. These are FOR THE SALESPERSON, not for the report. Each one should be a specific, non-obvious insight from THIS audit that adds credibility or context beyond what's already visible in the findings — e.g. explaining WHY a specific phrase is a violation when it doesn\'t look like one on its surface (like confirming vs. denying patient status being the same violation), pointing out a pattern across multiple findings, or flagging the single most damaging finding to lead with. Keep each one to 1-2 sentences, conversational, ready to say out loud. Do NOT restate the findings themselves — add insight the findings don\'t already show."],
   "findings": [
     {
@@ -250,11 +250,11 @@ export async function POST(req, { params }) {
 
     const mergedFindings = [...existingFindings, ...dedupedNewFindings]
 
-    const existingSummary = mode === 'append' ? (audit.summary || '') : ''
-    const newSummary = parsed.summary || ''
-    const mergedSummary = existingSummary
-      ? `${existingSummary}\n\n--- Batch ${Math.ceil(existingFindings.length / 50) + 1} ---\n${newSummary}`
-      : newSummary
+    // Since raw_input is now always the FULL current content (see comment
+    // above), the summary this run produces already describes everything
+    // currently in the box — no need to concatenate old + new summaries
+    // together. The latest summary simply replaces the prior one, every time.
+    const mergedSummary = parsed.summary || audit.summary || ''
 
     // Talking points always reflect the latest run.
     const talkingPoints = parsed.loom_talking_points || []
