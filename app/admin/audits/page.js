@@ -338,25 +338,22 @@ function AuditDrawer({ audit, onClose, onUpdate, onDelete }) {
     if (!rawInput.trim()) { setMsg('Paste their existing responses first.'); return }
     if (mode === 'fresh' && (audit.findings || []).length > 0) {
       const ok = window.confirm(
-        `This audit already has ${audit.findings.length} findings saved. "Run audit" will REPLACE all of them with a fresh analysis of only what's currently in the text box below.\n\nIf you're adding MORE reviews on top of what's already been analyzed, click Cancel and use "+ Append as new batch" instead.\n\nContinue and replace all existing findings?`
+        `This audit already has ${audit.findings.length} findings saved. "Run audit" will REPLACE all of them with a fresh analysis of exactly what's currently in the text box below.\n\nIf you're adding MORE reviews on top of what's already been analyzed, click Cancel, ADD your new reviews to the END of what's already in the text box (don't remove the existing text), then use "+ Append as new batch".\n\nContinue and replace all existing findings?`
       )
       if (!ok) return
     }
     setAnalyzing(true); setMsg('')
-    // In append mode, ACCUMULATE stored raw_input (old + new) so the full
-    // pasted history is preserved for reference and future fresh re-runs —
-    // but this accumulated text is never sent to the AI in this same call
-    // (see batch_text below), which prevents re-analyzing old reviews and
-    // creating duplicate findings.
-    const savedRawInput = mode === 'append' && audit.raw_input
-      ? `${audit.raw_input}\n\n--- New batch pasted ${new Date().toLocaleString()} ---\n\n${rawInput}`
-      : rawInput
-    // Save input AND stats first so nothing is lost if analysis fails.
+    // raw_input is always saved as EXACTLY what's in the text box — no
+    // separate history tracking, no accumulation behind the scenes. What you
+    // see in the box is what gets analyzed and what gets stored. Simple and
+    // predictable. If you're appending a second batch, paste it into the SAME
+    // box below your first batch before clicking Append — don't clear and
+    // replace, or the earlier batch won't be part of what's analyzed.
     const total = parseInt(stats.total_reviews) || 0
     const withText = parseInt(stats.reviews_with_text) || 0
     const withResp = parseInt(stats.reviews_with_responses) || 0
     await patch({
-      raw_input: savedRawInput,
+      raw_input: rawInput,
       total_reviews: total || null,
       reviews_with_text: withText || null,
       reviews_with_responses: withResp || null,
@@ -382,21 +379,12 @@ function AuditDrawer({ audit, onClose, onUpdate, onDelete }) {
       const res = await fetch(`/api/admin/audits/${audit.id}/analyze`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mode, batch_text: rawInput }),
+        body: JSON.stringify({ mode }),
       })
       const data = await res.json()
       if (res.ok) {
         onUpdate(data.audit)
-        if (mode === 'append') {
-          // Clear the textarea so the next paste starts clean — otherwise the
-          // accumulated history now stored in raw_input would get re-sent as
-          // batch_text on the next Append click, re-analyzing old reviews
-          // and creating duplicate findings.
-          setRawInput('')
-          setMsg('Batch added to existing findings. Text box cleared — paste the next batch when ready.')
-        } else {
-          setMsg('Analysis complete — previous findings replaced.')
-        }
+        setMsg(mode === 'append' ? 'Batch added to existing findings (duplicates automatically skipped).' : 'Analysis complete — previous findings replaced.')
       }
       else setMsg(data.error || 'Analysis failed.')
     } catch {
@@ -634,7 +622,7 @@ function AuditDrawer({ audit, onClose, onUpdate, onDelete }) {
                   className="rev-mini-btn"
                   onClick={() => runAnalysis('append')}
                   disabled={analyzing || saving || !rawInput.trim()}
-                  title="Keeps existing findings and adds this run's results on top — only use this when continuing a large batch you haven't finished pasting yet."
+                  title="Keeps existing findings and merges in this run's results — exact duplicates of already-found findings are automatically skipped."
                 >
                   + Append as new batch
                 </button>
@@ -642,7 +630,9 @@ function AuditDrawer({ audit, onClose, onUpdate, onDelete }) {
             </div>
             {(audit.findings || []).length > 0 && (
               <p style={{ fontSize: '0.75rem', color: '#6b7280', marginTop: '0.35rem' }}>
-                &quot;Run audit&quot; replaces all existing findings with a fresh analysis. Use &quot;Append as new batch&quot; only if you&apos;re deliberately adding more reviews on top of what&apos;s already been analyzed.
+                &quot;Run audit&quot; replaces all existing findings with a fresh analysis of exactly what&apos;s in the box above.
+                To add more reviews without losing what&apos;s already found, keep the existing text in the box, add your
+                new reviews to the end of it, then click &quot;Append as new batch&quot; — duplicates are automatically filtered out.
               </p>
             )}
           </div>
