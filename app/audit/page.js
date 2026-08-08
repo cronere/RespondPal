@@ -32,10 +32,10 @@ export default function AuditLanding() {
             needs fixing, delivered to your inbox within 48 hours.
           </p>
           <div className="hero-cta-group">
-            <a href="#order" className="btn-orange">Get your audit — $47 →</a>
+            <a href="/audit/thankyou" className="btn-orange">Claim your free audit →</a>
           </div>
           <p className="hero-sub" style={{ fontSize: '0.85rem', marginTop: '0.5rem', opacity: 0.7 }}>
-            Use code <strong>AUDIT47</strong> at checkout &nbsp;|&nbsp; Regularly $97
+            100% free &nbsp;|&nbsp; No card required &nbsp;|&nbsp; Regularly $97
           </p>
         </div>
       </section>
@@ -104,16 +104,16 @@ export default function AuditLanding() {
       {/* ORDER */}
       <section className="pricing" id="order">
         <div className="container">
-          <div className="section-label">Order your audit</div>
-          <h2 className="section-h2">Custom report. 48-hour delivery.<br />No contracts, no calls required.</h2>
+          <div className="section-label">Claim your audit</div>
+          <h2 className="section-h2">Custom report. 48-hour delivery.<br />100% free, no contracts, no calls required.</h2>
           <div className="pricing-cards" style={{ justifyContent: 'center' }}>
             <div className="price-card featured" style={{ maxWidth: 420 }}>
               <div className="price-name">Reputation Risk Audit</div>
               <div className="price-amount" style={{ fontSize: '3rem' }}>
                 <span style={{ fontSize: '1.2rem', textDecoration: 'line-through', color: '#6b7280', marginRight: 8 }}>$97</span>
-                $47
+                FREE
               </div>
-              <div className="price-save">Use code AUDIT47</div>
+              <div className="price-save">Limited time — no card required</div>
               <div className="pricing-includes">
                 <div>✓ Full Google &amp; Yelp response scan</div>
                 <div>✓ Critical findings with exact quotes</div>
@@ -121,11 +121,11 @@ export default function AuditLanding() {
                 <div>✓ Example professional rewrite</div>
                 <div>✓ Delivered to your inbox in 48 hours</div>
               </div>
-              <a href="https://buy.stripe.com/3cI14pey34tBg9Z5RDebu03" className="btn-orange" style={{ marginTop: 'auto', fontSize: '1.05rem' }}>Get your audit →</a>
+              <a href="/audit/thankyou" className="btn-orange" style={{ marginTop: 'auto', fontSize: '1.05rem' }}>Claim your free audit →</a>
             </div>
           </div>
           <p className="section-sub" style={{ marginTop: '1.5rem', fontSize: '0.85rem', opacity: 0.7 }}>
-            After purchase, you&apos;ll be asked to share your business name and review profile links. We handle the rest.
+            Just tell us your business name and review profile links. We handle the rest — no payment, no obligation.
           </p>
         </div>
       </section>
@@ -138,8 +138,8 @@ export default function AuditLanding() {
           <div className="steps">
             <div className="step">
               <div className="step-num">01</div>
-              <h3>Purchase your audit</h3>
-              <p>Pay $47 and tell us your business name and where to find your Google and Yelp profiles. That&apos;s all we need.</p>
+              <h3>Claim your free audit</h3>
+              <p>Tell us your business name and where to find your Google and Yelp profiles. That&apos;s all we need — no payment required.</p>
             </div>
             <div className="step">
               <div className="step-num">02</div>
@@ -175,8 +175,8 @@ export default function AuditLanding() {
       <section className="final-cta">
         <div className="container">
           <h2>Find out what your<br />responses are really saying.</h2>
-          <p>Custom audit. 48-hour delivery. $47 with code AUDIT47.</p>
-          <a href="#order" className="btn-outline" style={{ background: 'white', color: '#111827', borderColor: 'white', fontWeight: 700 }}>Get your audit →</a>
+          <p>Custom audit. 48-hour delivery. 100% free.</p>
+          <a href="/audit/thankyou" className="btn-outline" style={{ background: 'white', color: '#111827', borderColor: 'white', fontWeight: 700 }}>Claim your free audit →</a>
         </div>
       </section>
 
