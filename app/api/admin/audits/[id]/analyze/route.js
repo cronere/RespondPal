@@ -9,12 +9,6 @@ import { supabaseAdmin } from '../../../../../lib/supabaseAdmin'
 // produce a rewrite for anything flagged.
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
-// Large batches (30-40+ reviews) can take Claude 30-60+ seconds to fully
-// analyze given the depth of reasoning required per finding. Without this,
-// Vercel's default function timeout (as low as 10s on some plans) can kill
-// the request mid-analysis — which looks like a "timeout" with no findings
-// saved, even though nothing was actually wrong with the input or the model.
-export const maxDuration = 60
 
 const MODEL = 'claude-sonnet-4-6' // analysis task — use Sonnet, not Haiku
 
@@ -101,9 +95,6 @@ NEVER select a generic opener or pleasantry as violating_phrase, even if it happ
 - "thank you for taking the time to share your experience" / "thank you for sharing your feedback" / "thank you for your review"
 - "we're sorry to hear about your experience" (without a more specific confirming detail attached)
 - General principle statements that don't reference this specific reviewer's situation — e.g. "sometimes the treatment a patient needs and wants don't match" (this is a generic policy statement, not evidence tying THIS reviewer to patient status)
-- Company policy or hypothetical future-action statements, even when they sound severe or dramatic — e.g. "we have a strict no-refund policy after 30 days and will not make exceptions" or "it is ultimately a policy holder's responsibility to understand their own benefits." These describe what the business does/would do IN GENERAL, not a confirmed fact about THIS reviewer's specific patient status, treatment, or account. A phrase can sound serious or quotable and still fail this test — severity of TONE is not the same as specificity to THIS reviewer. If the response ALSO contains a more specific, reviewer-tied phrase elsewhere (even if less dramatic-sounding), that phrase must be chosen instead. If truly nothing in the excerpt ties specifically to this reviewer, reconsider whether "Privacy violation" is the correct tag at all — it may only warrant "Combative tone" or "Billing defensiveness" instead.
-
-CLASSIFICATION CHECK — before tagging ANY finding "Privacy violation": scan the response for language that ties to THIS specific reviewer — their name, "you/your," a specific date, a specific dollar amount, a named provider in connection with their care, or any other reviewer-specific fact. If the ENTIRE response only uses generic, hypothetical, or third-person language ("a patient," "the patient," "our patients," "we have a policy that...") with NOTHING that specifically confirms or ties to this individual reviewer, do NOT tag it "Privacy violation" — even if the tone is defensive or combative, and even if it was written in obvious response to a specific complaint. Generic deflection is a "Combative tone" and/or "Billing defensiveness" issue, not a privacy issue, unless it actually discloses something specific about this reviewer.
 
 INSTEAD, scan the full original_excerpt and select the phrase that does ONE of the following, in this priority order:
 1. Names a specific provider, staff member, or specialist in connection with THIS reviewer's care (e.g. "that is exactly what Dr. Fisher did," "Dr. Fisher recommended")
@@ -112,7 +103,7 @@ INSTEAD, scan the full original_excerpt and select the phrase that does ONE of t
 4. Confirms an ongoing or past visit/appointment/relationship specific to this reviewer (e.g. "since your last visit," "we fell short of that for you" when tied to an earlier specific claim)
 5. Only if NONE of the above exist in the excerpt, select the most specific available sentence — but this should be rare for anything flagged as a genuine Privacy violation.
 
-SELF-CHECK for violating_phrase: Before finalizing, ask two questions: (1) "If someone read ONLY this highlighted phrase in isolation, with no other context, would it clearly demonstrate why this is a privacy violation?" (2) "Is this phrase describing a general company policy, rule, or hypothetical future action — rather than a confirmed fact specific to THIS reviewer?" If the answer to (1) is no, or the answer to (2) is yes, the phrase fails — go back and find a more specific, reviewer-tied phrase in the same excerpt instead. Dramatic or severe-sounding language is not a substitute for specificity.
+SELF-CHECK for violating_phrase: Before finalizing, ask "If someone read ONLY this highlighted phrase in isolation, with no other context, would it clearly demonstrate why this is a privacy violation?" If the phrase could apply to literally any reviewer regardless of what they experienced (a generic greeting or general principle), it fails this test — go back and find a more specific phrase in the same excerpt instead.
 
 Respond ONLY with valid JSON in this exact structure, no other text:
 {
@@ -195,12 +186,7 @@ export async function POST(req, { params }) {
     if (!res.ok) {
       const errText = await res.text()
       console.error('Anthropic API error:', res.status, errText)
-      // If this audit already had findings before this run started, a failed
-      // re-run shouldn't wipe out its "ready" status — that data is untouched
-      // and still valid. Only fall back to 'awaiting_input' for audits that
-      // never had findings to begin with.
-      const revertStatus = (audit.findings || []).length > 0 ? (audit.status || 'ready') : 'awaiting_input'
-      await supabaseAdmin.from('audits').update({ status: revertStatus }).eq('id', id)
+      await supabaseAdmin.from('audits').update({ status: 'awaiting_input' }).eq('id', id)
       // Surface the actual error detail so it's visible without digging through
       // server logs — this is an internal admin endpoint, safe to expose.
       let detail = errText
@@ -231,8 +217,7 @@ export async function POST(req, { params }) {
       const stopReason = data.stop_reason
       const likelyTruncated = stopReason === 'max_tokens'
       console.error('Audit JSON parse error:', parseErr.message, '| stop_reason:', stopReason, '| response length:', raw.length)
-      const revertStatus = (audit.findings || []).length > 0 ? (audit.status || 'ready') : 'awaiting_input'
-      await supabaseAdmin.from('audits').update({ status: revertStatus }).eq('id', id)
+      await supabaseAdmin.from('audits').update({ status: 'awaiting_input' }).eq('id', id)
       return NextResponse.json({
         error: likelyTruncated
           ? 'The AI response was cut off because the batch was too large. Try splitting your input into smaller batches (15-20 reviews at a time).'
@@ -240,36 +225,16 @@ export async function POST(req, { params }) {
       }, { status: 502 })
     }
 
-    // In 'fresh' mode (the default), discard any prior findings/summary before
-    // merging — this run replaces them entirely. In 'append' mode, prior
-    // findings/summary are kept and this run's results are added on top,
-    // for deliberately continuing a large review set across multiple batches.
+    // Append new findings to any existing ones (supports batched audits).
     const existingFindings = mode === 'append' ? (audit.findings || []) : []
     const newFindings = parsed.findings || []
+    const mergedFindings = [...existingFindings, ...newFindings]
 
-    // Deduplicate by normalized response text — if the same underlying review
-    // response appears more than once (duplicate rows in pasted input, an
-    // overlapping append batch, or any other source), only the first
-    // occurrence is kept. This is a structural safeguard independent of WHY
-    // a duplicate might occur, rather than trying to prevent every possible
-    // path that could produce one.
-    const normalize = (s) => (s || '').toLowerCase().replace(/\s+/g, ' ').trim()
-    const seen = new Set(existingFindings.map((f) => normalize(f.original_excerpt)))
-    const dedupedNewFindings = []
-    for (const f of newFindings) {
-      const key = normalize(f.original_excerpt)
-      if (key && seen.has(key)) continue
-      if (key) seen.add(key)
-      dedupedNewFindings.push(f)
-    }
-
-    const mergedFindings = [...existingFindings, ...dedupedNewFindings]
-
-    // Since raw_input is now always the FULL current content (see comment
-    // above), the summary this run produces already describes everything
-    // currently in the box — no need to concatenate old + new summaries
-    // together. The latest summary simply replaces the prior one, every time.
-    const mergedSummary = parsed.summary || audit.summary || ''
+    const existingSummary = mode === 'append' ? (audit.summary || '') : ''
+    const newSummary = parsed.summary || ''
+    const mergedSummary = existingSummary
+      ? `${existingSummary}\n\n--- Batch ${Math.ceil(existingFindings.length / 50) + 1} ---\n${newSummary}`
+      : newSummary
 
     // Talking points always reflect the latest run.
     const talkingPoints = parsed.loom_talking_points || []
