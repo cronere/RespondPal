@@ -95,6 +95,7 @@ NEVER select a generic opener or pleasantry as violating_phrase, even if it happ
 - "thank you for taking the time to share your experience" / "thank you for sharing your feedback" / "thank you for your review"
 - "we're sorry to hear about your experience" (without a more specific confirming detail attached)
 - General principle statements that don't reference this specific reviewer's situation — e.g. "sometimes the treatment a patient needs and wants don't match" (this is a generic policy statement, not evidence tying THIS reviewer to patient status)
+- Company policy or hypothetical future-action statements, even when they sound severe or dramatic — e.g. "we have a zero-tolerance policy for threats and will dismiss patients who..." or "it is ultimately a policy holder's responsibility to understand their own benefits." These describe what the business does/would do IN GENERAL, not a confirmed fact about THIS reviewer's specific patient status, treatment, or account. A phrase can sound serious or quotable and still fail this test — severity of TONE is not the same as specificity to THIS reviewer. If the response ALSO contains a more specific, reviewer-tied phrase elsewhere (even if less dramatic-sounding), that phrase must be chosen instead. If truly nothing in the excerpt ties specifically to this reviewer, reconsider whether "Privacy violation" is the correct tag at all — it may only warrant "Combative tone" or "Billing defensiveness" instead.
 
 INSTEAD, scan the full original_excerpt and select the phrase that does ONE of the following, in this priority order:
 1. Names a specific provider, staff member, or specialist in connection with THIS reviewer's care (e.g. "that is exactly what Dr. Fisher did," "Dr. Fisher recommended")
@@ -103,7 +104,7 @@ INSTEAD, scan the full original_excerpt and select the phrase that does ONE of t
 4. Confirms an ongoing or past visit/appointment/relationship specific to this reviewer (e.g. "since your last visit," "we fell short of that for you" when tied to an earlier specific claim)
 5. Only if NONE of the above exist in the excerpt, select the most specific available sentence — but this should be rare for anything flagged as a genuine Privacy violation.
 
-SELF-CHECK for violating_phrase: Before finalizing, ask "If someone read ONLY this highlighted phrase in isolation, with no other context, would it clearly demonstrate why this is a privacy violation?" If the phrase could apply to literally any reviewer regardless of what they experienced (a generic greeting or general principle), it fails this test — go back and find a more specific phrase in the same excerpt instead.
+SELF-CHECK for violating_phrase: Before finalizing, ask two questions: (1) "If someone read ONLY this highlighted phrase in isolation, with no other context, would it clearly demonstrate why this is a privacy violation?" (2) "Is this phrase describing a general company policy, rule, or hypothetical future action — rather than a confirmed fact specific to THIS reviewer?" If the answer to (1) is no, or the answer to (2) is yes, the phrase fails — go back and find a more specific, reviewer-tied phrase in the same excerpt instead. Dramatic or severe-sounding language is not a substitute for specificity.
 
 Respond ONLY with valid JSON in this exact structure, no other text:
 {
