@@ -51,21 +51,29 @@ export default function AuditReport() {
   const findings = audit.findings || []
 
   // Findings are stored in whatever order the AI produced them, which roughly
-  // tracks the order reviews were pasted in — NOT severity. Score each finding
-  // so the most damning ones surface first, rather than whichever happened to
-  // be pasted first. More issue tags + certain high-impact categories rank higher.
+  // tracks the order reviews were pasted in — NOT how compelling they are.
+  // Score each finding so the most PERSUASIVE ones surface first for the
+  // client-facing report. Critically: a short, self-evident violation (e.g.
+  // "trusting us with your care") is often MORE convincing to a prospect than
+  // a multi-issue finding that needs a paragraph of explanation to justify —
+  // even though the multi-issue one may carry more raw issue tags. Clarity is
+  // weighted heavily; issue-tag count is a secondary factor, not the primary one.
   const impactScore = (f) => {
     const issues = (f.issues || []).map(i => i.toLowerCase())
-    let score = issues.length * 10 // more simultaneous issues = more damning
-    if (issues.some(i => i.includes('privacy'))) score += 15
-    if (issues.some(i => i.includes('grave') || i.includes('grief'))) score += 20
-    if (issues.some(i => i.includes('combative'))) score += 8
-    if (issues.some(i => i.includes('billing'))) score += 5
-    if (issues.some(i => i.includes('staff'))) score += 5
-    if (issues.some(i => i.includes('false resolution'))) score += 5
-    // Longer original_excerpt often means a more substantive, specific violation
-    // rather than a one-line brush-off — small tiebreaker weight only.
-    score += Math.min((f.original_excerpt || '').length / 50, 5)
+    let score = 0
+    if (issues.some(i => i.includes('privacy'))) score += 20
+    if (issues.some(i => i.includes('grave') || i.includes('grief'))) score += 25
+    if (issues.some(i => i.includes('combative'))) score += 4
+    if (issues.some(i => i.includes('billing'))) score += 4
+    if (issues.some(i => i.includes('staff'))) score += 4
+    if (issues.some(i => i.includes('false resolution'))) score += 4
+    // Clarity bonus — a short violating_phrase that stands alone as obviously
+    // damning is the strongest signal for what belongs in a persuasive report.
+    const phraseWords = (f.violating_phrase || '').trim().split(/\s+/).filter(Boolean).length
+    if (phraseWords > 0 && phraseWords <= 6) score += 18
+    else if (phraseWords > 0 && phraseWords <= 10) score += 8
+    // Small tiebreaker for substantive excerpts.
+    score += Math.min((f.original_excerpt || '').length / 100, 3)
     return score
   }
 
