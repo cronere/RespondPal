@@ -691,18 +691,57 @@ function AuditDrawer({ audit, onClose, onUpdate, onDelete }) {
           {audit.loom_talking_points && audit.loom_talking_points.length > 0 && (
             <div className="drawer-section" style={{ background: '#FFF7ED', border: '1px solid #FDBA74', borderRadius: 8, padding: '0.85rem 1rem' }}>
               <div className="drawer-section-label" style={{ color: '#C2410C' }}>
-                🎥 Loom Talking Points <span style={{ fontWeight: 400, fontSize: '0.75rem', color: '#9A3412' }}>(internal only — not shown to the client)</span>
+                🎥 Loom Script <span style={{ fontWeight: 400, fontSize: '0.75rem', color: '#9A3412' }}>(internal only — not shown to the client)</span>
               </div>
-              <p style={{ fontSize: '0.8rem', color: '#9A3412', marginTop: '0.2rem', marginBottom: '0.6rem' }}>
-                Insights worth saying out loud on the walkthrough video — context the report itself doesn&apos;t spell out.
+              <p style={{ fontSize: '0.8rem', color: '#9A3412', marginTop: '0.2rem', marginBottom: '0.75rem' }}>
+                Read the opening and close as written. Ad-lib through the bullets in the middle using this audit&apos;s report on screen.
               </p>
-              <ul style={{ margin: 0, paddingLeft: '1.1rem' }}>
+
+              <p style={{ fontSize: '0.85rem', color: '#1a1a1a', lineHeight: 1.6, marginBottom: '0.5rem' }}>
+                Hi {audit.contact_name ? `Dr. ${audit.contact_name.split(' ').pop()}` : 'Dr. [LastName]'} — It&apos;s Jacob Merkley here from RespondPal.
+                <br />I put together a Reputation Risk Audit for you and wanted to walk you through what I found.
+                In particular I saw very similar patterns in your reviews that have resulted in HHS fines at other
+                practices, so hopefully this is valuable intel for you.
+              </p>
+
+              <ul style={{ margin: '0 0 0.75rem', paddingLeft: '1.1rem' }}>
                 {audit.loom_talking_points.map((point, i) => (
-                  <li key={i} style={{ fontSize: '0.85rem', color: '#1a1a1a', marginBottom: '0.5rem', lineHeight: 1.5 }}>
+                  <li key={i} style={{ fontSize: '0.85rem', color: '#1a1a1a', marginBottom: '0.4rem', lineHeight: 1.5 }}>
                     {point}
                   </li>
                 ))}
               </ul>
+
+              <hr style={{ border: 'none', borderTop: '1px solid #FDBA74', margin: '0.6rem 0' }} />
+
+              <p style={{ fontSize: '0.85rem', color: '#1a1a1a', lineHeight: 1.6, marginBottom: '0.5rem' }}>
+                A lot of practices have someone on staff handling this, but there are risks with that.
+                <br /><br />
+                First, our system removes the HIPAA risk, even by accident. Our proprietary AI system has reviewed
+                tens of thousands of healthcare reviews to identify how to respond without confirming patient status,
+                never referencing treatment or billing details — you know, the stuff that gets a practice in trouble.
+                <br /><br />
+                Yet it still provides empathy, stays on brand for your business, and doesn&apos;t rotate the same
+                5 canned templates. When your office manager is busy already, this is a task that doesn&apos;t get
+                the right treatment.
+                <br /><br />
+                Honestly, you&apos;re in a hard spot in today&apos;s world. AI is using review responses — or lack
+                of response — and not just the rating, to decide whether to promote you in the search engines. But
+                you need to stay HIPAA and privacy compliant as well.
+                <br /><br />
+                That&apos;s where we come in. We take this off your plate, stay compliant, stay on brand, and boost
+                your reputation in the marketplace with a 24 hour response guarantee.
+              </p>
+
+              <hr style={{ border: 'none', borderTop: '1px solid #FDBA74', margin: '0.6rem 0' }} />
+
+              <p style={{ fontSize: '0.85rem', color: '#1a1a1a', lineHeight: 1.6 }}>
+                If you just want the stuff I flagged today cleaned up, that&apos;s a one-time $197 fee. If you want
+                us to handle this permanently going forward, we charge $397/month with no contract. Either way, this
+                report is yours to keep.
+                <br /><br />
+                Let me know if you have any questions. Enjoy the day.
+              </p>
             </div>
           )}
 
