@@ -739,7 +739,7 @@ function AuditDrawer({ audit, onClose, onUpdate, onDelete }) {
 
         <div className="drawer-foot rev-foot">
           <button className="rev-del-btn" onClick={del} disabled={saving}>Delete</button>
-          {(audit.status === 'ready' || audit.status === 'delivered') && (
+          {(audit.findings || []).length > 0 && (
             <a
               href={`/admin/audits/${audit.id}/report`}
               target="_blank"
@@ -749,6 +749,16 @@ function AuditDrawer({ audit, onClose, onUpdate, onDelete }) {
             >
               View Report ↗
             </a>
+          )}
+          {(audit.findings || []).length > 0 && audit.status !== 'ready' && audit.status !== 'delivered' && audit.status !== 'converted' && (
+            <button
+              className="rev-mini-btn"
+              onClick={() => patch({ status: 'ready' }, 'Marked ready — findings were already there, just fixing the status.')}
+              disabled={saving}
+              title="Use this if the status got knocked back to 'needs work' by a failed re-run, but the findings below are still intact."
+            >
+              Mark ready
+            </button>
           )}
           {audit.status === 'ready' && (
             <button className="drawer-btn-secondary" onClick={markDelivered} disabled={saving}>Mark delivered</button>
