@@ -408,18 +408,22 @@ function AuditDrawer({ audit, onClose, onUpdate, onDelete }) {
   }
 
   // Same impact heuristic used on the client-facing report — ranks the most
-  // damning findings first within each severity tier, so what's reviewed here
-  // in HQ matches what surfaces at the top of the report.
+  // PERSUASIVE findings first within each severity tier (clarity-weighted,
+  // not just raw issue-tag count — see report page for full rationale), so
+  // what's reviewed here in HQ matches what surfaces at the top of the report.
   const impactScore = (f) => {
     const issues = (f.issues || []).map(i => i.toLowerCase())
-    let score = issues.length * 10
-    if (issues.some(i => i.includes('privacy'))) score += 15
-    if (issues.some(i => i.includes('grave') || i.includes('grief'))) score += 20
-    if (issues.some(i => i.includes('combative'))) score += 8
-    if (issues.some(i => i.includes('billing'))) score += 5
-    if (issues.some(i => i.includes('staff'))) score += 5
-    if (issues.some(i => i.includes('false resolution'))) score += 5
-    score += Math.min((f.original_excerpt || '').length / 50, 5)
+    let score = 0
+    if (issues.some(i => i.includes('privacy'))) score += 20
+    if (issues.some(i => i.includes('grave') || i.includes('grief'))) score += 25
+    if (issues.some(i => i.includes('combative'))) score += 4
+    if (issues.some(i => i.includes('billing'))) score += 4
+    if (issues.some(i => i.includes('staff'))) score += 4
+    if (issues.some(i => i.includes('false resolution'))) score += 4
+    const phraseWords = (f.violating_phrase || '').trim().split(/\s+/).filter(Boolean).length
+    if (phraseWords > 0 && phraseWords <= 6) score += 18
+    else if (phraseWords > 0 && phraseWords <= 10) score += 8
+    score += Math.min((f.original_excerpt || '').length / 100, 3)
     return score
   }
 
