@@ -98,7 +98,7 @@ export default function AuditReport() {
   // still have legacy "--- Batch N ---" dividers stored from before that
   // change — for those, show the LATEST segment since it's the most complete.
   const summaryParts = (audit.summary || '').split('--- Batch')
-  const summary = summaryParts[summaryParts.length - 1].replace(/^\d+\s*---\s*/, '').trim()
+  const summary = summaryParts[summaryParts.length - 1].replace(/^\s*\d+\s*---\s*/, '').trim()
 
   // Pick two of the SHOWN findings (already top-5 by impact) to inline a
   // rewrite directly beneath — prefer two different categories so the pair
