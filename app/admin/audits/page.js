@@ -381,14 +381,26 @@ function AuditDrawer({ audit, onClose, onUpdate, onDelete }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ mode }),
       })
-      const data = await res.json()
+      let data
+      try {
+        data = await res.json()
+      } catch {
+        // Response wasn't valid JSON at all — likely a platform-level timeout
+        // or gateway error page (HTML) rather than our API's own error format.
+        setMsg(`Analysis failed: server returned a non-JSON response (HTTP ${res.status}). This usually means the request timed out at the platform level before our code could respond — try a smaller batch.`)
+        setAnalyzing(false)
+        return
+      }
       if (res.ok) {
         onUpdate(data.audit)
         setMsg(mode === 'append' ? 'Batch added to existing findings (duplicates automatically skipped).' : 'Analysis complete — previous findings replaced.')
       }
       else setMsg(data.error || 'Analysis failed.')
-    } catch {
-      setMsg('Analysis failed.')
+    } catch (err) {
+      // fetch() itself threw — network drop, connection reset, or a hard
+      // timeout that killed the connection before any HTTP response came
+      // back at all. Show the real browser error instead of a generic message.
+      setMsg(`Analysis failed: ${err?.message || err?.name || 'connection error'}. If this keeps happening on large batches, try splitting into smaller ones via Append.`)
     }
     setAnalyzing(false)
   }
