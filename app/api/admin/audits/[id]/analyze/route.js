@@ -9,6 +9,12 @@ import { supabaseAdmin } from '../../../../../lib/supabaseAdmin'
 // produce a rewrite for anything flagged.
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
+// Large batches (30-40+ reviews) can take Claude 30-60+ seconds to fully
+// analyze given the depth of reasoning required per finding. Without this,
+// Vercel's default function timeout (as low as 10s on some plans) can kill
+// the request mid-analysis — which looks like a "timeout" with no findings
+// saved, even though nothing was actually wrong with the input or the model.
+export const maxDuration = 60
 
 const MODEL = 'claude-sonnet-4-6' // analysis task — use Sonnet, not Haiku
 
