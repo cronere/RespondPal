@@ -97,6 +97,10 @@ export default function AuditReport() {
   // analyze logic. This split/fallback only matters for older audits that
   // still have legacy "--- Batch N ---" dividers stored from before that
   // change — for those, show the LATEST segment since it's the most complete.
+  // Summaries always fully replace the prior one now (the AI receives prior
+  // findings as context and writes one comprehensive summary each time) — no
+  // divider-splitting needed. This split/fallback only matters for any older
+  // audits that still have legacy "--- Batch N ---" text stored from before.
   const summaryParts = (audit.summary || '').split('--- Batch')
   const summary = summaryParts[summaryParts.length - 1].replace(/^\s*\d+\s*---\s*/, '').trim()
 
