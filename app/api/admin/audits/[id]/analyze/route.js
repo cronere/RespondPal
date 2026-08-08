@@ -187,7 +187,12 @@ export async function POST(req, { params }) {
     if (!res.ok) {
       const errText = await res.text()
       console.error('Anthropic API error:', res.status, errText)
-      await supabaseAdmin.from('audits').update({ status: 'awaiting_input' }).eq('id', id)
+      // If this audit already had findings before this run started, a failed
+      // re-run shouldn't wipe out its "ready" status — that data is untouched
+      // and still valid. Only fall back to 'awaiting_input' for audits that
+      // never had findings to begin with.
+      const revertStatus = (audit.findings || []).length > 0 ? (audit.status || 'ready') : 'awaiting_input'
+      await supabaseAdmin.from('audits').update({ status: revertStatus }).eq('id', id)
       // Surface the actual error detail so it's visible without digging through
       // server logs — this is an internal admin endpoint, safe to expose.
       let detail = errText
@@ -218,7 +223,8 @@ export async function POST(req, { params }) {
       const stopReason = data.stop_reason
       const likelyTruncated = stopReason === 'max_tokens'
       console.error('Audit JSON parse error:', parseErr.message, '| stop_reason:', stopReason, '| response length:', raw.length)
-      await supabaseAdmin.from('audits').update({ status: 'awaiting_input' }).eq('id', id)
+      const revertStatus = (audit.findings || []).length > 0 ? (audit.status || 'ready') : 'awaiting_input'
+      await supabaseAdmin.from('audits').update({ status: revertStatus }).eq('id', id)
       return NextResponse.json({
         error: likelyTruncated
           ? 'The AI response was cut off because the batch was too large. Try splitting your input into smaller batches (15-20 reviews at a time).'
