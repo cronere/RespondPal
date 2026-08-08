@@ -19,7 +19,7 @@ const HIPAA_KEYWORDS = ['dental', 'dentist', 'orthodont', 'medical', 'doctor', '
   'physical therapy', 'urgent care', 'clinic', 'healthcare', 'health care',
   'oral surg', 'periodon', 'endodont', 'pediatric', 'obgyn', 'ob-gyn']
 
-function buildAuditPrompt(industry) {
+function buildAuditPrompt(industry, priorContext) {
   const ind = (industry || '').toLowerCase()
   const isHipaa = HIPAA_KEYWORDS.some(kw => ind.includes(kw))
 
@@ -27,6 +27,12 @@ function buildAuditPrompt(industry) {
 
 BUSINESS INDUSTRY: ${industry || 'Not specified'}
 ${isHipaa ? 'THIS IS A HIPAA-COVERED HEALTHCARE BUSINESS. Privacy violations in responses carry federal enforcement risk ($10,000-$50,000+ per violation). Treat ALL privacy issues as CRITICAL severity.' : ''}
+${priorContext ? `
+IMPORTANT — THIS IS A CONTINUATION OF AN AUDIT ALREADY IN PROGRESS. Earlier batches of this same business's reviews have already been analyzed, with these results:
+${priorContext}
+
+Your "summary" field below must describe the COMPLETE picture of the ENTIRE audit so far — combining what was already found in the earlier batches above WITH what you find in the new responses below. Do NOT write a summary that only describes the new batch you're analyzing right now; that would misrepresent the audit as covering less than it actually does. If the earlier batches found negative-review privacy violations and this new batch is all positive reviews (or vice versa), your summary must mention BOTH, not just what's in front of you right now.
+` : ''}
 
 Screen every response against these failure patterns, drawn from analysis of thousands of real business review responses across ten industries:
 
@@ -170,6 +176,27 @@ export async function POST(req, { params }) {
       return NextResponse.json({ error: 'No responses have been pasted in yet for this audit.' }, { status: 400 })
     }
 
+    // In append mode, build a compact summary of findings from earlier batches
+    // so the AI can write a summary reflecting the COMPLETE audit so far, not
+    // just this batch. Without this, the model has no way to know earlier
+    // batches exist at all — which is why append-mode summaries have been
+    // describing only a fraction of what's actually been found.
+    const priorFindings = mode === 'append' ? (audit.findings || []) : []
+    let priorContext = ''
+    if (priorFindings.length > 0) {
+      const bySeverity = { critical: 0, moderate: 0, minor: 0 }
+      priorFindings.forEach(f => {
+        const sev = (f.severity || '').toLowerCase()
+        if (bySeverity[sev] !== undefined) bySeverity[sev]++
+      })
+      const criticalSummaries = priorFindings
+        .filter(f => (f.severity || '').toLowerCase() === 'critical')
+        .slice(0, 12)
+        .map(f => `- ${f.review_summary || 'Critical finding'} [${(f.issues || []).join(', ')}]`)
+        .join('\n')
+      priorContext = `Earlier batches found: ${bySeverity.critical} critical, ${bySeverity.moderate} moderate, ${bySeverity.minor} minor findings.${criticalSummaries ? `\n\nCritical findings from earlier batches:\n${criticalSummaries}${priorFindings.filter(f => (f.severity || '').toLowerCase() === 'critical').length > 12 ? '\n(plus additional critical findings not listed here for brevity)' : ''}` : ''}`
+    }
+
     await supabaseAdmin.from('audits').update({ status: 'analyzing' }).eq('id', id)
 
     const res = await fetch('https://api.anthropic.com/v1/messages', {
@@ -182,7 +209,7 @@ export async function POST(req, { params }) {
       body: JSON.stringify({
         model: MODEL,
         max_tokens: 8192,
-        messages: [{ role: 'user', content: buildAuditPrompt(audit.industry) + textToAnalyze }],
+        messages: [{ role: 'user', content: buildAuditPrompt(audit.industry, priorContext) + textToAnalyze }],
       }),
     })
 
@@ -233,11 +260,13 @@ export async function POST(req, { params }) {
     const newFindings = parsed.findings || []
     const mergedFindings = [...existingFindings, ...newFindings]
 
-    const existingSummary = mode === 'append' ? (audit.summary || '') : ''
-    const newSummary = parsed.summary || ''
-    const mergedSummary = existingSummary
-      ? `${existingSummary}\n\n--- Batch ${Math.ceil(existingFindings.length / 50) + 1} ---\n${newSummary}`
-      : newSummary
+    // The AI now receives prior-batch context (see priorContext above) and is
+    // explicitly instructed to write a summary covering the COMPLETE audit so
+    // far, not just this batch — so its output can simply replace the old
+    // summary directly. No more divider-concatenation needed, which was the
+    // source of both the "3 ---" display artifact and summaries that only
+    // ever described whichever batch happened to run first.
+    const mergedSummary = parsed.summary || audit.summary || ''
 
     // Talking points always reflect the latest run.
     const talkingPoints = parsed.loom_talking_points || []
