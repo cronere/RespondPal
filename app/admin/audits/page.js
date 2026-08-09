@@ -691,7 +691,11 @@ function AuditDrawer({ audit, onClose, onUpdate, onDelete }) {
                   </p>
                 </>
               ) : (
-                <p className="rev-review-text">{audit.summary}</p>
+                <div>
+                  {audit.summary.split(/\n\s*\n/).map((para, i) => (
+                    para.trim() ? <p className="rev-review-text" key={i} style={{ marginBottom: 8 }}>{para.trim()}</p> : null
+                  ))}
+                </div>
               )}
             </div>
           )}
