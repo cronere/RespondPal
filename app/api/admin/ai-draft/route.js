@@ -200,11 +200,12 @@ THE RULE: Under HIPAA, this business cannot disclose Protected Health Informatio
 
 YOUR TASK: Read the draft above as if you are a stranger with no context. Ask yourself these questions with total honesty — do not give the benefit of the doubt just because the draft sounds warm or well-written:
 
-1. Does ANY part of this draft confirm, even indirectly, that the reviewer is or was a patient? This includes: thanking them for "trust," "choosing us," "coming in," referencing "your care," "your visit," "your experience" — AND softer paraphrases of these ideas in different words.
-2. Does this draft imply an ONGOING or FUTURE care relationship — inviting them to a "next visit," to "discuss scheduling," to "come back," or anything implying they will be seen again as a patient?
-3. Does this draft echo back the SPECIFIC QUALITY of care or interaction the reviewer described (their "thoroughness," "kindness," "gentleness," how a procedure went) — even while praising named staff?
+1. Does ANY part of this draft confirm, even indirectly, that the reviewer is or was a patient? This includes ALL of these exact patterns and any paraphrase of them — treat this list as illustrative, not exhaustive: "your experience," "your experience with us," "such a positive experience," "give you such a positive experience," "had a positive experience," "your visit," "your care," "your treatment," "the consultation," "the treatment," "trusting us," "trusting us with your care," "glad you came to us," "we enjoy having you," "get to be your dentist," "such an awesome patient," "always so happy to have you," "bringing in your family," "enjoyed your experience," "enjoyed her/his experience." If the draft contains ANY of these phrases or anything that means the same thing, this is a YES.
+2. Does this draft imply an ONGOING or FUTURE care relationship — "next visit," "discuss scheduling," "come back," "look forward to seeing you," "see you again soon," or anything implying they will be seen again as a patient?
+3. Does this draft echo back the SPECIFIC QUALITY of care or interaction the reviewer described (their "thoroughness," "kindness," "gentleness," how a procedure went, "physical comfort during treatment") — even while praising named staff?
 4. Does this draft reference a records search in any way — confirming OR denying that a record was found?
 5. Does this draft contain any fabricated contact information?
+6. Does this draft name any specific staff member or provider in connection with this reviewer's care?
 
 If the answer to ALL FIVE is genuinely no, respond with EXACTLY this JSON: {"compliant": true, "response": "the original draft, unchanged"}
 
@@ -258,6 +259,35 @@ async function runComplianceCheck(draftResponse, apiKey) {
     // draft, but flag it as unchecked so this is visible in logs.
     return { compliant: null, response: draftResponse, issue: 'compliance check response unparseable' }
   }
+}
+
+// THIRD LAYER — a deterministic, non-AI keyword scan. Both AI passes above
+// are probabilistic and can inconsistently miss the same phrase on different
+// runs — that's the nature of LLM generation, no amount of prompting removes
+// it entirely. This scan is different in kind, not just another attempt: it's
+// plain string matching, so it either finds an exact known-bad phrase or it
+// doesn't — no inconsistency possible. It won't catch novel paraphrases we
+// haven't seen yet, but for every pattern we've already proven fails (see
+// today's audit testing), this is a 100%-reliable backstop. Grows over time
+// as new failure patterns are discovered — add to this list, don't just patch
+// prompts.
+const HARD_BLOCKLIST_PHRASES = [
+  'your experience', 'such a positive experience', 'give you such a positive experience',
+  'had a positive experience', 'enjoyed your experience', 'enjoyed her experience', 'enjoyed his experience',
+  'your visit', 'your care', 'your treatment', 'your dental health', 'your consultation',
+  'the consultation went well', 'the treatment went well',
+  'trusting us', 'trusting us with your care',
+  'glad you came to us', 'we enjoy having you', 'get to be your dentist',
+  'such an awesome patient', 'always so happy to have you', 'bringing in your family',
+  'bringing in your wonderful family', 'since your last visit', 'look forward to seeing you',
+  'see you again soon', 'see you soon', 'next visit', 'next appointment',
+  'physical comfort during treatment', 'happy to have you',
+]
+
+function scanForBlockedPhrases(text) {
+  const lower = (text || '').toLowerCase()
+  const found = HARD_BLOCKLIST_PHRASES.filter((phrase) => lower.includes(phrase))
+  return found
 }
 
 export async function POST(req) {
@@ -343,6 +373,19 @@ export async function POST(req) {
         // response (fail safe for availability), but flag it so this is
         // visible to whoever reviews the draft before it posts.
         complianceFlag = 'unchecked'
+      }
+
+      // THIRD LAYER — deterministic scan on whatever draft is currently in
+      // hand (post-correction if the AI check fixed something). This is not
+      // another AI attempt — it's a hard, code-level backstop for the exact
+      // phrases we've proven slip through probabilistic passes. If anything
+      // is still found here, this response should NOT be treated as
+      // auto-clean — it needs mandatory human review before it can post,
+      // regardless of what the two AI passes concluded.
+      const blockedHits = scanForBlockedPhrases(draft)
+      if (blockedHits.length > 0) {
+        console.error('HARD BLOCKLIST HIT after both AI passes — mandatory human review required:', blockedHits)
+        complianceFlag = 'blocked_needs_human_review'
       }
     }
 
