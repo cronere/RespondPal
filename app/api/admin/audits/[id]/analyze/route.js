@@ -88,7 +88,8 @@ REQUIRED patterns for rewrites:
 - NEVER invent or include a phone number, email address, physical address, or any other contact detail in a rewrite. You do not know the business's real contact information. Say "please reach out to our office directly" or "please contact us through our website" — NEVER fabricate a phone number or email. A wrong or made-up phone number in a client-facing report is a serious credibility failure.
 - NEVER imply an ongoing, future, or continuing care relationship — this confirms patient status just as much as referencing the past. Forbidden: "going forward," "next visit," "see you again soon," "your next appointment," "continue to support your care," "in the future" when tied to seeing this specific reviewer again. A rewrite can invite them to CONTACT the office (a one-time, generic action) but must NOT imply they will be BACK IN CARE (an ongoing relationship). "Please reach out to our office directly" is fine; "we look forward to seeing you at your next visit" is NOT.
 - CRITICAL — DO NOT EVADE THE FORBIDDEN PATTERNS BY REWORDING THEM. The forbidden phrases listed throughout this prompt (e.g. "thank you for trusting us") are EXAMPLES of a category, not an exhaustive list — a paraphrase that preserves the same substance is EQUALLY forbidden even if the exact words differ. "We're so grateful for your trust" / "thankful you chose us for your care" / "we appreciate you trusting our team" all mean the same thing as "thank you for trusting us with your care" and are ALL forbidden. Before finalizing, ask: "Does this sentence, in substance — regardless of the specific words chosen — confirm gratitude for a care/patient relationship, confirm patient status, or reference an established trust-in-care bond?" If yes, it fails, no matter how the words are arranged.
-- Naming staff the reviewer ALREADY named themselves is fine ("Manda and Lexy are wonderful") — but do NOT also echo back the SPECIFIC QUALITY OF CARE or interaction the reviewer described (e.g. their "warmth," "thoroughness," "kindness," "gentleness," "how thorough the exam was"). Repeating those specific descriptors back confirms the specific nature of THIS reviewer's interaction, which is functionally the same as confirming a treatment detail. Acknowledge staff by name and express general gratitude — do NOT validate what, specifically, made the visit good. Safe: "Manda and Lexy are truly wonderful — thank you for sharing this!" Not safe: "so glad to hear the team's warmth and thoroughness came through" (echoes the reviewer's own specific description of their care back to them).
+- Do NOT name specific staff members, providers, or specialists in a rewrite, even if the reviewer named them first and even if it feels warm to do so. Naming a provider in connection with this reviewer's care is our OWN top-priority signal for detecting a violation in original text — a rewrite cannot do the same thing and still be safe. Use "our team" or "the whole practice" instead of specific names. Safe: "Thank you so much — our team truly appreciates this!" Not safe: "Dr. Moss and Manda are wonderful" (still ties named providers to this reviewer's care).
+- Do NOT reference "looking into" a matter, situation, or account for this specific reviewer, or reference their situation by category (e.g. "unexpected billing situations," "your billing concern") — even generalized-sounding category language can confirm that a specific matter exists for this reviewer. Use fully generic language instead: "we welcome the opportunity to discuss any questions" rather than "we can look into this for you."
 
 SELF-CHECK before finalizing each rewrite: Read it one more time and ask five questions: (1) "Could a reasonable person reading this determine that the reviewer IS or WAS a patient?" (2) "Does this rewrite reference a records search in ANY way — found, not found, connected, matched, or unable to locate?" (3) "Does this rewrite contain any phone number, email, or address?" (4) "Does this rewrite imply an ongoing or future care relationship — 'going forward,' 'next visit,' 'see you soon,' or similar?" (5) "Even if I avoided the EXACT forbidden phrases, did I write something that means the same thing in different words — like thanking them for 'trust' or 'choosing us for care'?" If the answer to ANY of these is yes, rewrite it to remove that element entirely. When in doubt, be MORE general, not less.
 
@@ -140,6 +141,64 @@ Here are the business\'s existing responses to audit:
 
 `
   return prompt
+}
+
+// SECOND, INDEPENDENT PASS for HIPAA clients — reviews ALL rewrites from this
+// run together in ONE additional call, batched to keep cost reasonable rather
+// than one compliance check per finding. This is the same structural fix used
+// in the production ai-draft route: a separate call with no memory of having
+// written the rewrites, reviewing them cold, rather than the same call that
+// wrote them self-certifying its own work.
+function buildRewriteComplianceCheckPrompt(rewrites) {
+  const numbered = rewrites.map((r, i) => `[${i}] "${r}"`).join('\n\n')
+  return `You are a HIPAA compliance reviewer. You did NOT write the rewrites below — someone else did, and your ONLY job is to check each one with completely fresh eyes, the way a compliance officer reviews someone else's work before it's approved for a client-facing report.
+
+REWRITES TO REVIEW:
+${numbered}
+
+THE RULE: These are proposed replacement responses for a HIPAA-covered healthcare business. None of them may disclose Protected Health Information (PHI) — which includes the simple fact that someone IS or WAS a patient. This applies even to warm, positive rewrites.
+
+For EACH rewrite, ask with total honesty — do not give the benefit of the doubt just because it sounds warm or well-written:
+1. Does it confirm, even indirectly, that the reviewer is or was a patient (including soft paraphrases of "trust," "your care," "your experience")?
+2. Does it imply an ONGOING or FUTURE care relationship (next visit, scheduling, coming back)?
+3. Does it name a specific staff member or provider in connection with this reviewer's care?
+4. Does it reference "looking into" or otherwise confirm a specific matter/situation exists for this reviewer, even in generalized category language?
+5. Does it reference a records search in any way, or contain fabricated contact info?
+
+Respond with ONLY a JSON array, one entry per rewrite in the same order, no other text:
+[{"index": 0, "compliant": true, "response": "unchanged text"}, {"index": 1, "compliant": false, "response": "corrected text with the issue removed, preserving as much warmth/structure as possible", "issue": "short description"}]`
+}
+
+async function runRewriteComplianceCheck(rewrites, apiKey) {
+  if (rewrites.length === 0) return []
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01',
+    },
+    body: JSON.stringify({
+      model: MODEL,
+      max_tokens: 4096,
+      messages: [{ role: 'user', content: buildRewriteComplianceCheckPrompt(rewrites) }],
+    }),
+  })
+
+  if (!res.ok) {
+    console.error('Rewrite compliance check API error:', res.status, await res.text())
+    return null // signal failure — caller keeps original rewrites, unflagged
+  }
+
+  const data = await res.json()
+  const raw = (data.content || []).filter((b) => b.type === 'text').map((b) => b.text).join('').trim()
+  try {
+    const cleaned = raw.replace(/^```json\s*/i, '').replace(/```\s*$/, '').trim()
+    return JSON.parse(cleaned)
+  } catch (parseErr) {
+    console.error('Rewrite compliance check parse error:', parseErr.message, raw)
+    return null
+  }
 }
 
 export async function POST(req, { params }) {
@@ -262,7 +321,42 @@ export async function POST(req, { params }) {
 
     // Append new findings to any existing ones (supports batched audits).
     const existingFindings = mode === 'append' ? (audit.findings || []) : []
-    const newFindings = parsed.findings || []
+    let newFindings = parsed.findings || []
+
+    // SECOND PASS — for HIPAA-covered businesses, send all rewrites from this
+    // run to an independent compliance check before saving. Structural fix,
+    // not another prompt patch: a separate call reviewing the finished
+    // rewrites with no memory of writing them, the same safeguard used in
+    // the production ai-draft route.
+    const industryLower = (audit.industry || '').toLowerCase()
+    const isHipaaAudit = HIPAA_KEYWORDS.some(kw => industryLower.includes(kw))
+    if (isHipaaAudit) {
+      const rewriteIndexes = []
+      const rewriteTexts = []
+      newFindings.forEach((f, i) => {
+        if (f.rewrite) {
+          rewriteIndexes.push(i)
+          rewriteTexts.push(f.rewrite)
+        }
+      })
+      if (rewriteTexts.length > 0) {
+        const checkResults = await runRewriteComplianceCheck(rewriteTexts, apiKey)
+        if (checkResults) {
+          checkResults.forEach((result) => {
+            if (result.compliant === false && typeof result.index === 'number') {
+              const findingIdx = rewriteIndexes[result.index]
+              if (findingIdx !== undefined && result.response) {
+                console.warn('Rewrite compliance check corrected a finding:', result.issue)
+                newFindings[findingIdx] = { ...newFindings[findingIdx], rewrite: result.response }
+              }
+            }
+          })
+        } else {
+          console.error('Rewrite compliance check failed or was unparseable — original rewrites kept, unverified by second pass.')
+        }
+      }
+    }
+
     const mergedFindings = [...existingFindings, ...newFindings]
 
     // The AI now receives prior-batch context (see priorContext above) and is
