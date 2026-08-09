@@ -77,9 +77,17 @@ export default function AuditReport() {
     return score
   }
 
-  const critical = findings
+  // Findings marked "featured" in HQ always take priority for display — this
+  // gives the person building the report final editorial control over which
+  // examples the client sees, rather than relying entirely on the automatic
+  // scoring heuristic (which is a good default but won't always agree with
+  // human judgment on which finding is most persuasive to lead with).
+  const allCritical = findings
     .filter(f => (f.severity || '').toLowerCase() === 'critical')
     .sort((a, b) => impactScore(b) - impactScore(a))
+  const featuredCritical = allCritical.filter(f => f.featured)
+  const unfeaturedCritical = allCritical.filter(f => !f.featured)
+  const critical = [...featuredCritical, ...unfeaturedCritical]
   const moderate = findings.filter(f => (f.severity || '').toLowerCase() === 'moderate')
   const minor = findings.filter(f => (f.severity || '').toLowerCase() === 'minor')
 
