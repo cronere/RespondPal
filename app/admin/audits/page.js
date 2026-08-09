@@ -241,6 +241,7 @@ function AuditDrawer({ audit, onClose, onUpdate, onDelete }) {
   const [rawInput, setRawInput] = useState(audit.raw_input || '')
   const [summaryDraft, setSummaryDraft] = useState(audit.summary || '')
   const [editingSummary, setEditingSummary] = useState(false)
+  const [regeneratingSummary, setRegeneratingSummary] = useState(false)
   const [stats, setStats] = useState({
     total_reviews: audit.total_reviews || '',
     reviews_with_text: audit.reviews_with_text || '',
@@ -463,10 +464,28 @@ function AuditDrawer({ audit, onClose, onUpdate, onDelete }) {
     return (
       <>
         {text.slice(0, idx)}
-        <b style={{ background: '#FEE2E2', display: 'inline' }}>{text.slice(idx, idx + matchLen)}</b>
+        <b style={{ color: '#b91c1c' }}>{text.slice(idx, idx + matchLen)}</b>
         {text.slice(idx + matchLen)}
       </>
     )
+  }
+
+  const regenerateSummary = async () => {
+    if (regeneratingSummary) return
+    setRegeneratingSummary(true); setMsg('')
+    try {
+      const res = await fetch(`/api/admin/audits/${audit.id}/regenerate-summary`, { method: 'POST' })
+      const data = await res.json()
+      if (res.ok) {
+        onUpdate(data.audit)
+        setMsg('Summary reformatted into paragraphs — no findings were changed.')
+      } else {
+        setMsg(data.error || 'Failed to regenerate summary.')
+      }
+    } catch {
+      setMsg('Failed to regenerate summary.')
+    }
+    setRegeneratingSummary(false)
   }
 
   const toggleFeatured = (findingObj) => {
@@ -654,9 +673,19 @@ function AuditDrawer({ audit, onClose, onUpdate, onDelete }) {
               <div className="rev-response-head">
                 <div className="drawer-section-label">Summary</div>
                 {!editingSummary && (
-                  <button className="rev-mini-btn" onClick={() => { setSummaryDraft(audit.summary || ''); setEditingSummary(true) }}>
-                    Edit
-                  </button>
+                  <>
+                    <button
+                      className="rev-mini-btn"
+                      onClick={regenerateSummary}
+                      disabled={regeneratingSummary}
+                      title="Rewrites just the summary paragraph(s) using the findings already saved — does not re-analyze reviews or change any findings. Use this if a summary is stuck as one dense block."
+                    >
+                      {regeneratingSummary ? 'Reformatting…' : '↻ Reformat into paragraphs'}
+                    </button>
+                    <button className="rev-mini-btn" onClick={() => { setSummaryDraft(audit.summary || ''); setEditingSummary(true) }}>
+                      Edit
+                    </button>
+                  </>
                 )}
               </div>
               {editingSummary ? (
