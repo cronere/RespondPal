@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { supabaseAdmin } from '../../../../../../lib/supabaseAdmin'
+import { supabaseAdmin } from '../../../../../lib/supabaseAdmin'
 
 // POST /api/admin/audits/[id]/regenerate-summary — rewrites ONLY the summary
 // field using the findings already stored on this audit. Does NOT re-analyze
