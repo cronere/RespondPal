@@ -762,6 +762,15 @@ function AuditDrawer({ audit, onClose, onUpdate, onDelete }) {
               <div className="audit-findings">
                 {findings.map((f, i) => (
                   <div key={i} className={`audit-finding audit-finding-${f.severity}`}>
+                    {f.needsManualReview && (
+                      <div style={{
+                        background: '#FEF2F2', border: '1px solid #B91C1C', borderRadius: 6,
+                        padding: '0.5rem 0.75rem', marginBottom: '0.5rem', fontSize: '0.8rem', color: '#991B1B',
+                      }}>
+                        ⚠️ <b>Flagged after both compliance passes</b> — the rewrite below still contains a known-risky
+                        phrase ({(f.blockedPhrases || []).join(', ')}). Do not feature or send as-is — edit manually first.
+                      </div>
+                    )}
                     <div className="audit-finding-head">
                       <span className={`audit-severity-badge audit-severity-${f.severity}`}>
                         {f.severity}
@@ -789,7 +798,7 @@ function AuditDrawer({ audit, onClose, onUpdate, onDelete }) {
                     <p className="audit-finding-excerpt">&ldquo;{highlightExcerpt(f.original_excerpt, f.violating_phrase)}&rdquo;</p>
                     <p className="audit-finding-explanation">{f.explanation}</p>
                     {f.rewrite && (
-                      <div className="audit-rewrite">
+                      <div className="audit-rewrite" style={f.needsManualReview ? { borderColor: '#B91C1C' } : undefined}>
                         <div className="audit-rewrite-label">Suggested rewrite</div>
                         <p>{f.rewrite}</p>
                         <button className="rev-mini-btn" onClick={() => copyRewrite(f.rewrite)}>Copy</button>
