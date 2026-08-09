@@ -180,6 +180,86 @@ SELF-CHECK: Before finalizing, reread the response and ask FIVE questions: (1) "
   return prompt
 }
 
+// SECOND, INDEPENDENT PASS — a dedicated compliance checker for HIPAA-covered
+// businesses. This is a structural fix, not another prompt patch: instead of
+// asking one AI call to simultaneously write something warm/specific AND
+// police itself against a complex legal rule in the same breath, we send the
+// finished draft to a SEPARATE call whose only job is checking it with fresh
+// eyes — the same way real compliance review works (someone other than the
+// writer checks the work). This catches disclosure patterns that evade any
+// finite list of forbidden phrases, because it isn't phrase-matching — it's
+// re-reading the draft cold and asking whether IT, as a first-time reader,
+// would conclude the reviewer is a patient.
+function buildComplianceCheckPrompt(draftResponse) {
+  return `You are a HIPAA compliance reviewer for a healthcare business. You did NOT write the response below — someone else did, and your ONLY job is to check it with completely fresh eyes, the way a compliance officer reviews someone else's work before it's approved.
+
+DRAFT RESPONSE TO REVIEW:
+"${draftResponse}"
+
+THE RULE: Under HIPAA, this business cannot disclose Protected Health Information (PHI) in a public response — and PHI includes the simple fact that someone IS or WAS a patient. This applies even to warm, positive, well-intentioned responses.
+
+YOUR TASK: Read the draft above as if you are a stranger with no context. Ask yourself these questions with total honesty — do not give the benefit of the doubt just because the draft sounds warm or well-written:
+
+1. Does ANY part of this draft confirm, even indirectly, that the reviewer is or was a patient? This includes: thanking them for "trust," "choosing us," "coming in," referencing "your care," "your visit," "your experience" — AND softer paraphrases of these ideas in different words.
+2. Does this draft imply an ONGOING or FUTURE care relationship — inviting them to a "next visit," to "discuss scheduling," to "come back," or anything implying they will be seen again as a patient?
+3. Does this draft echo back the SPECIFIC QUALITY of care or interaction the reviewer described (their "thoroughness," "kindness," "gentleness," how a procedure went) — even while praising named staff?
+4. Does this draft reference a records search in any way — confirming OR denying that a record was found?
+5. Does this draft contain any fabricated contact information?
+
+If the answer to ALL FIVE is genuinely no, respond with EXACTLY this JSON: {"compliant": true, "response": "the original draft, unchanged"}
+
+If ANY answer is yes, rewrite the response to remove ONLY the problematic element(s) while preserving as much of the original warmth, tone, and structure as possible. Respond with EXACTLY this JSON: {"compliant": false, "response": "the corrected response text", "issue": "one short phrase describing what was wrong, for internal logging"}
+
+Respond with ONLY the JSON, no other text.`
+}
+
+async function runComplianceCheck(draftResponse, apiKey) {
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01',
+    },
+    body: JSON.stringify({
+      model: MODEL,
+      max_tokens: 600,
+      messages: [{ role: 'user', content: buildComplianceCheckPrompt(draftResponse) }],
+    }),
+  })
+
+  if (!res.ok) {
+    // If the compliance check itself fails, fail SAFE — return the original
+    // draft flagged as unchecked rather than blocking the whole request.
+    // This should be rare and is logged for visibility.
+    const errText = await res.text()
+    console.error('Compliance check API error:', res.status, errText)
+    return { compliant: null, response: draftResponse, issue: 'compliance check unavailable' }
+  }
+
+  const data = await res.json()
+  const raw = (data.content || [])
+    .filter((b) => b.type === 'text')
+    .map((b) => b.text)
+    .join('')
+    .trim()
+
+  try {
+    const cleaned = raw.replace(/^```json\s*/i, '').replace(/```\s*$/, '').trim()
+    const parsed = JSON.parse(cleaned)
+    return {
+      compliant: parsed.compliant,
+      response: parsed.response || draftResponse,
+      issue: parsed.issue || null,
+    }
+  } catch (parseErr) {
+    console.error('Compliance check JSON parse error:', parseErr.message, raw)
+    // Fail safe — if we can't parse the checker's response, don't block the
+    // draft, but flag it as unchecked so this is visible in logs.
+    return { compliant: null, response: draftResponse, issue: 'compliance check response unparseable' }
+  }
+}
+
 export async function POST(req) {
   try {
     // Auth — reject requests without a valid draft key
@@ -201,6 +281,15 @@ export async function POST(req) {
     if (!review || !client) {
       return NextResponse.json({ error: 'Review and client are required.' }, { status: 400 })
     }
+
+    const industry = (client.industry || '').toLowerCase()
+    const HIPAA_KEYWORDS = ['dental', 'dentist', 'orthodont', 'medical', 'doctor', 'physician',
+      'chiropractic', 'chiropractor', 'med spa', 'medspa', 'dermatology', 'dermatologist',
+      'cosmetic surg', 'plastic surg', 'optometry', 'optometrist', 'ophthalmol',
+      'behavioral health', 'mental health', 'psychiatr', 'psycholog', 'therapy',
+      'physical therapy', 'urgent care', 'clinic', 'healthcare', 'health care',
+      'oral surg', 'periodon', 'endodont', 'pediatric', 'obgyn', 'ob-gyn']
+    const isHipaaClient = HIPAA_KEYWORDS.some(kw => industry.includes(kw))
 
     const prompt = buildPrompt({ review, client })
 
@@ -228,7 +317,7 @@ export async function POST(req) {
     }
 
     const data = await res.json()
-    const draft = (data.content || [])
+    let draft = (data.content || [])
       .filter((b) => b.type === 'text')
       .map((b) => b.text)
       .join('')
@@ -238,7 +327,26 @@ export async function POST(req) {
       return NextResponse.json({ error: 'AI returned an empty response. Try again.' }, { status: 502 })
     }
 
-    return NextResponse.json({ draft })
+    // SECOND PASS — for HIPAA-covered clients only, send the draft to an
+    // independent compliance check before returning it. This is a real
+    // structural safeguard: a separate call reviewing the finished draft
+    // with no memory of writing it, rather than the same call self-certifying.
+    let complianceFlag = null
+    if (isHipaaClient) {
+      const checked = await runComplianceCheck(draft, apiKey)
+      if (checked.compliant === false) {
+        console.warn('Compliance check caught an issue and corrected it:', checked.issue)
+        draft = checked.response
+        complianceFlag = 'corrected'
+      } else if (checked.compliant === null) {
+        // The check itself failed or was unparseable — don't block the
+        // response (fail safe for availability), but flag it so this is
+        // visible to whoever reviews the draft before it posts.
+        complianceFlag = 'unchecked'
+      }
+    }
+
+    return NextResponse.json({ draft, complianceFlag })
   } catch (err) {
     console.error('AI draft error:', err)
     return NextResponse.json({ error: 'Failed to generate draft.' }, { status: 500 })
