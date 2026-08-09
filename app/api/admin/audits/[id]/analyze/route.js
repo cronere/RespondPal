@@ -201,6 +201,31 @@ async function runRewriteComplianceCheck(rewrites, apiKey) {
   }
 }
 
+// THIRD LAYER — deterministic, non-AI keyword scan, same list and same logic
+// as the production ai-draft route. Both AI passes above are probabilistic
+// and can inconsistently miss the same phrase on different runs. This is
+// plain string matching — no inconsistency possible. It won't catch novel
+// paraphrases, but for every pattern already proven to fail in testing, this
+// is a 100%-reliable backstop. Grows over time — add newly discovered failure
+// patterns here, in both this file and app/api/admin/ai-draft/route.js.
+const HARD_BLOCKLIST_PHRASES = [
+  'your experience', 'such a positive experience', 'give you such a positive experience',
+  'had a positive experience', 'enjoyed your experience', 'enjoyed her experience', 'enjoyed his experience',
+  'your visit', 'your care', 'your treatment', 'your dental health', 'your consultation',
+  'the consultation went well', 'the treatment went well',
+  'trusting us', 'trusting us with your care',
+  'glad you came to us', 'we enjoy having you', 'get to be your dentist',
+  'such an awesome patient', 'always so happy to have you', 'bringing in your family',
+  'bringing in your wonderful family', 'since your last visit', 'look forward to seeing you',
+  'see you again soon', 'see you soon', 'next visit', 'next appointment',
+  'physical comfort during treatment', 'happy to have you',
+]
+
+function scanForBlockedPhrases(text) {
+  const lower = (text || '').toLowerCase()
+  return HARD_BLOCKLIST_PHRASES.filter((phrase) => lower.includes(phrase))
+}
+
 export async function POST(req, { params }) {
   try {
     const apiKey = process.env.ANTHROPIC_API_KEY
@@ -355,6 +380,20 @@ export async function POST(req, { params }) {
           console.error('Rewrite compliance check failed or was unparseable — original rewrites kept, unverified by second pass.')
         }
       }
+
+      // THIRD LAYER — deterministic scan on every rewrite, whether or not the
+      // AI check touched it. This can't be inconsistent the way two AI passes
+      // can. Anything still matching a known-bad phrase gets flagged directly
+      // on the finding so it's visible in HQ — never silently trusted.
+      rewriteIndexes.forEach((findingIdx) => {
+        const currentRewrite = newFindings[findingIdx]?.rewrite
+        if (!currentRewrite) return
+        const hits = scanForBlockedPhrases(currentRewrite)
+        if (hits.length > 0) {
+          console.error('HARD BLOCKLIST HIT in audit rewrite after both AI passes — flagging for manual review:', hits)
+          newFindings[findingIdx] = { ...newFindings[findingIdx], needsManualReview: true, blockedPhrases: hits }
+        }
+      })
     }
 
     const mergedFindings = [...existingFindings, ...newFindings]
