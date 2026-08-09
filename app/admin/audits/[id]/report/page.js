@@ -329,7 +329,9 @@ export default function AuditReport() {
           </div>
         </div>
 
-        {summary && <p className="body">{summary}</p>}
+        {summary && summary.split(/\n\s*\n/).map((para, i) => (
+          para.trim() ? <p className="body" key={i} style={{ marginBottom: 10 }}>{para.trim()}</p> : null
+        ))}
 
         {(moderate.length > 0 || minor.length > 0) && (
           <p className="body">
