@@ -463,7 +463,7 @@ function AuditDrawer({ audit, onClose, onUpdate, onDelete }) {
     return (
       <>
         {text.slice(0, idx)}
-        <b style={{ background: '#FEE2E2', padding: '0 2px' }}>{text.slice(idx, idx + matchLen)}</b>
+        <b style={{ background: '#FEE2E2', display: 'inline' }}>{text.slice(idx, idx + matchLen)}</b>
         {text.slice(idx + matchLen)}
       </>
     )
