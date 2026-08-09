@@ -291,7 +291,15 @@ function ReviewDrawer({ review, onClose, onUpdate, onDelete }) {
       const data = await res.json()
       if (res.ok) {
         setDraft(data.draft)
-        setMsg('Draft generated — review and edit before posting.')
+        if (data.complianceFlag === 'blocked_needs_human_review') {
+          setMsg('⚠️ Draft generated, but our compliance scan still found a risky phrase after two AI passes. Read carefully and edit before saving — do not post as-is.')
+        } else if (data.complianceFlag === 'corrected') {
+          setMsg('Draft generated — our compliance check caught and corrected an issue automatically. Still review before posting.')
+        } else if (data.complianceFlag === 'unchecked') {
+          setMsg('Draft generated, but the compliance check itself didn\'t run — review extra carefully before posting.')
+        } else {
+          setMsg('Draft generated — review and edit before posting.')
+        }
       } else {
         setMsg(data.error || 'Could not generate a draft.')
       }
