@@ -82,12 +82,18 @@ export default function AuditReport() {
   // examples the client sees, rather than relying entirely on the automatic
   // scoring heuristic (which is a good default but won't always agree with
   // human judgment on which finding is most persuasive to lead with).
+  //
+  // SAFETY EXCLUSION: a finding flagged needsManualReview (failed the hard
+  // deterministic blocklist scan even after two AI passes) is NEVER shown in
+  // the top slots, even if someone accidentally features it — it goes to the
+  // back of the list until a human edits the rewrite and clears the flag.
   const allCritical = findings
     .filter(f => (f.severity || '').toLowerCase() === 'critical')
     .sort((a, b) => impactScore(b) - impactScore(a))
-  const featuredCritical = allCritical.filter(f => f.featured)
-  const unfeaturedCritical = allCritical.filter(f => !f.featured)
-  const critical = [...featuredCritical, ...unfeaturedCritical]
+  const featuredCritical = allCritical.filter(f => f.featured && !f.needsManualReview)
+  const unfeaturedCritical = allCritical.filter(f => !f.featured && !f.needsManualReview)
+  const flaggedCritical = allCritical.filter(f => f.needsManualReview)
+  const critical = [...featuredCritical, ...unfeaturedCritical, ...flaggedCritical]
   const moderate = findings.filter(f => (f.severity || '').toLowerCase() === 'moderate')
   const minor = findings.filter(f => (f.severity || '').toLowerCase() === 'minor')
 
