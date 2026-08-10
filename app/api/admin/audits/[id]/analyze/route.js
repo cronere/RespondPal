@@ -87,6 +87,7 @@ FORBIDDEN phrases and patterns (DO NOT USE in any rewrite):
 - Any reference to what the reviewer described — even paraphrased or generalized
 
 REQUIRED patterns for rewrites:
+- NEVER use the word "experience" anywhere in a rewrite, in any context or combination — this single word has repeatedly caused disclosure issues today even when the surrounding sentence tried to generalize it (e.g. "we're sorry this experience felt otherwise" still points back at the reviewer's specific situation, even paired with generalizing language like "every interaction"). Use "interaction," "contact," or rephrase entirely instead. There is no safe way to use this word in a HIPAA rewrite — do not attempt it.
 - Use ONLY general practice-value statements that could apply to anyone: "We take all feedback seriously" / "We hold ourselves to the highest standard" / "Every person who contacts our office deserves to be treated with respect"
 - Invite GENERIC private communication: "Please reach out to our office directly" or "We welcome anyone with questions to contact us" — NEVER "please call us to discuss your concerns" or "so we can address what happened"
 - Express care through VALUES, not through acknowledging specifics: "Quality of care is our highest priority" — NOT "we're sorry the care you received fell short"
@@ -214,8 +215,13 @@ async function runRewriteComplianceCheck(rewrites, apiKey) {
 // is a 100%-reliable backstop. Grows over time — add newly discovered failure
 // patterns here, in both this file and app/api/admin/ai-draft/route.js.
 const HARD_BLOCKLIST_PHRASES = [
-  'your experience', 'such a positive experience', 'give you such a positive experience',
-  'had a positive experience', 'enjoyed your experience', 'enjoyed her experience', 'enjoyed his experience',
+  // 'experience' has caused three separate near-misses today in different
+  // phrase combinations ("share your experience," "positive experience,"
+  // "this experience felt otherwise") — rather than continuing to enumerate
+  // every combination, the word itself is now banned from rewrites. There is
+  // no legitimate reason a compliant rewrite needs this word; safe synonyms
+  // like "interaction" or "contacting our office" exist.
+  'experience',
   'your visit', 'your care', 'your treatment', 'your dental health', 'your consultation',
   'the consultation went well', 'the treatment went well',
   'trusting us', 'trusting us with your care',
