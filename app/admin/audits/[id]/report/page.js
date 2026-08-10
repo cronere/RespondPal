@@ -93,9 +93,21 @@ export default function AuditReport() {
   const featuredCritical = allCritical.filter(f => f.featured && !f.needsManualReview)
   const unfeaturedCritical = allCritical.filter(f => !f.featured && !f.needsManualReview)
   const flaggedCritical = allCritical.filter(f => f.needsManualReview)
+  // critical.length is the TRUE critical count — used for every stat, header,
+  // and count claim in the report. Never inflate this with non-critical items,
+  // even featured ones, or the report would overstate severity.
   const critical = [...featuredCritical, ...unfeaturedCritical, ...flaggedCritical]
   const moderate = findings.filter(f => (f.severity || '').toLowerCase() === 'moderate')
   const minor = findings.filter(f => (f.severity || '').toLowerCase() === 'minor')
+
+  // Findings of ANY severity can be explicitly featured — e.g. a moderate
+  // finding worth showcasing even though it didn't score as critical. These
+  // get priority display slots alongside true critical findings, but each
+  // card always shows its own honest severity badge — featuring a moderate
+  // finding never relabels it as critical.
+  const featuredNonCritical = findings
+    .filter(f => (f.severity || '').toLowerCase() !== 'critical' && f.featured && !f.needsManualReview)
+    .sort((a, b) => impactScore(b) - impactScore(a))
 
   const gTotal = audit.total_reviews || 0
   const gResp = audit.reviews_with_responses || 0
@@ -112,8 +124,15 @@ export default function AuditReport() {
   const combinedText = gText + yText
   const combinedRate = combinedText > 0 ? ((combinedResp / combinedText) * 100).toFixed(1) + '%' : 'N/A'
 
-  const shown = critical.slice(0, 5)
-  const overflow = critical.length - shown.length
+  // Featured items (any severity) get priority slots, then fill remaining
+  // space with unfeatured critical findings by impact score. Cap at 5 total
+  // display slots either way.
+  const shown = [...featuredCritical, ...featuredNonCritical, ...unfeaturedCritical].slice(0, 5)
+  // Overflow counts only TRUE critical findings not included in shown — a
+  // featured moderate finding taking a slot doesn't change how many critical
+  // findings remain unshown.
+  const shownCriticalCount = shown.filter(f => (f.severity || '').toLowerCase() === 'critical').length
+  const overflow = critical.length - shownCriticalCount
 
   // Summaries are always replaced (never concatenated) as of the latest
   // analyze logic. This split/fallback only matters for older audits that
@@ -251,6 +270,7 @@ export default function AuditReport() {
         .finding-content { padding: 8px 12px; flex: 1; }
         .finding-header { font-size: 9pt; font-weight: 700; margin-bottom: 4px; }
         .finding-header .crit { color: #b91c1c; }
+        .finding-header .mod { color: #C2410C; }
         .finding-header .tags { color: #6b7280; font-weight: 400; font-size: 8pt; margin-left: 8px; }
         .finding-review { font-size: 8.5pt; color: #6b7280; font-style: italic; margin-bottom: 3px; }
         .finding-response { font-size: 9pt; color: #374151; margin-bottom: 0; }
@@ -396,7 +416,9 @@ export default function AuditReport() {
                   <div className="finding-bar" />
                   <div className="finding-content">
                     <div className="finding-header">
-                      <span className="crit">CRITICAL</span>
+                      <span className={(f.severity || '').toLowerCase() === 'critical' ? 'crit' : 'mod'}>
+                        {(f.severity || 'CRITICAL').toUpperCase()}
+                      </span>
                       <span className="tags">{(f.issues || []).join(', ')}</span>
                     </div>
                     {f.review_summary && (
