@@ -17,7 +17,12 @@ const HIPAA_KEYWORDS = ['dental', 'dentist', 'orthodont', 'medical', 'doctor', '
   'cosmetic surg', 'plastic surg', 'optometry', 'optometrist', 'ophthalmol',
   'behavioral health', 'mental health', 'psychiatr', 'psycholog', 'therapy',
   'physical therapy', 'urgent care', 'clinic', 'healthcare', 'health care',
-  'oral surg', 'periodon', 'endodont', 'pediatric', 'obgyn', 'ob-gyn']
+  'oral surg', 'periodon', 'endodont', 'pediatric', 'obgyn', 'ob-gyn',
+  'aesthetic', 'esthetic', 'wellness', 'injectable', 'botox', 'filler',
+  'iv therapy', 'iv hydration', 'weight loss clinic', 'hormone', 'laser clinic',
+  'natural medicine', 'functional medicine', 'integrative medicine', 'naturopath',
+  'acupunctur', 'nutritionist', 'dietitian', 'rehab', 'recovery center',
+  'urgent', 'family practice', 'internal medicine', 'nurse practitioner', 'nurse pract']
 
 function buildAuditPrompt(industry, priorContext) {
   const ind = (industry || '').toLowerCase()
