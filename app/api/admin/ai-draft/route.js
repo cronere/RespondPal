@@ -36,7 +36,12 @@ function buildPrompt({ review, client }) {
     'cosmetic surg', 'plastic surg', 'optometry', 'optometrist', 'ophthalmol',
     'behavioral health', 'mental health', 'psychiatr', 'psycholog', 'therapy',
     'physical therapy', 'urgent care', 'clinic', 'healthcare', 'health care',
-    'oral surg', 'periodon', 'endodont', 'pediatric', 'obgyn', 'ob-gyn']
+    'oral surg', 'periodon', 'endodont', 'pediatric', 'obgyn', 'ob-gyn',
+    'aesthetic', 'esthetic', 'wellness', 'injectable', 'botox', 'filler',
+    'iv therapy', 'iv hydration', 'weight loss clinic', 'hormone', 'laser clinic',
+    'natural medicine', 'functional medicine', 'integrative medicine', 'naturopath',
+    'acupunctur', 'nutritionist', 'dietitian', 'rehab', 'recovery center',
+    'urgent', 'family practice', 'internal medicine', 'nurse practitioner', 'nurse pract']
   const isHipaa = HIPAA_KEYWORDS.some(kw => industry.includes(kw))
 
   const ratingLine = review.star_rating
@@ -318,7 +323,12 @@ export async function POST(req) {
       'cosmetic surg', 'plastic surg', 'optometry', 'optometrist', 'ophthalmol',
       'behavioral health', 'mental health', 'psychiatr', 'psycholog', 'therapy',
       'physical therapy', 'urgent care', 'clinic', 'healthcare', 'health care',
-      'oral surg', 'periodon', 'endodont', 'pediatric', 'obgyn', 'ob-gyn']
+      'oral surg', 'periodon', 'endodont', 'pediatric', 'obgyn', 'ob-gyn',
+      'aesthetic', 'esthetic', 'wellness', 'injectable', 'botox', 'filler',
+      'iv therapy', 'iv hydration', 'weight loss clinic', 'hormone', 'laser clinic',
+      'natural medicine', 'functional medicine', 'integrative medicine', 'naturopath',
+      'acupunctur', 'nutritionist', 'dietitian', 'rehab', 'recovery center',
+      'urgent', 'family practice', 'internal medicine', 'nurse practitioner', 'nurse pract']
     const isHipaaClient = HIPAA_KEYWORDS.some(kw => industry.includes(kw))
 
     const prompt = buildPrompt({ review, client })
