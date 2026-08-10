@@ -169,6 +169,7 @@ FORBIDDEN phrases (DO NOT USE):
 - Any phone number, email address, or physical address you are not explicitly given by the business — you do not know this business's real contact information beyond what client data provides. Never invent or guess contact details.
 
 REQUIRED patterns:
+- NEVER use the word "experience" anywhere in a response, in any context — this has repeatedly caused disclosure issues even when the sentence tried to generalize it. Use "interaction," "contact," or rephrase entirely. There is no safe way to use this word for a HIPAA-covered business — do not attempt it.
 - General practice-value statements: "We take all feedback seriously" / "We hold ourselves to the highest standard of care" / "Every person who contacts our office deserves to be treated with respect"
 - Generic private-communication invitations: "Please reach out to our office directly" / "We welcome anyone with questions to contact us"
 - Express care through VALUES: "Quality of care is our highest priority" — NOT "we're sorry the care you received fell short"
@@ -277,8 +278,12 @@ async function runComplianceCheck(draftResponse, apiKey) {
 // as new failure patterns are discovered — add to this list, don't just patch
 // prompts.
 const HARD_BLOCKLIST_PHRASES = [
-  'your experience', 'such a positive experience', 'give you such a positive experience',
-  'had a positive experience', 'enjoyed your experience', 'enjoyed her experience', 'enjoyed his experience',
+  // 'experience' has caused three separate near-misses today in different
+  // phrase combinations — rather than continuing to enumerate every
+  // combination, the word itself is now banned from rewrites. There is no
+  // legitimate reason a compliant response needs this word; safe synonyms
+  // like "interaction" or "contacting our office" exist.
+  'experience',
   'your visit', 'your care', 'your treatment', 'your dental health', 'your consultation',
   'the consultation went well', 'the treatment went well',
   'trusting us', 'trusting us with your care',
