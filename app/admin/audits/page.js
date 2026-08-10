@@ -811,22 +811,20 @@ function AuditDrawer({ audit, onClose, onUpdate, onDelete }) {
                       {f.issues?.map((iss, j) => (
                         <span key={j} className="pill audit-issue-pill">{iss}</span>
                       ))}
-                      {(f.severity || '').toLowerCase() === 'critical' && (
-                        <button
-                          className="rev-mini-btn"
-                          style={{
-                            marginLeft: 'auto',
-                            background: f.featured ? '#C2410C' : undefined,
-                            color: f.featured ? 'white' : undefined,
-                            borderColor: f.featured ? '#C2410C' : undefined,
-                          }}
-                          onClick={() => toggleFeatured(f)}
-                          disabled={saving}
-                          title="Pin this finding to show first in the client-facing report, overriding automatic sorting"
-                        >
-                          {f.featured ? '★ Featured' : '☆ Feature in report'}
-                        </button>
-                      )}
+                      <button
+                        className="rev-mini-btn"
+                        style={{
+                          marginLeft: 'auto',
+                          background: f.featured ? '#C2410C' : undefined,
+                          color: f.featured ? 'white' : undefined,
+                          borderColor: f.featured ? '#C2410C' : undefined,
+                        }}
+                        onClick={() => toggleFeatured(f)}
+                        disabled={saving}
+                        title="Pin this finding to show in the client-facing report's top findings, regardless of its severity — its true severity badge still displays honestly."
+                      >
+                        {f.featured ? '★ Featured' : '☆ Feature in report'}
+                      </button>
                     </div>
                     <p className="audit-finding-excerpt">&ldquo;{highlightExcerpt(f.original_excerpt, f.violating_phrase)}&rdquo;</p>
                     <p className="audit-finding-explanation">{f.explanation}</p>
