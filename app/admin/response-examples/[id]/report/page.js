@@ -77,9 +77,9 @@ export default function ResponseDemoReport() {
           body { margin: 0; }
           .no-print { display: none !important; }
           .report { padding: 0; }
-          .page-break { page-break-before: always; }
           @page { margin: 0.5in 0.6in; }
         }
+        .page-break { page-break-before: always; }
         .report {
           font-family: Helvetica, Arial, sans-serif;
           max-width: 780px;
@@ -220,7 +220,7 @@ export default function ResponseDemoReport() {
           </div>
         )}
 
-        <h2 className="section-h">Sample Responses</h2>
+        <h2 className="section-h page-break">Sample Responses</h2>
 
         {draftedReviews.length === 0 ? (
           <p className="body">No responses generated yet — go back and click &quot;Generate Responses.&quot;</p>
