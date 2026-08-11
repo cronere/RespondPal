@@ -208,12 +208,16 @@ THE RULE: Under HIPAA, this business cannot disclose Protected Health Informatio
 
 YOUR TASK: Read the draft above as if you are a stranger with no context. Ask yourself these questions with total honesty — do not give the benefit of the doubt just because the draft sounds warm or well-written:
 
-1. Does ANY part of this draft confirm, even indirectly, that the reviewer is or was a patient? This includes ALL of these exact patterns and any paraphrase of them — treat this list as illustrative, not exhaustive: "your experience," "your experience with us," "such a positive experience," "give you such a positive experience," "had a positive experience," "your visit," "your care," "your treatment," "the consultation," "the treatment," "trusting us," "trusting us with your care," "glad you came to us," "we enjoy having you," "get to be your dentist," "such an awesome patient," "always so happy to have you," "bringing in your family," "enjoyed your experience," "enjoyed her/his experience." If the draft contains ANY of these phrases or anything that means the same thing, this is a YES.
+1. Does ANY part of this draft confirm, even indirectly, that the reviewer is or was a patient? This includes ALL of these exact patterns and any paraphrase of them — treat this list as illustrative, not exhaustive: "your experience," "your experience with us," "such a positive experience," "give you such a positive experience," "had a positive experience," "your visit," "this visit," "that visit," "the visit," "your care," "your treatment," "the consultation," "the treatment," "trust," "trusting us," "trusting us with your care," "your trust," "honored by your trust," "grateful for your trust," "glad you came to us," "we enjoy having you," "get to be your dentist," "such an awesome patient," "always so happy to have you," "bringing in your family," "enjoyed your experience," "enjoyed her/his experience." If the draft contains ANY of these phrases or anything that means the same thing, this is a YES.
 2. Does this draft imply an ONGOING or FUTURE care relationship — "next visit," "discuss scheduling," "come back," "look forward to seeing you," "see you again soon," or anything implying they will be seen again as a patient?
 3. Does this draft echo back the SPECIFIC QUALITY of care or interaction the reviewer described (their "thoroughness," "kindness," "gentleness," how a procedure went, "physical comfort during treatment") — even while praising named staff?
 4. Does this draft reference a records search in any way — confirming OR denying that a record was found?
 5. Does this draft contain any fabricated contact information?
 6. Does this draft name any specific staff member or provider in connection with this reviewer's care?
+7. Does this draft reference a SPECIFIC OCCASION, DAY, OR INCIDENT tied to this reviewer, even in generalized-sounding language — "what happened," "what happened that day," "that occasion," "at that time," or anything pinning the response to a specific past event rather than speaking only in general category terms ("concerns about wait times")?
+8. Does this draft reference "looking into" this reviewer's specific situation, account, or matter — "look into this," "look into this with you," "look into this for you," "look into your account" — or otherwise imply there is a specific matter on file to investigate for this individual?
+
+This list is illustrative, not exhaustive — new phrasings of the same underlying ideas (confirming patient status, confirming a specific occasion, expressing a care-relationship bond) should be treated the same as the examples given, even if the exact wording is new.
 
 If the answer to ALL FIVE is genuinely no, respond with EXACTLY this JSON: {"compliant": true, "response": "the original draft, unchanged"}
 
@@ -288,7 +292,7 @@ const HARD_BLOCKLIST_PHRASES = [
   'experience',
   'your visit', 'this visit', 'that visit', 'the visit', 'your care', 'your treatment', 'your dental health', 'your consultation',
   'the consultation went well', 'the treatment went well',
-  'trust', 'that day', 'what happened that day', 'look into this', 'look into your',
+  'trust', 'that day', 'what happened that day', 'what happened', 'look into this', 'look into your',
   'glad you came to us', 'we enjoy having you', 'get to be your dentist',
   'such an awesome patient', 'always so happy to have you', 'bringing in your family',
   'bringing in your wonderful family', 'since your last visit', 'look forward to seeing you',
