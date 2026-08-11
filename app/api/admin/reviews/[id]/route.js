@@ -37,7 +37,7 @@ export async function PATCH(req, { params }) {
       .from('reviews')
       .update(updates)
       .eq('id', id)
-      .select('*, clients(business_name, response_signer, response_tone, things_to_avoid, business_tagline, ai_instructions)')
+      .select('*, clients(business_name, response_signer, response_tone, things_to_avoid, business_tagline, ai_instructions, industry)')
       .single()
 
     if (error) {
