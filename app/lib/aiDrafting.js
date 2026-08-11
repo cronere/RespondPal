@@ -198,6 +198,7 @@ SPECIFIC TO THIS REVIEW — DO NOT USE THESE NAMES: this reviewer specifically n
 FORBIDDEN phrases (DO NOT USE):
 - "your visit" / "this visit" / "your experience with us" / "your appointment"
 - "thank you for coming in" / "thank you for choosing us" / "thank you for trusting us"
+- "we appreciate our patients" / "we love our patients" / "we love treating your kids" — real ADA-documented HIPAA violation examples. Said directly to a specific reviewer, "our patients" implicitly categorizes THAT person as a patient — same problem as "your care," just phrased as a possessive plural instead of "your." Use "everyone who contacts us" or "our team" instead of "our patients."
 - "sorry about your experience" / "sorry this visit" / "sorry your visit fell short"
 - "patient experience" / "patient care" directed at the reviewer with "your"
 - "your treatment" / "your procedure" / "your care" / "your records"
@@ -321,6 +322,13 @@ export const HARD_BLOCKLIST_PHRASES = [
   'the consultation went well', 'the treatment went well',
   'trust', 'that day', 'what happened that day', 'what happened', 'look into this', 'look into your',
   'glad you came to us', 'we enjoy having you', 'get to be your dentist',
+  // 'our patients' — confirmed as a real violation pattern by external legal
+  // research (ADA guidance explicitly names "We appreciate our patients" as
+  // an example that violates HIPAA), not something we'd previously covered.
+  // Said in direct reply to a named reviewer, this possessive plural
+  // implicitly categorizes THAT person as a patient — same confirm/deny
+  // problem as "your care," just phrased as "our" instead of "your."
+  'our patients', 'love treating your kids', 'love treating our patients',
   'such an awesome patient', 'always so happy to have you', 'bringing in your family',
   'bringing in your wonderful family', 'since your last visit', 'look forward to seeing you',
   'see you again soon', 'see you soon', 'next visit', 'next appointment',
