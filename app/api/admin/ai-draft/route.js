@@ -170,6 +170,7 @@ FORBIDDEN phrases (DO NOT USE):
 
 REQUIRED patterns:
 - NEVER use the word "experience" anywhere in a response, in any context — this has repeatedly caused disclosure issues even when the sentence tried to generalize it. Use "interaction," "contact," or rephrase entirely. There is no safe way to use this word for a HIPAA-covered business — do not attempt it.
+- NEVER use the word "trust" anywhere in a response, in any form — "trusting us," "your trust," "honored by your trust" are all the same violation reworded, and this has repeatedly slipped through in different phrasings. "Thank you for these kind words" says the same thing safely. Do not attempt to use "trust" for a HIPAA-covered business.
 - General practice-value statements: "We take all feedback seriously" / "We hold ourselves to the highest standard of care" / "Every person who contacts our office deserves to be treated with respect"
 - Generic private-communication invitations: "Please reach out to our office directly" / "We welcome anyone with questions to contact us"
 - Express care through VALUES: "Quality of care is our highest priority" — NOT "we're sorry the care you received fell short"
@@ -284,9 +285,9 @@ const HARD_BLOCKLIST_PHRASES = [
   // legitimate reason a compliant response needs this word; safe synonyms
   // like "interaction" or "contacting our office" exist.
   'experience',
-  'your visit', 'your care', 'your treatment', 'your dental health', 'your consultation',
+  'your visit', 'this visit', 'that visit', 'the visit', 'your care', 'your treatment', 'your dental health', 'your consultation',
   'the consultation went well', 'the treatment went well',
-  'trusting us', 'trusting us with your care',
+  'trust',
   'glad you came to us', 'we enjoy having you', 'get to be your dentist',
   'such an awesome patient', 'always so happy to have you', 'bringing in your family',
   'bringing in your wonderful family', 'since your last visit', 'look forward to seeing you',
