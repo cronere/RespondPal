@@ -324,9 +324,24 @@ export const HARD_BLOCKLIST_PHRASES = [
   'physical comfort during treatment', 'happy to have you',
 ]
 
+// Normalizes smart quotes/apostrophes/dashes before blocklist matching.
+// LLM output routinely uses curly apostrophes (') while blocklist phrases
+// are written with straight ones (') — visually identical, but a different
+// Unicode character, which silently defeats plain .includes() matching.
+// We already solved this once for report highlighting; this applies the
+// same fix to BOTH deterministic scanners so a smart-quote variant can never
+// slip either check the way "You're absolutely right" just did.
+function normalizeForScan(s) {
+  return (s || '')
+    .replace(/[\u2018\u2019]/g, "'")
+    .replace(/[\u201C\u201D]/g, '"')
+    .replace(/[\u2013\u2014]/g, '-')
+    .toLowerCase()
+}
+
 export function scanForBlockedPhrases(text) {
-  const lower = (text || '').toLowerCase()
-  return HARD_BLOCKLIST_PHRASES.filter((phrase) => lower.includes(phrase))
+  const normalized = normalizeForScan(text)
+  return HARD_BLOCKLIST_PHRASES.filter((phrase) => normalized.includes(normalizeForScan(phrase)))
 }
 
 // UNIVERSAL — applies to every client, HIPAA or not. Rule 4 ("don't concede
@@ -349,8 +364,8 @@ const FAULT_CONCESSION_PHRASES = [
 ]
 
 export function scanForFaultConcession(text) {
-  const lower = (text || '').toLowerCase()
-  return FAULT_CONCESSION_PHRASES.filter((phrase) => lower.includes(phrase))
+  const normalized = normalizeForScan(text)
+  return FAULT_CONCESSION_PHRASES.filter((phrase) => normalized.includes(normalizeForScan(phrase)))
 }
 
 // Full pipeline: draft → (if HIPAA) independent compliance check → (if
