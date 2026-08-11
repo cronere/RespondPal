@@ -251,7 +251,7 @@ YOUR TASK: Read the draft above as if you are a stranger with no context. Ask yo
 
 1. Does ANY part of this draft confirm, even indirectly, that the reviewer is or was a patient? This includes ALL of these exact patterns and any paraphrase of them — treat this list as illustrative, not exhaustive: "your experience," "your experience with us," "such a positive experience," "give you such a positive experience," "had a positive experience," "your visit," "this visit," "that visit," "the visit," "your care," "your treatment," "the consultation," "the treatment," "trust," "trusting us," "trusting us with your care," "your trust," "honored by your trust," "grateful for your trust," "glad you came to us," "we enjoy having you," "get to be your dentist," "such an awesome patient," "always so happy to have you," "bringing in your family," "enjoyed your experience," "enjoyed her/his experience." If the draft contains ANY of these phrases or anything that means the same thing, this is a YES.
 2. Does this draft imply an ONGOING or FUTURE care relationship — "next visit," "discuss scheduling," "come back," "look forward to seeing you," "see you again soon," or anything implying they will be seen again as a patient?
-3. Does this draft echo back the SPECIFIC QUALITY of care or interaction the reviewer described (their "thoroughness," "kindness," "gentleness," how a procedure went, "physical comfort during treatment") — even while praising named staff?
+3. Does this draft echo back ANY SPECIFIC DETAIL the reviewer described about their own case — not just clinical quality ("thoroughness," "kindness," "gentleness," how a procedure went, "physical comfort during treatment"), but also operational/scheduling specifics like being "fit in quickly," seen "same day," or any other particular circumstance of their visit? Mirroring a specific detail back — even a non-clinical one — confirms that detail happened to THIS reviewer specifically, which is the same disclosure problem in a different category. A generic capability statement ("we're happy to accommodate scheduling needs") is fine; echoing their specific described circumstance back is not.
 4. Does this draft reference a records search in any way — confirming OR denying that a record was found?
 5. Does this draft contain any fabricated contact information?
 6. Does this draft name ANY specific staff member or provider in connection with this reviewer's care — including any of the names listed above under "NAMES THE REVIEWER USED"? Check this one especially carefully — cross-reference the draft against that exact list.
@@ -329,6 +329,13 @@ export const HARD_BLOCKLIST_PHRASES = [
   // implicitly categorizes THAT person as a patient — same confirm/deny
   // problem as "your care," just phrased as "our" instead of "your."
   'our patients', 'love treating your kids', 'love treating our patients',
+  // "made a positive difference" is the same disclosure as "you had a
+  // positive experience," just grammatically inverted (active vs passive
+  // voice) — same confirmation that a positive interaction happened to
+  // THIS reviewer specifically, discovered as a new paraphrase today.
+  'positive difference', 'made a difference for you', 'made a difference in your',
+  'grateful for the referral', 'thankful for the referral',
+  'fit them in quickly', 'fit you in quickly', 'got you in quickly',
   'such an awesome patient', 'always so happy to have you', 'bringing in your family',
   'bringing in your wonderful family', 'since your last visit', 'look forward to seeing you',
   'see you again soon', 'see you soon', 'next visit', 'next appointment',
