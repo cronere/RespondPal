@@ -89,6 +89,7 @@ FORBIDDEN phrases and patterns (DO NOT USE in any rewrite):
 REQUIRED patterns for rewrites:
 - NEVER use the word "experience" anywhere in a rewrite, in any context or combination — this single word has repeatedly caused disclosure issues today even when the surrounding sentence tried to generalize it (e.g. "we're sorry this experience felt otherwise" still points back at the reviewer's specific situation, even paired with generalizing language like "every interaction"). Use "interaction," "contact," or rephrase entirely instead. There is no safe way to use this word in a HIPAA rewrite — do not attempt it.
 - NEVER use the word "trust" anywhere in a rewrite, in any form — "trusting us," "your trust," "honored by your trust," "grateful for your trust" are all the SAME violation just reworded, and this word has repeatedly slipped through in different phrasings today. Any sentence expressing gratitude for a review does not need this word — "thank you for these kind words" or "we're so grateful for this feedback" say the same thing safely. There is no safe way to use "trust" in a HIPAA rewrite — do not attempt it.
+- DO NOT REFERENCE A SPECIFIC OCCASION, DAY, OR INCIDENT tied to this reviewer, even in generalized-sounding language — "what happened that day," "during your visit," "what happened," "that occasion," "at that time." Banning individual words ("experience," "trust," "visit") only closes one door at a time; this reviewer keeps finding new phrasings for the same underlying idea — confirming a specific occasion occurred. Speak ONLY in category terms about the TYPE of concern, never the specific occasion: "concerns about wait times," "communication during scheduling delays," "the situation you described." If you catch yourself writing anything that pins the response to a specific day, visit, or incident — even without naming it directly — rewrite it to reference only the general category of concern instead.
 - Use ONLY general practice-value statements that could apply to anyone: "We take all feedback seriously" / "We hold ourselves to the highest standard" / "Every person who contacts our office deserves to be treated with respect"
 - Invite GENERIC private communication: "Please reach out to our office directly" or "We welcome anyone with questions to contact us" — NEVER "please call us to discuss your concerns" or "so we can address what happened"
 - Express care through VALUES, not through acknowledging specifics: "Quality of care is our highest priority" — NOT "we're sorry the care you received fell short"
@@ -227,7 +228,7 @@ const HARD_BLOCKLIST_PHRASES = [
   'experience',
   'your visit', 'this visit', 'that visit', 'the visit', 'your care', 'your treatment', 'your dental health', 'your consultation',
   'the consultation went well', 'the treatment went well',
-  'trust',
+  'trust', 'that day', 'what happened that day',
   'glad you came to us', 'we enjoy having you', 'get to be your dentist',
   'such an awesome patient', 'always so happy to have you', 'bringing in your family',
   'bringing in your wonderful family', 'since your last visit', 'look forward to seeing you',
