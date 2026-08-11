@@ -783,12 +783,14 @@ a {
   flex-direction: column;
 }
 
-.price-card-featured {
+.price-card-featured,
+.price-card.featured {
   border-color: var(--orange);
   background: var(--card2);
 }
 
-.price-card-featured::before {
+.price-card-featured::before,
+.price-card.featured::before {
   content: '';
   position: absolute;
   inset: -1px;
@@ -987,6 +989,44 @@ a {
   color: var(--muted);
   line-height: 1.55;
   margin: 0;
+}
+
+/* ── PRICING — MOBILE ──
+   The base .pricing-cards rule uses flex-wrap with min-width:0 on the cards,
+   which lets the browser cram all 3 cards into one row at shrinking widths
+   instead of wrapping — that's the "looks horrible on mobile" bug. Below a
+   sensible breakpoint, force a clean vertical stack instead, and scale down
+   the oversized price figure and padding so nothing overflows a phone screen. */
+@media (max-width: 860px) {
+  .pricing-cards {
+    flex-direction: column;
+    align-items: center;
+    gap: 1.25rem;
+  }
+  .pricing-cards .price-card {
+    flex: none;
+    width: 100%;
+    max-width: 420px;
+  }
+}
+
+@media (max-width: 480px) {
+  .price-card {
+    padding: 1.75rem 1.5rem;
+  }
+  .price-amount {
+    font-size: 3rem;
+  }
+  .price-amount span {
+    font-size: 1.15rem;
+    margin-top: 0.4rem;
+  }
+  .pricing-addon {
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+    padding: 1.25rem;
+  }
 }
 
 /* ── FAQ ── */
@@ -5143,3 +5183,62 @@ footer a:hover {
 
 /* Feedback admin — contact name */
 .fb-contact-name { font-weight: 600; color: var(--admin-text); font-size: 0.9rem; margin-bottom: 0.15rem; }
+
+/* ═══════════════════════════════════════════════════════
+   Response Examples / Demo tool
+   ═══════════════════════════════════════════════════════ */
+.drawer-wide { width: min(720px, 92vw); }
+.admin-back-link { font-size: 0.8rem; color: var(--orange); text-decoration: none; display: inline-block; margin-bottom: 0.5rem; }
+.admin-back-link:hover { text-decoration: underline; }
+.admin-msg { background: #FFF7ED; border: 1px solid #FDBA74; color: #9A3412; font-size: 0.85rem; padding: 0.6rem 0.9rem; border-radius: 6px; margin-bottom: 1rem; }
+.admin-warning-banner { background: #FEF2F2; border: 1px solid #B91C1C; color: #991B1B; font-size: 0.85rem; padding: 0.7rem 1rem; border-radius: 6px; margin-bottom: 1rem; }
+.admin-loading { color: var(--admin-muted); font-size: 0.9rem; padding: 2rem 0; text-align: center; }
+.admin-empty { color: var(--admin-muted); font-size: 0.9rem; padding: 3rem 1rem; text-align: center; background: #f9fafb; border: 1px dashed #e5e7eb; border-radius: 8px; }
+
+.rev-textarea {
+  width: 100%;
+  min-height: 90px;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-family: inherit;
+  line-height: 1.5;
+  resize: vertical;
+  color: var(--admin-text);
+}
+.rev-textarea:focus { outline: none; border-color: var(--orange); }
+
+.demo-list { display: flex; flex-direction: column; gap: 0.6rem; }
+.demo-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 0.9rem 1.1rem;
+}
+.demo-card-name { font-weight: 700; color: var(--admin-text); font-size: 0.95rem; }
+.demo-card-meta { font-size: 0.8rem; color: var(--admin-muted); margin-top: 0.15rem; }
+.demo-card-actions { display: flex; gap: 0.5rem; align-items: center; }
+.demo-status { text-transform: capitalize; font-weight: 600; }
+.demo-status-draft { color: #9A3412; }
+.demo-status-generated { color: #15803d; }
+.demo-status-delivered { color: #1d4ed8; }
+
+.demo-review-input { border: 1px solid #e5e7eb; border-radius: 8px; padding: 0.9rem 1rem; margin-bottom: 0.75rem; background: #fafafa; }
+.demo-review-input-head { font-size: 0.75rem; font-weight: 700; color: var(--orange); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 0.5rem; }
+
+.demo-reviews-list { display: flex; flex-direction: column; gap: 0.9rem; }
+.demo-review-card { border: 1px solid #e5e7eb; border-radius: 8px; padding: 1rem 1.1rem; background: white; }
+.demo-review-card-head { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.5rem; flex-wrap: wrap; }
+.demo-review-platform { font-size: 0.7rem; font-weight: 700; color: var(--admin-muted); text-transform: uppercase; border: 1px solid #e5e7eb; border-radius: 4px; padding: 0.1rem 0.4rem; }
+.demo-review-stars { color: #F59E0B; letter-spacing: 1px; }
+.demo-review-name { font-weight: 700; font-size: 0.85rem; color: var(--admin-text); }
+.demo-flag-badge { background: #FEF2F2; color: #B91C1C; font-size: 0.72rem; font-weight: 700; padding: 0.15rem 0.5rem; border-radius: 4px; margin-left: auto; }
+.demo-review-text { font-style: italic; color: #4b5563; font-size: 0.85rem; margin-bottom: 0.6rem; }
+.demo-draft-box { background: #FFF7ED; border-left: 3px solid var(--orange); padding: 0.6rem 0.8rem; border-radius: 4px; }
+.demo-draft-label { font-size: 0.7rem; font-weight: 700; color: var(--orange); text-transform: uppercase; margin-bottom: 0.25rem; }
+.demo-draft-pending { color: var(--admin-muted); font-size: 0.85rem; font-style: italic; }
+.demo-draft-edit { display: flex; flex-direction: column; gap: 0.5rem; }
