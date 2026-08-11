@@ -25,6 +25,44 @@ export function isHipaaIndustry(industry) {
   return HIPAA_KEYWORDS.some(kw => ind.includes(kw))
 }
 
+// Extracts provider/staff names the REVIEWER themselves named, directly from
+// the review text — e.g. "Dr. Nathan Baker and his assistant Tracy" yields
+// ["Nathan Baker", "Baker", "Tracy"]. This is the structural fix for named-
+// provider leaks: rather than relying on the AI to remember "don't name
+// providers" as an abstract rule, we know the exact names in advance for
+// THIS review and can deterministically block them from appearing in THIS
+// specific draft — the same certainty the static blocklist gives "trust" or
+// "experience," just computed per-review instead of hardcoded once.
+export function extractNamedPersons(reviewText) {
+  const text = reviewText || ''
+  const names = new Set()
+
+  // "Dr. Nathan Baker" / "Dr Baker" / "Doctor Baker" — capture full name and
+  // last-name-only, since either could appear in a drafted response.
+  const drRegex = /\b(?:Dr\.?|Doctor)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)/g
+  let match
+  while ((match = drRegex.exec(text)) !== null) {
+    const fullName = match[1].trim()
+    names.add(fullName)
+    const parts = fullName.split(/\s+/)
+    if (parts.length > 1) names.add(parts[parts.length - 1]) // last name alone
+  }
+
+  // "his assistant Tracy" / "hygienist Sue" / "Assistant Manda and Lexy" —
+  // a role word directly followed by one or two capitalized first names.
+  // NOTE: deliberately no global 'i' flag — that would make [A-Z] match
+  // lowercase too, defeating the capitalization check and matching ordinary
+  // words like "did" right after "assistant". Instead, both cases of the
+  // role word's first letter are spelled out explicitly.
+  const roleRegex = /\b(?:[Aa]ssistant|[Hh]ygienist|[Nn]urse|[Tt]echnician|[Tt]ech|[Ss]taff member|[Rr]eceptionist|[Ff]ront desk)\s+([A-Z][a-z]+)(?:\s+and\s+([A-Z][a-z]+))?/g
+  while ((match = roleRegex.exec(text)) !== null) {
+    if (match[1]) names.add(match[1])
+    if (match[2]) names.add(match[2])
+  }
+
+  return [...names].filter((n) => n.length > 1)
+}
+
 const TONE_GUIDANCE = {
   professional_friendly: 'professional but warm and approachable',
   warm_personal: 'warm, personal, and genuinely appreciative',
@@ -137,6 +175,7 @@ Treat this by meaning, not just exact words. If they ask you to avoid a phrase, 
   }
 
   if (isHipaa) {
+    const namedPersons = extractNamedPersons(review.review_text)
     prompt += `\n\n═══════════════════════════════════════════════════════════
 HIPAA COMPLIANCE — MANDATORY FOR THIS HEALTHCARE BUSINESS
 ═══════════════════════════════════════════════════════════
@@ -145,6 +184,8 @@ This business is a HIPAA-covered entity. Federal law (the HIPAA Privacy Rule) pr
 1. NEVER confirm or deny the reviewer is a patient, client, or has received care — even if they identify themselves.
 
 2. NEVER reference any specific detail from the review — no treatment names, procedures, diagnoses, billing amounts, insurance details, appointment dates, visit history, clinical findings, or staff interactions that connect to this specific reviewer.
+${namedPersons.length > 0 ? `
+SPECIFIC TO THIS REVIEW — DO NOT USE THESE NAMES: this reviewer specifically named the following people: ${namedPersons.join(', ')}. Even though the reviewer named them first and it feels warm to acknowledge them, repeating any of these names in your response ties a specific provider to this reviewer's care, which is a disclosure. Refer to "our team" or "the whole practice" instead — do NOT write any of these names anywhere in your response, under any circumstance.` : ''}
 
 3. NEVER use "you" or "your" in a way that connects to specific care — no "your visit," "your treatment," "your appointment," "your concerns about the procedure."
 
@@ -195,12 +236,12 @@ SELF-CHECK: Before finalizing, reread the response and ask FIVE questions: (1) "
 // finite list of forbidden phrases, because it isn't phrase-matching — it's
 // re-reading the draft cold and asking whether IT, as a first-time reader,
 // would conclude the reviewer is a patient.
-function buildComplianceCheckPrompt(draftResponse) {
+function buildComplianceCheckPrompt(draftResponse, namedPersons) {
   return `You are a HIPAA compliance reviewer for a healthcare business. You did NOT write the response below — someone else did, and your ONLY job is to check it with completely fresh eyes, the way a compliance officer reviews someone else's work before it's approved.
 
 DRAFT RESPONSE TO REVIEW:
 "${draftResponse}"
-
+${namedPersons && namedPersons.length > 0 ? `\nNAMES THE REVIEWER USED IN THEIR ORIGINAL REVIEW (must NOT appear anywhere in the draft above): ${namedPersons.join(', ')}\n` : ''}
 THE RULE: Under HIPAA, this business cannot disclose Protected Health Information (PHI) in a public response — and PHI includes the simple fact that someone IS or WAS a patient. This applies even to warm, positive, well-intentioned responses.
 
 YOUR TASK: Read the draft above as if you are a stranger with no context. Ask yourself these questions with total honesty — do not give the benefit of the doubt just because the draft sounds warm or well-written:
@@ -210,9 +251,10 @@ YOUR TASK: Read the draft above as if you are a stranger with no context. Ask yo
 3. Does this draft echo back the SPECIFIC QUALITY of care or interaction the reviewer described (their "thoroughness," "kindness," "gentleness," how a procedure went, "physical comfort during treatment") — even while praising named staff?
 4. Does this draft reference a records search in any way — confirming OR denying that a record was found?
 5. Does this draft contain any fabricated contact information?
-6. Does this draft name any specific staff member or provider in connection with this reviewer's care?
+6. Does this draft name ANY specific staff member or provider in connection with this reviewer's care — including any of the names listed above under "NAMES THE REVIEWER USED"? Check this one especially carefully — cross-reference the draft against that exact list.
 7. Does this draft reference a SPECIFIC OCCASION, DAY, OR INCIDENT tied to this reviewer, even in generalized-sounding language — "what happened," "what happened that day," "that occasion," "at that time," or anything pinning the response to a specific past event rather than speaking only in general category terms ("concerns about wait times")?
 8. Does this draft reference "looking into" this reviewer's specific situation, account, or matter — "look into this," "look into this with you," "look into this for you," "look into your account" — or otherwise imply there is a specific matter on file to investigate for this individual?
+9. Does this draft state as FACT that the business was at fault, rather than acknowledging only the reviewer's feeling? (e.g. "that's a real gap in how we communicate" or "the lack of X from our team" concedes fault; "we understand that felt frustrating" only acknowledges feeling.) This isn't a HIPAA issue, but flag it the same way — it's a real liability problem.
 
 This list is illustrative, not exhaustive — new phrasings of the same underlying ideas (confirming patient status, confirming a specific occasion, expressing a care-relationship bond) should be treated the same as the examples given, even if the exact wording is new.
 
@@ -223,7 +265,7 @@ If ANY answer is yes, rewrite the response to remove ONLY the problematic elemen
 Respond with ONLY the JSON, no other text.`
 }
 
-export async function runComplianceCheck(draftResponse, apiKey) {
+export async function runComplianceCheck(draftResponse, apiKey, namedPersons) {
   const res = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: {
@@ -234,7 +276,7 @@ export async function runComplianceCheck(draftResponse, apiKey) {
     body: JSON.stringify({
       model: MODEL,
       max_tokens: 600,
-      messages: [{ role: 'user', content: buildComplianceCheckPrompt(draftResponse) }],
+      messages: [{ role: 'user', content: buildComplianceCheckPrompt(draftResponse, namedPersons) }],
     }),
   })
 
@@ -328,7 +370,8 @@ export async function generateCompliantDraft({ review, client, apiKey }) {
 
   let complianceFlag = null
   if (isHipaa) {
-    const checked = await runComplianceCheck(draft, apiKey)
+    const dynamicNames = extractNamedPersons(review.review_text)
+    const checked = await runComplianceCheck(draft, apiKey, dynamicNames)
     if (checked.compliant === false) {
       console.warn('Compliance check caught an issue and corrected it:', checked.issue)
       draft = checked.response
@@ -337,7 +380,14 @@ export async function generateCompliantDraft({ review, client, apiKey }) {
       complianceFlag = 'unchecked'
     }
 
-    const blockedHits = scanForBlockedPhrases(draft)
+    // Static blocklist (phrases that are always risky, every client) PLUS
+    // names extracted from THIS specific review — the structural fix for
+    // named-provider leaks. A generic blocklist can never contain "Dr. Baker"
+    // in advance since every business has different staff; this computes the
+    // exact names to block fresh, per review, from the review text itself.
+    const draftLower = draft.toLowerCase()
+    const nameHits = dynamicNames.filter((n) => draftLower.includes(n.toLowerCase()))
+    const blockedHits = [...scanForBlockedPhrases(draft), ...nameHits]
     if (blockedHits.length > 0) {
       console.error('HARD BLOCKLIST HIT after both AI passes — mandatory human review required:', blockedHits)
       complianceFlag = 'blocked_needs_human_review'
