@@ -71,12 +71,7 @@ export default function ResponseDemoDetail() {
       const genData = await genRes.json()
       if (genRes.ok) {
         setDemo(genData.demo)
-        const diag = (genData._diagnostics || [])[0]
-        if (diag) {
-          setMsg(`Regenerated. DIAGNOSTIC — isHipaaDetected: ${diag.isHipaaDetected}, complianceFlag: ${diag.complianceFlag}, blockedHits: [${diag.blockedHits.join(', ')}], faultHits: [${diag.faultHits.join(', ')}]`)
-        } else {
-          setMsg('Regenerated — a fresh draft was created for this review only.')
-        }
+        setMsg('Regenerated — a fresh draft was created for this review only.')
       } else {
         setMsg(genData.error || 'Failed to regenerate.')
       }
