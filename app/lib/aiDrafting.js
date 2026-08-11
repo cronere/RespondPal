@@ -118,6 +118,8 @@ CORE RULES — these apply to every response
 
 4. DON'T CONCEDE DISPUTED FAULT IN WRITING — acknowledge the FEELING, not the FAULT. "I understand how frustrating that was" — never "you're right, we shouldn't have." (This is the most common mistake to avoid: over-apologizing and conceding things that are actually disputed.) Genuine, concrete, undisputed failures (a real no-show, a mess left behind, a clear mix-up) you CAN own sincerely.
 
+4b. NEVER IMPLICITLY VALIDATE A CONTRADICTING OPINION, even without conceding fault in words. If a reviewer describes getting a second opinion, switching providers, or having someone else's assessment contradict this business's own recommendation or diagnosis, do NOT praise or compliment that action — "seeking a second opinion shows good judgment" sounds neutral but actually endorses the idea that the other provider was right and this business was wrong, without ever using an obviously risky phrase. Stay fully neutral about outcomes and other providers' opinions: acknowledge that clinical perspectives can differ, without praising the reviewer's choice to seek one or implying who was correct.
+
 5. PROTECT PRIVACY. Never publicly confirm, deny, or discuss a person's private details — whether they're a customer/patient/client, their visit or case history, their treatment, their billing/account/payment specifics, or any personal information. This holds even while declining a claim. The honest move when details are disputed or you can't verify: stay neutral and take it private ("please reach out to our office directly"). Never disclose or argue account/invoice specifics in public. NEVER use "look into this," "look into this with you," or "look into this for you" — this confirms a specific matter exists for this reviewer, which is its own disclosure. Use a fully generic invitation instead: "please reach out to our office directly" with no reference to what will happen once they do.
 
 6. BILLING / PRICING / REFUND complaints (very common): don't disclose or argue the specific charges, don't insist the price was fair, and don't concede a ripoff either. Acknowledge that surprise costs or billing confusion are stressful, own genuine confusion the business created (unclear wording, a real error), and move the actual numbers to a private conversation.
@@ -255,6 +257,7 @@ YOUR TASK: Read the draft above as if you are a stranger with no context. Ask yo
 7. Does this draft reference a SPECIFIC OCCASION, DAY, OR INCIDENT tied to this reviewer, even in generalized-sounding language — "what happened," "what happened that day," "that occasion," "at that time," or anything pinning the response to a specific past event rather than speaking only in general category terms ("concerns about wait times")?
 8. Does this draft reference "looking into" this reviewer's specific situation, account, or matter — "look into this," "look into this with you," "look into this for you," "look into your account" — or otherwise imply there is a specific matter on file to investigate for this individual?
 9. Does this draft state as FACT that the business was at fault, rather than acknowledging only the reviewer's feeling? (e.g. "that's a real gap in how we communicate" or "the lack of X from our team" concedes fault; "we understand that felt frustrating" only acknowledges feeling.) This isn't a HIPAA issue, but flag it the same way — it's a real liability problem.
+10. Does this draft praise, compliment, or validate a reviewer's decision to seek a second opinion, switch providers, or otherwise act on someone else's assessment that contradicted this business's own recommendation or treatment? Phrases like "seeking a second opinion shows good judgment" sound neutral but implicitly endorse that the other provider was right and this business was wrong — without using any obviously risky words. This is the same liability category as question 9, just harder to spot since it never states fault directly. Flag it the same way.
 
 This list is illustrative, not exhaustive — new phrasings of the same underlying ideas (confirming patient status, confirming a specific occasion, expressing a care-relationship bond) should be treated the same as the examples given, even if the exact wording is new.
 
@@ -361,6 +364,14 @@ const FAULT_CONCESSION_PHRASES = [
   'we failed to', 'we failed you',
   'the lack of', // e.g. "the lack of acknowledgment from our team" — states
                  // the deficiency as established fact rather than feeling
+  // Implicit validation of a contradicting second opinion/provider — sounds
+  // neutral, actually endorses that the other provider was right and this
+  // business was wrong, without ever using an obviously risky word. Imperfect
+  // coverage (this is a meaning-in-context problem, not a phrase-matching
+  // one) but catches the most common ways it gets phrased.
+  'shows good judgment', 'shows good judgement', 'good call to seek',
+  'wise decision to seek', 'wise to seek', 'right call to seek',
+  'smart to get a second opinion', 'smart to seek a second opinion',
 ]
 
 export function scanForFaultConcession(text) {
