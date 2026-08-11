@@ -59,7 +59,14 @@ export default function ResponseDemoReport() {
   if (error || !demo) return <div style={{ padding: '2rem', textAlign: 'center', color: '#b91c1c' }}>{error || 'Not found.'}</div>
 
   const isHipaa = isHipaaIndustry(demo.industry)
-  const draftedReviews = (demo.reviews || []).filter((r) => r.draft_response)
+  const FLAGGED_STATES = ['blocked_needs_human_review', 'concedes_fault_needs_review']
+  const allDrafted = (demo.reviews || []).filter((r) => r.draft_response)
+  // Flagged responses are excluded automatically — this report is a
+  // trust-building sales document, and a flagged draft should never reach a
+  // prospect without a human reviewing and clearing it first (edit the
+  // response in the detail page, which clears the flag, then it'll appear).
+  const draftedReviews = allDrafted.filter((r) => !FLAGGED_STATES.includes(r.complianceFlag))
+  const excludedCount = allDrafted.length - draftedReviews.length
   const platforms = [...new Set((demo.reviews || []).map((r) => r.platform))].join(' & ')
   const today = new Date(demo.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
 
@@ -137,6 +144,15 @@ export default function ResponseDemoReport() {
           {generating ? 'Generating PDF...' : scriptLoaded ? 'Download PDF' : 'Loading...'}
         </button>
       </div>
+
+      {excludedCount > 0 && (
+        <div className="no-print admin-warning-banner" style={{ margin: '0.75rem 1.5rem' }}>
+          ⚠️ {excludedCount} response{excludedCount > 1 ? 's were' : ' was'} generated but flagged for
+          compliance or fault-concession issues, so {excludedCount > 1 ? "they're" : "it's"} excluded from
+          this report automatically. Go back to the detail page, edit the flagged response(s) to clear the
+          issue, then return here — this note is for you only and will never appear in the downloaded PDF.
+        </div>
+      )}
 
       <div className="report" ref={reportRef}>
         <div className="top-bar" />
