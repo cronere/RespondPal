@@ -65,7 +65,8 @@ export default function ResponseDemoDetail() {
   if (!demo) return <div className="admin-page"><p className="admin-error">Not found.</p></div>
 
   const anyDrafted = demo.reviews.some((r) => r.draft_response)
-  const anyFlagged = demo.reviews.some((r) => r.complianceFlag === 'blocked_needs_human_review')
+  const FLAGGED_STATES = ['blocked_needs_human_review', 'concedes_fault_needs_review']
+  const anyFlagged = demo.reviews.some((r) => FLAGGED_STATES.includes(r.complianceFlag))
 
   return (
     <div className="admin-page admin-page-wide">
@@ -105,7 +106,10 @@ export default function ResponseDemoDetail() {
               <span className="demo-review-stars">{'★'.repeat(parseInt(r.star_rating) || 0)}{'☆'.repeat(5 - (parseInt(r.star_rating) || 0))}</span>
               <span className="demo-review-name">{r.reviewer_name || 'Anonymous'}</span>
               {r.complianceFlag === 'blocked_needs_human_review' && (
-                <span className="demo-flag-badge">⚠️ Needs review</span>
+                <span className="demo-flag-badge">⚠️ Compliance review needed</span>
+              )}
+              {r.complianceFlag === 'concedes_fault_needs_review' && (
+                <span className="demo-flag-badge">⚠️ Concedes fault</span>
               )}
             </div>
             <p className="demo-review-text">&ldquo;{r.review_text}&rdquo;</p>
