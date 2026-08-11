@@ -14,6 +14,9 @@ export default function ResponseDemoDetail() {
   const [editingIdx, setEditingIdx] = useState(null)
   const [editDraft, setEditDraft] = useState('')
   const [saving, setSaving] = useState(false)
+  const [editingDetails, setEditingDetails] = useState(false)
+  const [detailsDraft, setDetailsDraft] = useState({})
+  const [savingDetails, setSavingDetails] = useState(false)
 
   const load = () => {
     setLoading(true)
@@ -103,6 +106,40 @@ export default function ResponseDemoDetail() {
     setEditingIdx(null); setSaving(false)
   }
 
+  // Closes a real gap: there was previously NO way to fix the industry field
+  // (or any other detail) after a demo was created — if it was left blank or
+  // mistyped, the entire compliance system silently never activates, with no
+  // path to correct it except deleting and recreating the whole demo.
+  const startEditDetails = () => {
+    setDetailsDraft({
+      business_name: demo.business_name || '',
+      industry: demo.industry || '',
+      contact_name: demo.contact_name || '',
+      contact_email: demo.contact_email || '',
+      google_url: demo.google_url || '',
+      yelp_url: demo.yelp_url || '',
+      total_reviews: demo.total_reviews ?? '',
+      response_rate: demo.response_rate ?? '',
+    })
+    setEditingDetails(true)
+  }
+
+  const saveDetails = async () => {
+    setSavingDetails(true)
+    const res = await fetch(`/api/admin/response-demos/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        ...detailsDraft,
+        total_reviews: detailsDraft.total_reviews === '' ? null : parseInt(detailsDraft.total_reviews),
+        response_rate: detailsDraft.response_rate === '' ? null : parseFloat(detailsDraft.response_rate),
+      }),
+    })
+    const data = await res.json()
+    if (res.ok) { setDemo(data.demo); setMsg('Business details saved.') }
+    setEditingDetails(false); setSavingDetails(false)
+  }
+
   if (loading) return <div className="admin-page"><p className="admin-loading">Loading…</p></div>
   if (!demo) return <div className="admin-page"><p className="admin-error">Not found.</p></div>
 
@@ -121,6 +158,7 @@ export default function ResponseDemoDetail() {
           </p>
         </div>
         <div style={{ display: 'flex', gap: '0.5rem' }}>
+          <button className="rev-mini-btn" onClick={startEditDetails}>Edit Details</button>
           <button className="drawer-btn-primary" onClick={generate} disabled={generating}>
             {generating ? 'Generating…' : anyDrafted ? '↻ Generate Remaining' : 'Generate Responses'}
           </button>
@@ -131,6 +169,67 @@ export default function ResponseDemoDetail() {
           )}
         </div>
       </header>
+
+      {!demo.industry && (
+        <div className="admin-warning-banner">
+          ⚠️ <b>No industry set for this business.</b> Without it, our system can&apos;t detect this as a
+          healthcare business — which means every response generated so far has skipped ALL compliance
+          protections entirely (no HIPAA rules, no second review, no blocklist). Click &quot;Edit Details&quot;
+          above, set the industry (e.g. &quot;Dental,&quot; &quot;Endodontics,&quot; &quot;Med Spa&quot;), save,
+          then regenerate every response on this page — none of the current drafts were checked for compliance.
+        </div>
+      )}
+
+      {editingDetails && (
+        <div className="drawer-section" style={{ background: '#fafafa', border: '1px solid #e5e7eb', borderRadius: 8, padding: '1rem', marginBottom: '1rem' }}>
+          <div className="drawer-section-label">Business details</div>
+          <div className="drawer-grid">
+            <label className="field">
+              <span className="field-label">Business name</span>
+              <input value={detailsDraft.business_name} onChange={(e) => setDetailsDraft((d) => ({ ...d, business_name: e.target.value }))} />
+            </label>
+            <label className="field">
+              <span className="field-label">Industry</span>
+              <input
+                value={detailsDraft.industry}
+                onChange={(e) => setDetailsDraft((d) => ({ ...d, industry: e.target.value }))}
+                placeholder="Dental, Med Spa, Chiropractic, etc."
+              />
+              <span className="field-hint">This is what determines whether HIPAA protections activate — get it right.</span>
+            </label>
+            <label className="field">
+              <span className="field-label">Contact name</span>
+              <input value={detailsDraft.contact_name} onChange={(e) => setDetailsDraft((d) => ({ ...d, contact_name: e.target.value }))} />
+            </label>
+            <label className="field">
+              <span className="field-label">Contact email</span>
+              <input value={detailsDraft.contact_email} onChange={(e) => setDetailsDraft((d) => ({ ...d, contact_email: e.target.value }))} />
+            </label>
+            <label className="field">
+              <span className="field-label">Google URL</span>
+              <input value={detailsDraft.google_url} onChange={(e) => setDetailsDraft((d) => ({ ...d, google_url: e.target.value }))} />
+            </label>
+            <label className="field">
+              <span className="field-label">Yelp URL</span>
+              <input value={detailsDraft.yelp_url} onChange={(e) => setDetailsDraft((d) => ({ ...d, yelp_url: e.target.value }))} />
+            </label>
+            <label className="field">
+              <span className="field-label">Total reviews</span>
+              <input type="number" value={detailsDraft.total_reviews} onChange={(e) => setDetailsDraft((d) => ({ ...d, total_reviews: e.target.value }))} />
+            </label>
+            <label className="field">
+              <span className="field-label">Response rate %</span>
+              <input type="number" value={detailsDraft.response_rate} onChange={(e) => setDetailsDraft((d) => ({ ...d, response_rate: e.target.value }))} />
+            </label>
+          </div>
+          <div className="rev-draft-actions">
+            <button className="rev-mini-btn" onClick={() => setEditingDetails(false)} disabled={savingDetails}>Cancel</button>
+            <button className="rev-ai-btn" onClick={saveDetails} disabled={savingDetails}>
+              {savingDetails ? 'Saving…' : 'Save Details'}
+            </button>
+          </div>
+        </div>
+      )}
 
       {msg && <div className="admin-msg">{msg}</div>}
       {anyFlagged && (
