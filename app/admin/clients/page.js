@@ -26,6 +26,7 @@ export default function AdminClients() {
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
   const [selected, setSelected] = useState(null)
+  const [adding, setAdding] = useState(false)
 
   const loadClients = async () => {
     setLoading(true)
@@ -77,6 +78,12 @@ export default function AdminClients() {
     setSelected(null)
   }
 
+  const onCreated = (created) => {
+    setClients((prev) => [created, ...prev])
+    setAdding(false)
+    setSelected(created)
+  }
+
   return (
     <div className="admin-page admin-page-wide">
       <header className="admin-page-head admin-page-head-row">
@@ -86,9 +93,18 @@ export default function AdminClients() {
             {loading ? 'Loading…' : `${clients.length} client${clients.length === 1 ? '' : 's'} total`}
           </p>
         </div>
-        <button className="admin-refresh-btn" onClick={loadClients} disabled={loading}>
-          ↻ Refresh
-        </button>
+        <div style={{ display: 'flex', gap: '0.5rem' }}>
+          <button className="admin-refresh-btn" onClick={loadClients} disabled={loading}>
+            ↻ Refresh
+          </button>
+          <button
+            className="drawer-btn-primary"
+            onClick={() => setAdding(true)}
+            title="Manually add a client directly — for warm-network or trial clients with no Stripe payment"
+          >
+            + Add Client
+          </button>
+        </div>
       </header>
 
       <div className="clients-toolbar">
@@ -118,7 +134,7 @@ export default function AdminClients() {
       ) : filtered.length === 0 ? (
         <div className="clients-empty">
           {clients.length === 0
-            ? 'No clients yet. They appear here once they complete onboarding.'
+            ? 'No clients yet. Click "+ Add Client" above, or they\'ll appear automatically once someone completes onboarding.'
             : 'No clients match this filter.'}
         </div>
       ) : (
@@ -162,7 +178,118 @@ export default function AdminClients() {
       {selected && (
         <ClientDrawer client={selected} onClose={() => setSelected(null)} onSaved={onSaved} />
       )}
+
+      {adding && (
+        <AddClientModal onClose={() => setAdding(false)} onCreated={onCreated} />
+      )}
     </div>
+  )
+}
+
+function AddClientModal({ onClose, onCreated }) {
+  const [form, setForm] = useState({
+    business_name: '', owner_name: '', email: '', phone: '', industry: '',
+    plan: 'monthly', locations: 1, monthly_rate: 0, status: 'onboarding',
+  })
+  const [saving, setSaving] = useState(false)
+  const [saveError, setSaveError] = useState('')
+
+  const set = (field, value) => setForm((f) => ({ ...f, [field]: value }))
+
+  const handleCreate = async () => {
+    if (!form.business_name.trim()) {
+      setSaveError('Business name is required.')
+      return
+    }
+    setSaving(true)
+    setSaveError('')
+    try {
+      const res = await fetch('/api/admin/clients', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      })
+      const data = await res.json()
+      if (res.ok) onCreated(data.client)
+      else { setSaveError(data.error || 'Failed to create client.'); setSaving(false) }
+    } catch (err) {
+      setSaveError('Failed to create client.'); setSaving(false)
+    }
+  }
+
+  return (
+    <>
+      <div className="drawer-overlay" onClick={onClose} />
+      <div className="drawer">
+        <div className="drawer-head">
+          <div>
+            <h2>Add Client</h2>
+            <p className="drawer-sub">
+              For warm-network, trial, or any client without a Stripe payment. Everything else — access
+              toggles, brand voice, AI instructions — can be filled in after creating, from the client&apos;s
+              normal drawer.
+            </p>
+          </div>
+          <button className="drawer-close" onClick={onClose}>✕</button>
+        </div>
+
+        <div className="drawer-body">
+          <div className="drawer-section">
+            <div className="drawer-section-label">The essentials</div>
+            <div className="drawer-grid">
+              <Field label="Business name *">
+                <input
+                  value={form.business_name}
+                  onChange={(e) => set('business_name', e.target.value)}
+                  placeholder="e.g. Spokane Family Dental"
+                  autoFocus
+                />
+              </Field>
+              <Field label="Owner name">
+                <input value={form.owner_name} onChange={(e) => set('owner_name', e.target.value)} />
+              </Field>
+              <Field label="Email">
+                <input value={form.email} onChange={(e) => set('email', e.target.value)} />
+              </Field>
+              <Field label="Phone">
+                <input value={form.phone} onChange={(e) => set('phone', e.target.value)} />
+              </Field>
+              <Field label="Industry" hint="e.g. Dental, Med Spa — determines HIPAA handling.">
+                <input value={form.industry} onChange={(e) => set('industry', e.target.value)} placeholder="Dental" />
+              </Field>
+              <Field label="Status">
+                <select value={form.status} onChange={(e) => set('status', e.target.value)}>
+                  {STATUS_OPTIONS.map((s) => <option key={s} value={s}>{s}</option>)}
+                </select>
+              </Field>
+              <Field label="Plan">
+                <select value={form.plan} onChange={(e) => set('plan', e.target.value)}>
+                  <option value="monthly">Monthly</option>
+                  <option value="monthly_plus_cleanup">Monthly + Cleanup</option>
+                  <option value="cleanup_only">Cleanup only</option>
+                </select>
+              </Field>
+              <Field label="Locations">
+                <input type="number" min="1" value={form.locations}
+                  onChange={(e) => set('locations', parseInt(e.target.value) || 1)} />
+              </Field>
+              <Field label="Monthly rate ($)" hint="Leave at 0 for a free trial.">
+                <input type="number" value={form.monthly_rate}
+                  onChange={(e) => set('monthly_rate', parseInt(e.target.value) || 0)} />
+              </Field>
+            </div>
+          </div>
+        </div>
+
+        <div className="drawer-foot">
+          {saveError && <div className="drawer-error">{saveError}</div>}
+          <button className="drawer-btn-secondary" onClick={onClose} disabled={saving}>Cancel</button>
+          <button className="drawer-btn-primary" onClick={handleCreate} disabled={saving}>
+            {saving ? 'Creating…' : 'Create Client'}
+          </button>
+        </div>
+      </div>
+    </>
   )
 }
 
