@@ -329,6 +329,30 @@ export function scanForBlockedPhrases(text) {
   return HARD_BLOCKLIST_PHRASES.filter((phrase) => lower.includes(phrase))
 }
 
+// UNIVERSAL — applies to every client, HIPAA or not. Rule 4 ("don't concede
+// disputed fault in writing") has been in the drafting prompt since the very
+// first version, but a single AI pass following it correctly 100% of the
+// time is exactly the same false hope we had about HIPAA rules before we
+// built layered defenses for those. This is the same fix, generalized: a
+// business publicly admitting fault in writing is a real liability exposure
+// regardless of industry, so this check is NOT gated behind isHipaa.
+const FAULT_CONCESSION_PHRASES = [
+  "you're right", 'you are right', "you're absolutely right",
+  'that is a real gap', "that's a real gap", 'that was a real gap',
+  'we should have', 'we should of',
+  "that's on us", 'that is on us',
+  'we dropped the ball', 'our mistake', 'we made a mistake',
+  'that should not have happened', "that shouldn't have happened",
+  'we failed to', 'we failed you',
+  'the lack of', // e.g. "the lack of acknowledgment from our team" — states
+                 // the deficiency as established fact rather than feeling
+]
+
+export function scanForFaultConcession(text) {
+  const lower = (text || '').toLowerCase()
+  return FAULT_CONCESSION_PHRASES.filter((phrase) => lower.includes(phrase))
+}
+
 // Full pipeline: draft → (if HIPAA) independent compliance check → (if
 // HIPAA) deterministic blocklist scan. Returns { draft, complianceFlag }.
 // Used by both the live ai-draft route and the response-demos tool so both
@@ -392,6 +416,18 @@ export async function generateCompliantDraft({ review, client, apiKey }) {
       console.error('HARD BLOCKLIST HIT after both AI passes — mandatory human review required:', blockedHits)
       complianceFlag = 'blocked_needs_human_review'
     }
+  }
+
+  // UNIVERSAL — runs for every client regardless of industry, since publicly
+  // conceding fault in writing is a liability risk everywhere, not just in
+  // healthcare. Cheap deterministic scan, no extra API call needed, so there's
+  // no reason this should only protect HIPAA clients.
+  const faultHits = scanForFaultConcession(draft)
+  if (faultHits.length > 0) {
+    console.error('Fault-concession language found — needs human review before posting:', faultHits)
+    complianceFlag = complianceFlag === 'blocked_needs_human_review'
+      ? complianceFlag // already flagged for a HIPAA reason, keep that flag
+      : 'concedes_fault_needs_review'
   }
 
   return { draft, complianceFlag }
