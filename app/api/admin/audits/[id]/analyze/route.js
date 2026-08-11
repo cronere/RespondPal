@@ -169,11 +169,14 @@ ${numbered}
 THE RULE: These are proposed replacement responses for a HIPAA-covered healthcare business. None of them may disclose Protected Health Information (PHI) — which includes the simple fact that someone IS or WAS a patient. This applies even to warm, positive rewrites.
 
 For EACH rewrite, ask with total honesty — do not give the benefit of the doubt just because it sounds warm or well-written:
-1. Does it confirm, even indirectly, that the reviewer is or was a patient (including soft paraphrases of "trust," "your care," "your experience")?
+1. Does it confirm, even indirectly, that the reviewer is or was a patient (including soft paraphrases of "trust," "your care," "your experience," "this/that/the visit")?
 2. Does it imply an ONGOING or FUTURE care relationship (next visit, scheduling, coming back)?
 3. Does it name a specific staff member or provider in connection with this reviewer's care?
 4. Does it reference "looking into" or otherwise confirm a specific matter/situation exists for this reviewer, even in generalized category language?
 5. Does it reference a records search in any way, or contain fabricated contact info?
+6. Does it reference a SPECIFIC OCCASION, DAY, OR INCIDENT tied to this reviewer, even in generalized-sounding language ("what happened," "what happened that day," "that occasion") — rather than speaking only in general category terms?
+
+This list is illustrative, not exhaustive — new phrasings of the same underlying ideas should be treated the same as the examples given.
 
 Respond with ONLY a JSON array, one entry per rewrite in the same order, no other text:
 [{"index": 0, "compliant": true, "response": "unchanged text"}, {"index": 1, "compliant": false, "response": "corrected text with the issue removed, preserving as much warmth/structure as possible", "issue": "short description"}]`
