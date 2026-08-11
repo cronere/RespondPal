@@ -213,6 +213,7 @@ export default function ResponseDemoReport() {
             <div className="protect-item"><span className="protect-check">✓</span><span>Implies an ongoing or future care relationship (no &quot;see you at your next visit&quot;)</span></div>
             <div className="protect-item"><span className="protect-check">✓</span><span>Names a specific provider or staff member in connection with a reviewer&apos;s care</span></div>
             <div className="protect-item"><span className="protect-check">✓</span><span>References a records search in any direction — confirmed, denied, or otherwise</span></div>
+            <div className="protect-item"><span className="protect-check">✓</span><span>Concedes fault or validates a disputed claim in writing — even indirectly, like agreeing a second opinion was &quot;the right call&quot; — since this can be used against a practice legally and often reconfirms the exact situation a reviewer described</span></div>
             <p className="body" style={{ marginTop: 10, marginBottom: 0, fontSize: '8.5pt', color: '#166534' }}>
               Every response also passes through a second, independent compliance review before you ever see it —
               and a final human check before anything is posted publicly.
