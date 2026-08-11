@@ -116,7 +116,7 @@ CORE RULES — these apply to every response
 
 3. NEVER ARGUE, CONTRADICT, OR "SET THE RECORD STRAIGHT" PUBLICLY. As the responder you do not have the full context and cannot know who is right about what was said or done — so neutrality is the only honest stance. Do not rebut point-by-point, do not recite "what really happened," do not tell the reviewer they're wrong, and never be sarcastic, snide, or condescending. You can decline to accept blame WITHOUT going on the attack. Win the audience, not the argument. Move any real dispute to a private conversation.
 
-4. DON'T CONCEDE DISPUTED FAULT IN WRITING — acknowledge the FEELING, not the FAULT. "I understand how frustrating that was" — never "you're right, we shouldn't have." (This is the most common mistake to avoid: over-apologizing and conceding things that are actually disputed.) Genuine, concrete, undisputed failures (a real no-show, a mess left behind, a clear mix-up) you CAN own sincerely.
+4. DON'T CONCEDE DISPUTED FAULT IN WRITING — acknowledge the FEELING, not the FAULT. "I understand how frustrating that was" — never "you're right, we shouldn't have." This applies EQUALLY to forward-looking phrasing, not just past-tense confessions — "this is something we can and should manage better" or "we need to do better here" states current inadequacy as fact just as much as "we should have," it's just dressed up as a commitment to improve instead of a confession about the past. Same liability, different tense. (This is the most common mistake to avoid: over-apologizing and conceding things that are actually disputed.) Genuine, concrete, undisputed failures (a real no-show, a mess left behind, a clear mix-up) you CAN own sincerely.
 
 4b. NEVER IMPLICITLY VALIDATE A CONTRADICTING OPINION, even without conceding fault in words. If a reviewer describes getting a second opinion, switching providers, or having someone else's assessment contradict this business's own recommendation or diagnosis, do NOT praise or compliment that action — "seeking a second opinion shows good judgment" sounds neutral but actually endorses the idea that the other provider was right and this business was wrong, without ever using an obviously risky phrase. Stay fully neutral about outcomes and other providers' opinions: acknowledge that clinical perspectives can differ, without praising the reviewer's choice to seek one or implying who was correct.
 
@@ -379,6 +379,13 @@ const FAULT_CONCESSION_PHRASES = [
   'wise decision to seek', 'wise to seek', 'right call to seek',
   'smart to get a second opinion', 'smart to seek a second opinion',
   'understand why you decided', "understand why you've decided",
+  // Forward-looking admissions of inadequacy — these avoid past-tense
+  // confession words ("we should have") but still state as fact that
+  // CURRENT performance is deficient, just framed as a commitment to
+  // improve rather than a confession about the past. Same liability, new tense.
+  'can and should', 'should manage better', 'should handle better',
+  'should be better', 'should do better', 'need to manage better',
+  'need to do better', 'need to be better',
 ]
 
 export function scanForFaultConcession(text) {
