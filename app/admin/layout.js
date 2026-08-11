@@ -10,6 +10,7 @@ const NAV = [
   { href: '/admin/onboarding', label: 'Onboarding' },
   { href: '/admin/reviews', label: 'Reviews', badgeKey: 'reviews' },
   { href: '/admin/audits', label: 'Risk Audits', badgeKey: 'audits' },
+  { href: '/admin/response-examples', label: 'Response Examples' },
   { href: '/admin/feedback', label: 'Feedback', badgeKey: 'feedback' },
   { href: '/admin/yelp-prep', label: 'Quick Draft' },
 ]
