@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
-import { supabaseAdmin } from '../../../../../../lib/supabaseAdmin'
-import { generateCompliantDraft } from '../../../../../../lib/aiDrafting'
+import { supabaseAdmin } from '../../../../../lib/supabaseAdmin'
+import { generateCompliantDraft } from '../../../../../lib/aiDrafting'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
