@@ -325,6 +325,12 @@ export const HARD_BLOCKLIST_PHRASES = [
   'bringing in your wonderful family', 'since your last visit', 'look forward to seeing you',
   'see you again soon', 'see you soon', 'next visit', 'next appointment',
   'physical comfort during treatment', 'happy to have you',
+  // 'your records' has been forbidden in the drafting prompt since day one
+  // but was never added here — this was a real, standalone gap independent
+  // of anything else, and one of the most serious possible phrases to miss:
+  // it directly invokes a records search, the exact pattern behind actual
+  // HHS enforcement actions.
+  'your records', 'look at your records', 'reviewing your case', 'your case',
 ]
 
 // Normalizes smart quotes/apostrophes/dashes before blocklist matching.
@@ -372,6 +378,7 @@ const FAULT_CONCESSION_PHRASES = [
   'shows good judgment', 'shows good judgement', 'good call to seek',
   'wise decision to seek', 'wise to seek', 'right call to seek',
   'smart to get a second opinion', 'smart to seek a second opinion',
+  'understand why you decided', "understand why you've decided",
 ]
 
 export function scanForFaultConcession(text) {
