@@ -9,6 +9,7 @@ export default function ResponseDemoDetail() {
   const [demo, setDemo] = useState(null)
   const [loading, setLoading] = useState(true)
   const [generating, setGenerating] = useState(false)
+  const [regeneratingIdx, setRegeneratingIdx] = useState(null)
   const [msg, setMsg] = useState('')
   const [editingIdx, setEditingIdx] = useState(null)
   const [editDraft, setEditDraft] = useState('')
@@ -39,6 +40,42 @@ export default function ResponseDemoDetail() {
       setMsg('Failed to generate.')
     }
     setGenerating(false)
+  }
+
+  // The bulk "Generate Responses" button (above) deliberately SKIPS any
+  // review that already has a draft_response, to avoid re-spending API calls
+  // on drafts that already look fine. That's the right default — but it
+  // means once every review has SOME draft, clicking that button again is a
+  // silent no-op, which is confusing when the underlying drafting logic has
+  // since improved and you specifically want a fresh attempt. This function
+  // is the fix: clear just this one review's draft first, then call the
+  // same generate endpoint — which will now see it as empty and regenerate
+  // ONLY this review, leaving every other saved draft untouched.
+  const regenerateOne = async (idx) => {
+    setRegeneratingIdx(idx); setMsg('')
+    try {
+      const clearedReviews = demo.reviews.map((r, i) =>
+        i === idx ? { ...r, draft_response: null, complianceFlag: null } : r
+      )
+      const clearRes = await fetch(`/api/admin/response-demos/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reviews: clearedReviews }),
+      })
+      if (!clearRes.ok) { setMsg('Failed to clear the old draft.'); setRegeneratingIdx(null); return }
+
+      const genRes = await fetch(`/api/admin/response-demos/${id}/generate`, { method: 'POST' })
+      const genData = await genRes.json()
+      if (genRes.ok) {
+        setDemo(genData.demo)
+        setMsg('Regenerated — a fresh draft was created for this review only.')
+      } else {
+        setMsg(genData.error || 'Failed to regenerate.')
+      }
+    } catch {
+      setMsg('Failed to regenerate.')
+    }
+    setRegeneratingIdx(null)
   }
 
   const startEdit = (idx) => {
@@ -134,7 +171,17 @@ export default function ResponseDemoDetail() {
                 <div className="demo-draft-box">
                   <div className="demo-draft-label">How we&apos;d respond</div>
                   <p>{r.draft_response}</p>
-                  <button className="rev-mini-btn" onClick={() => startEdit(i)}>Edit</button>
+                  <div style={{ display: 'flex', gap: '0.5rem' }}>
+                    <button className="rev-mini-btn" onClick={() => startEdit(i)}>Edit</button>
+                    <button
+                      className="rev-mini-btn"
+                      onClick={() => regenerateOne(i)}
+                      disabled={regeneratingIdx === i}
+                      title="Discards this draft and generates a fresh one — use this after a compliance fix, since 'Generate Responses' above skips reviews that already have any draft."
+                    >
+                      {regeneratingIdx === i ? 'Regenerating…' : '↻ Regenerate'}
+                    </button>
+                  </div>
                 </div>
               )
             ) : (
