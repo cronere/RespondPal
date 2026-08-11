@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { generateCompliantDraft } from '../../../../lib/aiDrafting'
+import { generateCompliantDraft } from '../../../lib/aiDrafting'
 
 // AI draft endpoint — generates an on-brand response to a review using the
 // client's saved voice settings. Calls the Anthropic API via the shared
