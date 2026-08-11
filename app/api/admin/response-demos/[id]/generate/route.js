@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { supabaseAdmin } from '../../../../../lib/supabaseAdmin'
-import { generateCompliantDraft } from '../../../../../lib/aiDrafting'
+import { generateCompliantDraft, isHipaaIndustry, scanForBlockedPhrases, scanForFaultConcession } from '../../../../../lib/aiDrafting'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
@@ -45,8 +45,19 @@ export async function POST(req, { params }) {
       response_tone: 'professional_friendly',
     }
 
+    // DIAGNOSTIC — this is the single most important line for tracing why a
+    // known-bad response isn't getting flagged. If isHipaaDetected is false,
+    // NONE of the compliance check, blocklist scan, or name extraction ever
+    // runs at all — that alone would fully explain a clean-looking draft
+    // that's actually full of violations.
+    const isHipaaDetected = isHipaaIndustry(demo.industry)
+    console.error('=== RESPONSE-DEMO GENERATE DIAGNOSTIC ===')
+    console.error('demo.industry (raw value):', JSON.stringify(demo.industry))
+    console.error('isHipaaIndustry(demo.industry):', isHipaaDetected)
+
     const updatedReviews = []
     const errors = []
+    const diagnostics = []
     for (const review of reviews) {
       if (review.draft_response) {
         // Already drafted — leave as-is rather than re-spending API calls.
@@ -63,6 +74,21 @@ export async function POST(req, { params }) {
           },
           client,
           apiKey,
+        })
+        // Independently re-run the deterministic scans here too, purely for
+        // diagnostic visibility — this does NOT affect what gets saved, it
+        // just tells us definitively whether the blocklist logic itself
+        // would catch this exact draft, regardless of what complianceFlag
+        // came back as.
+        const blockedHits = scanForBlockedPhrases(draft)
+        const faultHits = scanForFaultConcession(draft)
+        console.error(`Review "${review.reviewer_name}": isHipaa=${isHipaaDetected}, complianceFlag=${complianceFlag}, blockedHits=${JSON.stringify(blockedHits)}, faultHits=${JSON.stringify(faultHits)}`)
+        diagnostics.push({
+          reviewer: review.reviewer_name,
+          isHipaaDetected,
+          complianceFlag,
+          blockedHits,
+          faultHits,
         })
         updatedReviews.push({ ...review, draft_response: draft, complianceFlag })
       } catch (err) {
@@ -87,6 +113,10 @@ export async function POST(req, { params }) {
     return NextResponse.json({
       demo: updated,
       warning: errors.length > 0 ? `Failed to draft: ${errors.join(', ')}. Try generating again.` : null,
+      // TEMPORARY — surfaced directly in the API response so it's visible
+      // without digging through Vercel logs. Remove once the root cause is
+      // confirmed and fixed.
+      _diagnostics: diagnostics,
     })
   } catch (err) {
     console.error('Response demo generate error:', err)
