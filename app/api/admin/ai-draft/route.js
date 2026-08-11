@@ -83,7 +83,7 @@ CORE RULES — these apply to every response
 
 4. DON'T CONCEDE DISPUTED FAULT IN WRITING — acknowledge the FEELING, not the FAULT. "I understand how frustrating that was" — never "you're right, we shouldn't have." (This is the most common mistake to avoid: over-apologizing and conceding things that are actually disputed.) Genuine, concrete, undisputed failures (a real no-show, a mess left behind, a clear mix-up) you CAN own sincerely.
 
-5. PROTECT PRIVACY. Never publicly confirm, deny, or discuss a person's private details — whether they're a customer/patient/client, their visit or case history, their treatment, their billing/account/payment specifics, or any personal information. This holds even while declining a claim. The honest move when details are disputed or you can't verify: stay neutral and take it private ("we'd like to look into this with you directly — please reach out"). Never disclose or argue account/invoice specifics in public.
+5. PROTECT PRIVACY. Never publicly confirm, deny, or discuss a person's private details — whether they're a customer/patient/client, their visit or case history, their treatment, their billing/account/payment specifics, or any personal information. This holds even while declining a claim. The honest move when details are disputed or you can't verify: stay neutral and take it private ("please reach out to our office directly"). Never disclose or argue account/invoice specifics in public. NEVER use "look into this," "look into this with you," or "look into this for you" — this confirms a specific matter exists for this reviewer, which is its own disclosure. Use a fully generic invitation instead: "please reach out to our office directly" with no reference to what will happen once they do.
 
 6. BILLING / PRICING / REFUND complaints (very common): don't disclose or argue the specific charges, don't insist the price was fair, and don't concede a ripoff either. Acknowledge that surprise costs or billing confusion are stressful, own genuine confusion the business created (unclear wording, a real error), and move the actual numbers to a private conversation.
 
@@ -288,7 +288,7 @@ const HARD_BLOCKLIST_PHRASES = [
   'experience',
   'your visit', 'this visit', 'that visit', 'the visit', 'your care', 'your treatment', 'your dental health', 'your consultation',
   'the consultation went well', 'the treatment went well',
-  'trust', 'that day', 'what happened that day',
+  'trust', 'that day', 'what happened that day', 'look into this', 'look into your',
   'glad you came to us', 'we enjoy having you', 'get to be your dentist',
   'such an awesome patient', 'always so happy to have you', 'bringing in your family',
   'bringing in your wonderful family', 'since your last visit', 'look forward to seeing you',
