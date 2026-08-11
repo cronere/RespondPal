@@ -228,7 +228,7 @@ const HARD_BLOCKLIST_PHRASES = [
   'experience',
   'your visit', 'this visit', 'that visit', 'the visit', 'your care', 'your treatment', 'your dental health', 'your consultation',
   'the consultation went well', 'the treatment went well',
-  'trust', 'that day', 'what happened that day',
+  'trust', 'that day', 'what happened that day', 'look into this', 'look into your',
   'glad you came to us', 'we enjoy having you', 'get to be your dentist',
   'such an awesome patient', 'always so happy to have you', 'bringing in your family',
   'bringing in your wonderful family', 'since your last visit', 'look forward to seeing you',
