@@ -124,7 +124,10 @@ function ResultColumn({ title, result, isV2 }) {
             </div>
             {result.meta.attempts.map((a, i) => (
               <div key={i} style={{ fontSize: '0.8rem', marginBottom: '0.5rem', padding: '0.5rem', background: a.passed ? '#F0FDF4' : '#FEF2F2', borderRadius: 4 }}>
-                <div style={{ fontWeight: 700 }}>Attempt {a.attemptNum}: {a.passed ? '✓ Passed' : '✗ Failed'}</div>
+                <div style={{ fontWeight: 700, marginBottom: '0.35rem' }}>Attempt {a.attemptNum}: {a.passed ? '✓ Passed' : '✗ Failed'}</div>
+                <div style={{ fontStyle: 'italic', color: '#374151', marginBottom: '0.35rem', lineHeight: 1.5 }}>
+                  &ldquo;{a.draft}&rdquo;
+                </div>
                 {a.checkResults.filter((c) => c.violates).map((c, j) => (
                   <div key={j} style={{ marginTop: '0.25rem', color: '#991B1B' }}>
                     <b>{c.label}:</b> &ldquo;{c.quote}&rdquo; — {c.reason}
