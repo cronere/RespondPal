@@ -346,6 +346,8 @@ export const HARD_BLOCKLIST_PHRASES = [
   // it directly invokes a records search, the exact pattern behind actual
   // HHS enforcement actions.
   'your records', 'look at your records', 'reviewing your case', 'your case',
+  'review your case', 'review your records', 'review your file',
+  'when you needed it',
 ]
 
 // Normalizes smart quotes/apostrophes/dashes before blocklist matching.
@@ -399,8 +401,10 @@ const FAULT_CONCESSION_PHRASES = [
   // CURRENT performance is deficient, just framed as a commitment to
   // improve rather than a confession about the past. Same liability, new tense.
   'can and should', 'should manage better', 'should handle better',
-  'should be better', 'should do better', 'need to manage better',
+  'should be better', 'should do better', 'can do better', 'how we can do better', 'need to manage better',
   'need to do better', 'need to be better',
+  'not the standard we aim for', 'not the standard we hold ourselves to',
+  'not the standard we set for', 'not the standard we strive for',
 ]
 
 export function scanForFaultConcession(text) {
