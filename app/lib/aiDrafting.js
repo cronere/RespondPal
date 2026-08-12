@@ -347,7 +347,7 @@ export const HARD_BLOCKLIST_PHRASES = [
   // HHS enforcement actions.
   'your records', 'look at your records', 'reviewing your case', 'your case',
   'review your case', 'review your records', 'review your file',
-  'when you needed it',
+  'when you needed it', 'another chance', 'review the specifics',
 ]
 
 // Normalizes smart quotes/apostrophes/dashes before blocklist matching.
@@ -405,6 +405,10 @@ const FAULT_CONCESSION_PHRASES = [
   'need to do better', 'need to be better',
   'not the standard we aim for', 'not the standard we hold ourselves to',
   'not the standard we set for', 'not the standard we strive for',
+  'we should be', // present-continuous variant — "we should be reaching out
+                  // proactively" is the same admission as "we should have,"
+                  // just a different tense (third variant found today:
+                  // past confession, forward commitment, now present-continuous)
 ]
 
 export function scanForFaultConcession(text) {
