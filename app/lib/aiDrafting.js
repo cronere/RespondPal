@@ -60,6 +60,20 @@ export function extractNamedPersons(reviewText) {
     if (match[2]) names.add(match[2])
   }
 
+  // "working with Manda and Justice" / "seen by Sue" / "treated by Tracy and
+  // Sam" / "helped by X" — an interaction verb directly naming who the
+  // reviewer interacted with, WITHOUT a role word or title. This is a
+  // genuinely common, natural way reviewers name staff, and was the exact
+  // gap that let two real names through completely uncaught in production
+  // testing — the role-word pattern above requires "assistant Tracy," but
+  // reviewers just as often write "working with Tracy" with no descriptor
+  // at all.
+  const verbRegex = /\b(?:working with|worked with|seen by|treated by|helped by|cared for by|assisted by|handled by)\s+([A-Z][a-z]+)(?:\s+and\s+([A-Z][a-z]+))?/g
+  while ((match = verbRegex.exec(text)) !== null) {
+    if (match[1]) names.add(match[1])
+    if (match[2]) names.add(match[2])
+  }
+
   return [...names].filter((n) => n.length > 1)
 }
 
@@ -334,6 +348,9 @@ export const HARD_BLOCKLIST_PHRASES = [
   // voice) — same confirmation that a positive interaction happened to
   // THIS reviewer specifically, discovered as a new paraphrase today.
   'positive difference', 'made a difference for you', 'made a difference in your',
+  'hit that mark', 'hit the mark', // another paraphrase of confirming a
+  // positive outcome happened specifically for this reviewer — same family
+  // as "positive difference," different idiom
   'grateful for the referral', 'thankful for the referral',
   'fit them in quickly', 'fit you in quickly', 'got you in quickly',
   'such an awesome patient', 'always so happy to have you', 'bringing in your family',
