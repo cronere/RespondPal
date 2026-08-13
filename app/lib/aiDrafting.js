@@ -39,7 +39,7 @@ export function extractNamedPersons(reviewText) {
 
   // "Dr. Nathan Baker" / "Dr Baker" / "Doctor Baker" — capture full name and
   // last-name-only, since either could appear in a drafted response.
-  const drRegex = /\b(?:Dr\.?|Doctor)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)/g
+  const drRegex = /\b(?:Dr\.?|Doctor)\s+([A-Z][a-zA-Z]+(?:\s+[A-Z][a-zA-Z]+)?)/g
   let match
   while ((match = drRegex.exec(text)) !== null) {
     const fullName = match[1].trim()
@@ -48,13 +48,14 @@ export function extractNamedPersons(reviewText) {
     if (parts.length > 1) names.add(parts[parts.length - 1]) // last name alone
   }
 
-  // "his assistant Tracy" / "hygienist Sue" / "Assistant Manda and Lexy" —
-  // a role word directly followed by one or two capitalized first names.
+  // "his assistant Tracy" / "hygienist Sue" / "Assistant Manda and Lexy" /
+  // "PT Rachel" — a role word directly followed by one or two capitalized
+  // first names.
   // NOTE: deliberately no global 'i' flag — that would make [A-Z] match
   // lowercase too, defeating the capitalization check and matching ordinary
   // words like "did" right after "assistant". Instead, both cases of the
   // role word's first letter are spelled out explicitly.
-  const roleRegex = /\b(?:[Aa]ssistant|[Hh]ygienist|[Nn]urse|[Tt]echnician|[Tt]ech|[Ss]taff member|[Rr]eceptionist|[Ff]ront desk)\s+([A-Z][a-z]+)(?:\s+and\s+([A-Z][a-z]+))?/g
+  const roleRegex = /\b(?:[Aa]ssistant|[Hh]ygienist|[Nn]urse|[Tt]echnician|[Tt]ech|[Ss]taff member|[Rr]eceptionist|[Ff]ront desk|PT)\s+([A-Z][a-zA-Z]+)(?:\s+and\s+([A-Z][a-zA-Z]+))?/g
   while ((match = roleRegex.exec(text)) !== null) {
     if (match[1]) names.add(match[1])
     if (match[2]) names.add(match[2])
@@ -68,10 +69,37 @@ export function extractNamedPersons(reviewText) {
   // testing — the role-word pattern above requires "assistant Tracy," but
   // reviewers just as often write "working with Tracy" with no descriptor
   // at all.
-  const verbRegex = /\b(?:working with|worked with|seen by|treated by|helped by|cared for by|assisted by|handled by)\s+([A-Z][a-z]+)(?:\s+and\s+([A-Z][a-z]+))?/g
+  const verbRegex = /\b(?:working with|worked with|seen by|treated by|helped by|cared for by|assisted by|handled by)\s+([A-Z][a-zA-Z]+)(?:\s+and\s+([A-Z][a-zA-Z]+))?/g
   while ((match = verbRegex.exec(text)) !== null) {
     if (match[1]) names.add(match[1])
     if (match[2]) names.add(match[2])
+  }
+
+  // "Daniel and his team" / "Daniel and the whole team" — a bare first name
+  // (no title, no role word) directly followed by "and his/her/their/the
+  // team". Common when a reviewer refers to a provider casually by first
+  // name only, especially chiropractors/PTs who are often addressed without
+  // "Dr." in casual reviews.
+  const teamRegex = /\b([A-Z][a-zA-Z]+)\s+and\s+(?:his|her|their|the)(?:\s+whole)?\s+team\b/g
+  while ((match = teamRegex.exec(text)) !== null) {
+    if (match[1]) names.add(match[1])
+  }
+
+  // "Erika, Mitchell, Calle, Savion and Makela" — a bare comma-separated
+  // list of first names with no titles or role words at all, typically
+  // appearing when a reviewer thanks an entire team by name at the end of a
+  // review. Genuinely hard to distinguish from an ordinary list of capitalized
+  // words in general English, but in this narrow domain (review responses)
+  // a run of 3+ Title-Case single words joined by commas/and is a strong,
+  // reasonably safe signal of a name list — the false-positive risk here is
+  // low enough to accept given the severity of missing a real name list.
+  const nameListRegex = /\b([A-Z][a-zA-Z]+)(?:,\s*([A-Z][a-zA-Z]+))+(?:,?\s+and\s+([A-Z][a-zA-Z]+))/g
+  while ((match = nameListRegex.exec(text)) !== null) {
+    const fullMatch = match[0]
+    const potentialNames = fullMatch.split(/,\s*|\s+and\s+/).map((s) => s.trim()).filter(Boolean)
+    if (potentialNames.length >= 3) {
+      potentialNames.forEach((n) => names.add(n))
+    }
   }
 
   return [...names].filter((n) => n.length > 1)
@@ -347,7 +375,7 @@ export const HARD_BLOCKLIST_PHRASES = [
   // positive experience," just grammatically inverted (active vs passive
   // voice) — same confirmation that a positive interaction happened to
   // THIS reviewer specifically, discovered as a new paraphrase today.
-  'positive difference', 'made a difference for you', 'made a difference in your',
+  'positive difference', 'made a difference for you', 'made a difference in your', 'made a real difference', 'made a difference',
   'hit that mark', 'hit the mark', // another paraphrase of confirming a
   // positive outcome happened specifically for this reviewer — same family
   // as "positive difference," different idiom
@@ -426,6 +454,11 @@ const FAULT_CONCESSION_PHRASES = [
                   // proactively" is the same admission as "we should have,"
                   // just a different tense (third variant found today:
                   // past confession, forward commitment, now present-continuous)
+  'we respect that you sought', // second-opinion validation, new phrasing —
+  // "we respect that you sought additional opinions" implicitly endorses
+  // the decision the same way "shows good judgment" does
+  'real issues that deserve attention', // states current problems as
+  // established fact rather than acknowledging feeling
 ]
 
 export function scanForFaultConcession(text) {
