@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { supabaseAdmin } from '../../../../../lib/supabaseAdmin'
+import { scanForBlockedPhrases, scanForFaultConcession } from '../../../../../lib/aiDrafting'
 
 // POST /api/admin/audits/[id]/analyze — run the Reputation Risk Audit scan
 // on the raw pasted responses stored on this audit record. Uses Claude to
@@ -221,28 +222,13 @@ async function runRewriteComplianceCheck(rewrites, apiKey) {
 // paraphrases, but for every pattern already proven to fail in testing, this
 // is a 100%-reliable backstop. Grows over time — add newly discovered failure
 // patterns here, in both this file and app/api/admin/ai-draft/route.js.
-const HARD_BLOCKLIST_PHRASES = [
-  // 'experience' has caused three separate near-misses today in different
-  // phrase combinations ("share your experience," "positive experience,"
-  // "this experience felt otherwise") — rather than continuing to enumerate
-  // every combination, the word itself is now banned from rewrites. There is
-  // no legitimate reason a compliant rewrite needs this word; safe synonyms
-  // like "interaction" or "contacting our office" exist.
-  'experience',
-  'your visit', 'this visit', 'that visit', 'the visit', 'your care', 'your treatment', 'your dental health', 'your consultation',
-  'the consultation went well', 'the treatment went well',
-  'trust', 'that day', 'what happened that day', 'look into this', 'look into your',
-  'glad you came to us', 'we enjoy having you', 'get to be your dentist',
-  'such an awesome patient', 'always so happy to have you', 'bringing in your family',
-  'bringing in your wonderful family', 'since your last visit', 'look forward to seeing you',
-  'see you again soon', 'see you soon', 'next visit', 'next appointment',
-  'physical comfort during treatment', 'happy to have you',
-]
-
-function scanForBlockedPhrases(text) {
-  const lower = (text || '').toLowerCase()
-  return HARD_BLOCKLIST_PHRASES.filter((phrase) => lower.includes(phrase))
-}
+// HARD_BLOCKLIST_PHRASES and scanForBlockedPhrases now come from the shared
+// lib/aiDrafting.js — this used to be a separate local copy that silently
+// drifted out of sync with all the fixes discovered during the ai-draft/
+// response-demos testing (missing ~20+ later additions plus the entire
+// fault-concession scanner and dynamic name extraction). Importing the
+// shared functions means this file automatically inherits every future
+// fix too, the same way ai-draft/route.js already does.
 
 export async function POST(req, { params }) {
   try {
@@ -406,9 +392,11 @@ export async function POST(req, { params }) {
       rewriteIndexes.forEach((findingIdx) => {
         const currentRewrite = newFindings[findingIdx]?.rewrite
         if (!currentRewrite) return
-        const hits = scanForBlockedPhrases(currentRewrite)
+        const blockedHits = scanForBlockedPhrases(currentRewrite)
+        const faultHits = scanForFaultConcession(currentRewrite)
+        const hits = [...blockedHits, ...faultHits]
         if (hits.length > 0) {
-          console.error('HARD BLOCKLIST HIT in audit rewrite after both AI passes — flagging for manual review:', hits)
+          console.error('HARD BLOCKLIST/FAULT-CONCESSION HIT in audit rewrite after both AI passes — flagging for manual review:', hits)
           newFindings[findingIdx] = { ...newFindings[findingIdx], needsManualReview: true, blockedPhrases: hits }
         }
       })
