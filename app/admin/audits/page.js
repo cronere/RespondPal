@@ -241,6 +241,8 @@ function AuditDrawer({ audit, onClose, onUpdate, onDelete }) {
   const [rawInput, setRawInput] = useState(audit.raw_input || '')
   const [summaryDraft, setSummaryDraft] = useState(audit.summary || '')
   const [editingSummary, setEditingSummary] = useState(false)
+  const [editingRewriteIdx, setEditingRewriteIdx] = useState(null)
+  const [rewriteDraft, setRewriteDraft] = useState('')
   const [regeneratingSummary, setRegeneratingSummary] = useState(false)
   const [stats, setStats] = useState({
     total_reviews: audit.total_reviews || '',
@@ -494,6 +496,36 @@ function AuditDrawer({ audit, onClose, onUpdate, onDelete }) {
     if (idx === -1) return
     const updated = raw.map((item, i) => i === idx ? { ...item, featured: !item.featured } : item)
     patch({ findings: updated }, updated[idx].featured ? 'Featured for report — will show first.' : 'Unfeatured.')
+  }
+
+  const startEditRewrite = (findingObj) => {
+    const raw = audit.findings || []
+    const idx = raw.indexOf(findingObj)
+    if (idx === -1) return
+    setRewriteDraft(findingObj.rewrite || '')
+    setEditingRewriteIdx(idx)
+  }
+
+  const saveRewrite = () => {
+    if (editingRewriteIdx === null) return
+    const raw = audit.findings || []
+    // Editing manually clears needsManualReview/blockedPhrases — the human
+    // has now personally reviewed and approved this exact text, which is
+    // the actual point of a human-in-the-loop review step. If the new text
+    // still contains something risky, that's on the next read-through, not
+    // a stale flag left over from the AI's earlier attempt.
+    const updated = raw.map((item, i) =>
+      i === editingRewriteIdx
+        ? { ...item, rewrite: rewriteDraft, needsManualReview: false, blockedPhrases: [] }
+        : item
+    )
+    patch({ findings: updated }, 'Rewrite updated.')
+    setEditingRewriteIdx(null)
+  }
+
+  const cancelEditRewrite = () => {
+    setEditingRewriteIdx(null)
+    setRewriteDraft('')
   }
 
   const copyRewrite = (text) => {
@@ -831,8 +863,31 @@ function AuditDrawer({ audit, onClose, onUpdate, onDelete }) {
                     {f.rewrite && (
                       <div className="audit-rewrite" style={f.needsManualReview ? { borderColor: '#B91C1C' } : undefined}>
                         <div className="audit-rewrite-label">Suggested rewrite</div>
-                        <p>{f.rewrite}</p>
-                        <button className="rev-mini-btn" onClick={() => copyRewrite(f.rewrite)}>Copy</button>
+                        {editingRewriteIdx === (audit.findings || []).indexOf(f) ? (
+                          <>
+                            <textarea
+                              className="rev-textarea"
+                              style={{ minHeight: 90 }}
+                              value={rewriteDraft}
+                              onChange={(e) => setRewriteDraft(e.target.value)}
+                              autoFocus
+                            />
+                            <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.4rem' }}>
+                              <button className="rev-mini-btn" onClick={cancelEditRewrite} disabled={saving}>Cancel</button>
+                              <button className="rev-ai-btn" onClick={saveRewrite} disabled={saving}>
+                                {saving ? 'Saving…' : 'Save'}
+                              </button>
+                            </div>
+                          </>
+                        ) : (
+                          <>
+                            <p>{f.rewrite}</p>
+                            <div style={{ display: 'flex', gap: '0.5rem' }}>
+                              <button className="rev-mini-btn" onClick={() => startEditRewrite(f)}>Edit</button>
+                              <button className="rev-mini-btn" onClick={() => copyRewrite(f.rewrite)}>Copy</button>
+                            </div>
+                          </>
+                        )}
                       </div>
                     )}
                   </div>
