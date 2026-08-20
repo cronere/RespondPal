@@ -376,6 +376,10 @@ export const HARD_BLOCKLIST_PHRASES = [
   // voice) — same confirmation that a positive interaction happened to
   // THIS reviewer specifically, discovered as a new paraphrase today.
   'positive difference', 'made a difference for you', 'made a difference in your', 'made a real difference', 'made a difference',
+  'that resonated', 'resonated with you', 'resonates with you', 'worked well for you', // "it's wonderful
+  // to know that resonated" — confirms a specific value/approach was
+  // personally experienced positively by this reviewer, same family as
+  // "positive difference"
   'hit that mark', 'hit the mark', // another paraphrase of confirming a
   // positive outcome happened specifically for this reviewer — same family
   // as "positive difference," different idiom
