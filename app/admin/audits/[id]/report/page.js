@@ -478,7 +478,7 @@ export default function AuditReport() {
             if (critical.length > 0) {
               steps.push({
                 lead: 'Rewrite the flagged responses.',
-                rest: ' Each critical finding has a recommended rewrite that fixes the problem while preserving what the response was trying to accomplish. These should be updated as soon as possible.'
+                rest: ` The ${inlineRewriteIds.size} example${inlineRewriteIds.size === 1 ? '' : 's'} above show${inlineRewriteIds.size === 1 ? 's' : ''} what a compliant rewrite looks like — all ${critical.length} critical finding${critical.length === 1 ? '' : 's'} need the same treatment before they're safe to leave live. Getting the language exactly right without creating a new compliance risk is real work.`
               })
             }
             if (combinedNeg > 0) {
@@ -507,7 +507,7 @@ export default function AuditReport() {
           <div className="cta-head">Want us to handle this for you?</div>
           <div className="cta-body">
             {critical.length > 0
-              ? 'We\'ll rewrite every flagged response, respond to all unanswered negatives, and clean up your entire profile.'
+              ? `We'll rewrite all ${critical.length} flagged response${critical.length === 1 ? '' : 's'} — not just the ${inlineRewriteIds.size} shown above — respond to every unanswered negative, and clean up your entire profile.`
               : combinedNeg > 0
                 ? 'We\'ll respond to every unanswered negative and keep your profile sharp going forward.'
                 : 'We\'ll take every future review off your plate — responded to within 24 hours, every time.'}
@@ -529,7 +529,7 @@ export default function AuditReport() {
         </div>
 
         <div className="sig">
-          If you have any questions about this report or want to discuss what we found, just reply to this email or reach out directly. Happy to walk you through it.
+          I'll follow up with you this week to walk through the findings and answer anything that comes up — no pressure, just want to make sure this actually gets fixed. If a specific day works better for you, just reply and let me know.
         </div>
         <div className="sig" style={{ marginTop: 8 }}>
           <span className="sig-name">Jacob Merkley</span><br />
