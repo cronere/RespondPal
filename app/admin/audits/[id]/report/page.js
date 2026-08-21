@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { useParams } from 'next/navigation'
+import { isHipaaIndustry } from '../../../../../lib/aiDrafting'
 
 export default function AuditReport() {
   const { id } = useParams()
@@ -221,12 +222,14 @@ export default function AuditReport() {
   const platforms = hasYelp ? 'Google & Yelp' : 'Google'
   const now = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
 
-  const ind = (audit.industry || '').toLowerCase()
-  const hipaaKeywords = ['dental', 'dentist', 'orthodont', 'medical', 'doctor', 'physician',
-    'chiropractic', 'chiropractor', 'med spa', 'medspa', 'dermatology', 'dermatologist',
-    'cosmetic surg', 'plastic surg', 'optometry', 'behavioral health', 'mental health',
-    'urgent care', 'clinic', 'healthcare', 'health care']
-  const isHipaa = hipaaKeywords.some(kw => ind.includes(kw))
+  // isHipaa now comes from the shared lib/aiDrafting.js — this used to be a
+  // separate local copy that silently fell out of sync with every keyword
+  // added throughout today (missing "physical therapy" specifically caused
+  // this exact box to be suppressed on a real physical therapy audit, even
+  // though the findings themselves were correctly flagged elsewhere using a
+  // more current, separately-maintained list). Importing the shared function
+  // means this file automatically inherits every future addition too.
+  const isHipaa = isHipaaIndustry(audit.industry)
 
   return (
     <>
