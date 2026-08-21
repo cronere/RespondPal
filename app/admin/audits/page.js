@@ -788,32 +788,29 @@ function AuditDrawer({ audit, onClose, onUpdate, onDelete }) {
               <hr style={{ border: 'none', borderTop: '1px solid #FDBA74', margin: '0.6rem 0' }} />
 
               <p style={{ fontSize: '0.85rem', color: '#1a1a1a', lineHeight: 1.6, marginBottom: '0.5rem' }}>
-                A lot of practices have someone on staff handling this, but there are risks with that.
+                Honestly, you&apos;re in a hard spot in today&apos;s world. AI is using review responses — or the
+                lack of a response, not just the rating — to decide whether to promote you in search engines. But
+                you also need to stay HIPAA and privacy compliant.
                 <br /><br />
-                First, our system removes the HIPAA risk, even by accident. Our proprietary AI system has reviewed
-                tens of thousands of healthcare reviews to identify how to respond without confirming patient status,
-                never referencing treatment or billing details — you know, the stuff that gets a practice in trouble.
+                That&apos;s where we come in. Our proprietary AI has reviewed tens of thousands of healthcare
+                reviews to identify how to respond without confirming patient status, never referencing treatment
+                or billing.
                 <br /><br />
-                Yet it still provides empathy, stays on brand for your business, and doesn&apos;t rotate the same
-                5 canned templates. When your office manager is busy already, this is a task that doesn&apos;t get
-                the right treatment.
-                <br /><br />
-                Honestly, you&apos;re in a hard spot in today&apos;s world. AI is using review responses — or lack
-                of response — and not just the rating, to decide whether to promote you in the search engines. But
-                you need to stay HIPAA and privacy compliant as well.
-                <br /><br />
-                That&apos;s where we come in. We take this off your plate, stay compliant, stay on brand, and boost
-                your reputation in the marketplace with a 24 hour response guarantee.
+                Yet it still provides empathy for negative reviews, stays on brand for your business, and
+                doesn&apos;t rotate the same five canned templates. And then we boost your reputation in the
+                marketplace with a 24-hour response guarantee — all while staying compliant and simply taking this
+                task off your plate.
               </p>
 
               <hr style={{ border: 'none', borderTop: '1px solid #FDBA74', margin: '0.6rem 0' }} />
 
               <p style={{ fontSize: '0.85rem', color: '#1a1a1a', lineHeight: 1.6 }}>
-                If you just want the stuff I flagged today cleaned up, that&apos;s a one-time $197 fee. If you want
-                us to handle this permanently going forward, we charge $397/month with no contract. Either way, this
-                report is yours to keep.
+                If you want us to simply help clean up the flagged reviews, we charge a one-time $197 fee. We do
+                have a monthly service to protect you and take this off your plate moving forward.
                 <br /><br />
-                Let me know if you have any questions. Enjoy the day.
+                Either way, this report is yours to keep.
+                <br /><br />
+                If working together makes sense, let me know. Enjoy the day.
               </p>
             </div>
           )}
