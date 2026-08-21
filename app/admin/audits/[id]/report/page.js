@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { useParams } from 'next/navigation'
-import { isHipaaIndustry } from '../../../../../lib/aiDrafting'
+import { isHipaaIndustry } from '../../../../lib/aiDrafting'
 
 export default function AuditReport() {
   const { id } = useParams()
