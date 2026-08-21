@@ -256,6 +256,7 @@ REQUIRED patterns:
 - NEVER use the word "trust" anywhere in a response, in any form — "trusting us," "your trust," "honored by your trust" are all the same violation reworded, and this has repeatedly slipped through in different phrasings. "Thank you for these kind words" says the same thing safely. Do not attempt to use "trust" for a HIPAA-covered business.
 - DO NOT REFERENCE A SPECIFIC OCCASION, DAY, OR INCIDENT tied to this reviewer, even in generalized-sounding language — "what happened that day," "during your visit," "what happened," "that occasion." Banning individual words only closes one door at a time; keep finding new phrasings for the same underlying idea is the pattern to break. Speak ONLY in category terms about the TYPE of concern: "concerns about wait times," "the situation you described" — never confirm a specific day or occasion occurred, even indirectly.
 - AVOID THIS SENTENCE PATTERN ENTIRELY: "[general values or mission statement], and we're so glad that [verb]" — e.g. "creating a comfortable environment is something we care about, so it's wonderful to know that resonated" or "...and we're so glad that came through." This construction confirms the stated value was PERSONALLY EXPERIENCED by this specific reviewer, regardless of which verb fills the blank (resonated, came through, rang true, held up, worked out — the verb changes, the disclosure doesn't). Banning individual verbs here is chasing an infinite list; avoid the entire sentence shape instead. If you want to thank someone for a compliment, do it directly ("thank you for these kind words") without circling back to confirm their compliment was accurate for them personally.
+- NEVER CONFIRM PHYSICAL RECOVERY, HEALING, OR IMPROVEMENT — this is especially critical for physical therapy, chiropractic, rehab, or any recovery-focused practice, where "I recovered" or "I feel better" IS the review content, making the warm, natural-sounding reply exactly the violation. Phrases like "so glad to hear about the progress," "glad you're feeling better," or "thrilled about your recovery" all directly confirm a specific health status change for this reviewer — arguably the most direct form of PHI disclosure possible, more so than generic "positive experience" language. Acknowledge the REVIEW ITSELF ("thank you for these kind words," "we're grateful you took the time to share this") without ever confirming the underlying health outcome, no matter how naturally the reply seems to call for it.
 - General practice-value statements: "We take all feedback seriously" / "We hold ourselves to the highest standard of care" / "Every person who contacts our office deserves to be treated with respect"
 - Generic private-communication invitations: "Please reach out to our office directly" / "We welcome anyone with questions to contact us"
 - Express care through VALUES: "Quality of care is our highest priority" — NOT "we're sorry the care you received fell short"
@@ -391,6 +392,12 @@ export const HARD_BLOCKLIST_PHRASES = [
   'bringing in your wonderful family', 'since your last visit', 'look forward to seeing you',
   'see you again soon', 'see you soon', 'next visit', 'next appointment',
   'physical comfort during treatment', 'happy to have you',
+  // Recovery/progress confirmation — the most direct possible health-status
+  // disclosure, and the natural, warm-sounding response for PT/rehab/chiro
+  // reviews where "I recovered" IS the review content. Found via a real
+  // physical therapy audit report.
+  'feeling better', 'hear about the progress', 'glad about the progress',
+  'so glad about your progress', 'glad to hear about your progress',
   // 'your records' has been forbidden in the drafting prompt since day one
   // but was never added here — this was a real, standalone gap independent
   // of anything else, and one of the most serious possible phrases to miss:
