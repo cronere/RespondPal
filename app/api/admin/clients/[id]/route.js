@@ -27,6 +27,7 @@ const EDITABLE_FIELDS = [
   'rep_name',
   'cleanup_status',
   'onboarding_checklist',
+  'commission_months_completed',
 ]
 
 // GET /api/admin/clients/[id] — single client detail
@@ -62,6 +63,39 @@ export async function PATCH(req, { params }) {
 
     if (Object.keys(updates).length === 0) {
       return NextResponse.json({ error: 'No valid fields to update.' }, { status: 400 })
+    }
+
+    // Ownership rule groundwork: when a client transitions INTO cancelled,
+    // stamp cancelled_at (starts the 90-day first-right-of-return clock)
+    // and — unless the admin form already sent an explicit value for it —
+    // fill commission_months_completed with a reasonable starting estimate
+    // (whole months from live_date to now). This is an approximation, not
+    // an authoritative calculation — it doesn't account for paused periods
+    // in between, since that level of tracking is part of the full
+    // commission tracker being built later. Jacob can manually correct
+    // this number before it's relied on for an actual payout resumption.
+    if (updates.status === 'cancelled') {
+      const { data: current } = await supabaseAdmin
+        .from('clients')
+        .select('status, live_date')
+        .eq('id', id)
+        .single()
+
+      if (current && current.status !== 'cancelled') {
+        updates.cancelled_at = new Date().toISOString()
+        if (current.live_date && updates.commission_months_completed === undefined) {
+          const months = Math.max(
+            0,
+            Math.floor((Date.now() - new Date(current.live_date).getTime()) / (1000 * 60 * 60 * 24 * 30.44))
+          )
+          updates.commission_months_completed = months
+        }
+      }
+    }
+    // Reactivating from cancelled clears the cancelled_at stamp — that
+    // cancellation period is resolved once they're active again.
+    if (updates.status && updates.status !== 'cancelled') {
+      updates.cancelled_at = null
     }
 
     const { data, error } = await supabaseAdmin
