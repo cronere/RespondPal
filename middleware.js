@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { verifySalesToken } from './app/lib/salesAuth'
 
 // Protects all /admin routes behind the shared-password cookie.
 // The login page itself (/admin/login) and the auth API are left open.
@@ -35,15 +36,21 @@ async function hmacHex(secret, message) {
 }
 
 async function verifyToken(token) {
+  return verifyTokenWithSecret(
+    token,
+    process.env.ADMIN_SESSION_SECRET || process.env.ADMIN_PASSWORD || ''
+  )
+}
+
+async function verifyTokenWithSecret(token, secret) {
   if (!token || !token.includes('.')) return false
+  if (!secret) return false
   const [expiry, sig] = token.split('.')
   const expiryNum = Number(expiry)
   if (!expiryNum || Date.now() > expiryNum) return false
 
-  const secret = process.env.ADMIN_SESSION_SECRET || process.env.ADMIN_PASSWORD || ''
   const expected = await hmacHex(secret, expiry)
 
-  // Constant-time-ish compare (lengths equal, compare byte by byte)
   if (sig.length !== expected.length) return false
   let diff = 0
   for (let i = 0; i < sig.length; i++) {
@@ -55,6 +62,23 @@ async function verifyToken(token) {
 export async function middleware(req) {
   const { pathname } = req.nextUrl
 
+  // ── Sales HQ gate ──
+  if (pathname.startsWith('/sales')) {
+    if (pathname === '/sales/login') {
+      return NextResponse.next()
+    }
+    const secret = process.env.SALES_SESSION_SECRET
+    const token = req.cookies.get('rp_sales')?.value
+    const repId = secret ? await verifySalesToken(token, secret) : null
+    if (repId) {
+      return NextResponse.next()
+    }
+    const loginUrl = req.nextUrl.clone()
+    loginUrl.pathname = '/sales/login'
+    return NextResponse.redirect(loginUrl)
+  }
+
+  // ── Admin gate ──
   if (!pathname.startsWith('/admin')) {
     return NextResponse.next()
   }
@@ -74,5 +98,5 @@ export async function middleware(req) {
 }
 
 export const config = {
-  matcher: ['/admin/:path*'],
+  matcher: ['/admin/:path*', '/sales/:path*'],
 }
