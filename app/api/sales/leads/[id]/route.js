@@ -9,17 +9,40 @@ const supabase = createClient(
 
 const VALID_STAGES = ['lead', 'contacting', 'response_sent', 'won', 'lost']
 
-// PATCH /api/sales/leads/[id] — update stage and/or notes on a lead. The
-// .eq('sales_rep_id', repId) below is the actual security boundary: even
-// if a rep somehow guessed another rep's lead id, this update would match
-// zero rows rather than touching someone else's data.
+// PATCH /api/sales/leads/[id] — update stage and/or notes on a lead.
+//
+// Ownership rule: a rep can update a lead if they already own it, OR if
+// it's currently unclaimed (sales_rep_id is null) — taking real action on
+// an unclaimed lead is what claims it, per the 90-day ownership policy.
+// A lead still actively owned by a DIFFERENT rep is not touchable — the
+// fetch-then-check below is the actual security boundary there.
 export async function PATCH(req, { params }) {
   const repId = await getSalesRepId(req)
   if (!repId) return NextResponse.json({ error: 'Not signed in.' }, { status: 401 })
 
   try {
+    const { data: existing, error: fetchError } = await supabase
+      .from('leads')
+      .select('id, sales_rep_id')
+      .eq('id', params.id)
+      .single()
+
+    if (fetchError || !existing) {
+      return NextResponse.json({ error: 'Lead not found.' }, { status: 404 })
+    }
+    if (existing.sales_rep_id && existing.sales_rep_id !== repId) {
+      return NextResponse.json({ error: 'This lead belongs to another rep.' }, { status: 403 })
+    }
+
     const body = await req.json()
     const updates = { updated_at: new Date().toISOString() }
+
+    // Claiming: if it was unclaimed, this action makes the requesting rep
+    // the new current owner. original_sales_rep_id is untouched — it
+    // stays whoever found it first, forever.
+    if (!existing.sales_rep_id) {
+      updates.sales_rep_id = repId
+    }
 
     if (body.stage !== undefined) {
       if (!VALID_STAGES.includes(body.stage)) {
@@ -36,16 +59,12 @@ export async function PATCH(req, { params }) {
       .from('leads')
       .update(updates)
       .eq('id', params.id)
-      .eq('sales_rep_id', repId)
       .select()
       .single()
 
-    if (error) {
+    if (error || !data) {
       console.error('Lead update error:', error)
-      return NextResponse.json({ error: error.message }, { status: 500 })
-    }
-    if (!data) {
-      return NextResponse.json({ error: 'Lead not found.' }, { status: 404 })
+      return NextResponse.json({ error: error?.message || 'Failed to update lead.' }, { status: 500 })
     }
     return NextResponse.json({ lead: data })
   } catch (err) {
