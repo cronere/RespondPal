@@ -46,7 +46,7 @@ export default function IndustryAuditLanding({ headlineLine1, headlineLine2, bad
         <div className="container">
           <div className="section-label">What you get</div>
           <h2 className="section-h2">A custom diagnostic report<br />for your business.</h2>
-          <div className="feat-grid" style={{ gridTemplateColumns: 'repeat(2, 1fr)' }}>
+          <div className="feat-grid feat-grid-2up">
             <div className="feat">
               <div className="feat-icon">🔍</div>
               <h3>Full response scan</h3>
