@@ -2,6 +2,14 @@
 
 import { useState, useEffect } from 'react'
 
+const STAGE_LABELS = {
+  lead: 'Lead',
+  contacting: 'Contacting',
+  response_sent: 'Response Sent',
+  won: 'Won',
+  lost: 'Lost',
+}
+
 function generateTempPassword() {
   // Readable-ish random password: two short words + a number, easy for
   // Jacob to read aloud or text to a new rep, not meant to be memorable
@@ -21,6 +29,9 @@ export default function SalesTeam() {
   const [error, setError] = useState('')
   const [newRep, setNewRep] = useState({ name: '', email: '', password: generateTempPassword() })
   const [justCreated, setJustCreated] = useState(null)
+  const [selectedRep, setSelectedRep] = useState(null)
+  const [repLeads, setRepLeads] = useState([])
+  const [loadingLeads, setLoadingLeads] = useState(false)
 
   const load = async () => {
     setLoading(true)
@@ -35,6 +46,20 @@ export default function SalesTeam() {
   }
 
   useEffect(() => { load() }, [])
+
+  const viewRepLeads = async (rep) => {
+    setSelectedRep(rep)
+    setLoadingLeads(true)
+    setRepLeads([])
+    try {
+      const res = await fetch(`/api/admin/sales-reps/${rep.id}/leads`)
+      const data = await res.json()
+      if (res.ok) setRepLeads(data.leads || [])
+    } catch {
+      // drawer just shows empty state — not worth a separate error UI here
+    }
+    setLoadingLeads(false)
+  }
 
   const openAdd = () => {
     setNewRep({ name: '', email: '', password: generateTempPassword() })
@@ -83,9 +108,11 @@ export default function SalesTeam() {
       ) : reps.length === 0 ? (
         <p className="admin-page-sub">No sales reps yet. Add your first one above.</p>
       ) : (
+        <>
+        <p style={{ fontSize: '0.8rem', color: '#6b7280', marginBottom: '0.75rem' }}>Click a rep to see their leads.</p>
         <div className="demo-list">
           {reps.map((r) => (
-            <div className="response-demo-card" key={r.id}>
+            <div className="response-demo-card" key={r.id} onClick={() => viewRepLeads(r)} style={{ cursor: 'pointer' }}>
               <div>
                 <div className="demo-card-name">{r.name}</div>
                 <div className="demo-card-meta">{r.email} · added {new Date(r.created_at).toLocaleDateString()}</div>
@@ -96,6 +123,7 @@ export default function SalesTeam() {
             </div>
           ))}
         </div>
+        </>
       )}
 
       {showAdd && (
@@ -166,6 +194,45 @@ export default function SalesTeam() {
                 </button>
               </div>
             )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {selectedRep && (
+        <div className="drawer-overlay" onClick={() => setSelectedRep(null)}>
+          <div className="drawer" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 560 }}>
+            <div className="drawer-head">
+              <h2>{selectedRep.name}&apos;s Leads</h2>
+              <button className="drawer-close" onClick={() => setSelectedRep(null)}>×</button>
+            </div>
+            <div className="drawer-body">
+              {loadingLeads ? (
+                <p className="admin-page-sub">Loading…</p>
+              ) : repLeads.length === 0 ? (
+                <p className="admin-page-sub">No leads yet for this rep.</p>
+              ) : (
+                <div className="demo-list">
+                  {repLeads.map((l) => (
+                    <div className="response-demo-card" key={l.id} style={{ flexDirection: 'column', alignItems: 'stretch', gap: '0.4rem', cursor: 'default' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                        <div>
+                          <div className="demo-card-name">{l.business_name}</div>
+                          <div className="demo-card-meta">
+                            {l.industry || 'Industry not set'}
+                            {l.contact_name ? ` · ${l.contact_name}` : ''}
+                            {l.contact_email ? ` · ${l.contact_email}` : ''}
+                          </div>
+                        </div>
+                        <span style={{ fontSize: '0.78rem', fontWeight: 700, textTransform: 'capitalize', color: '#6b7280', whiteSpace: 'nowrap' }}>
+                          {STAGE_LABELS[l.stage] || l.stage}
+                        </span>
+                      </div>
+                      {l.notes && <div style={{ fontSize: '0.85rem', color: '#6b7280' }}>{l.notes}</div>}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </div>
