@@ -7,6 +7,7 @@ import { usePathname, useRouter } from 'next/navigation'
 const NAV = [
   { href: '/admin', label: 'Dashboard', exact: true },
   { href: '/admin/clients', label: 'Clients' },
+  { href: '/admin/sales-team', label: 'Sales Team' },
   { href: '/admin/onboarding', label: 'Onboarding' },
   { href: '/admin/reviews', label: 'Reviews', badgeKey: 'reviews' },
   { href: '/admin/audits', label: 'Risk Audits', badgeKey: 'audits' },
