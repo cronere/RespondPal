@@ -10,6 +10,7 @@ const NAV = [
   { href: '/sales/audit-request', label: 'Request Audit' },
   { href: '/sales/response-examples', label: 'Response Examples' },
   { href: '/sales/onboarding', label: 'Onboard a Client' },
+  { href: '/sales/settings', label: 'Settings' },
 ]
 
 export default function SalesLayout({ children }) {
