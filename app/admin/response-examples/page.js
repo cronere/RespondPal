@@ -60,7 +60,7 @@ export default function ResponseExamplesPage() {
       ) : (
         <div className="demo-list">
           {demos.map((d) => (
-            <div className="demo-card" key={d.id}>
+            <div className="response-demo-card" key={d.id}>
               <div className="demo-card-main">
                 <div className="demo-card-name">{d.business_name}</div>
                 <div className="demo-card-meta">
