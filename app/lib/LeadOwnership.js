@@ -22,4 +22,4 @@ export async function releaseStaleLeads(supabase) {
     // case a stale lead stays assigned one extra request cycle.
     console.error('releaseStaleLeads error:', err)
   }
-}
+} 
