@@ -15,9 +15,8 @@ export async function releaseStaleLeads(supabase) {
       .update({ sales_rep_id: null })
       .not('sales_rep_id', 'is', null)
       .lt('updated_at', ninetyDaysAgo)
-      // Won/lost leads are terminal — don't recycle a closed-out deal back
-      // into the open pool just because nobody touched it since.
-      .not('stage', 'in', '(won,lost)')
+      .neq('stage', 'won')
+      .neq('stage', 'lost')
   } catch (err) {
     // Never let a release-sweep failure block an actual leads read — worst
     // case a stale lead stays assigned one extra request cycle.
