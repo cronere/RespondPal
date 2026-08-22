@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { getSalesRepId } from '../../../lib/salesAuth'
+import { releaseStaleLeads } from '../../../lib/leadOwnership'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -16,6 +17,8 @@ export async function GET(req) {
   if (!repId) return NextResponse.json({ error: 'Not signed in.' }, { status: 401 })
 
   try {
+    await releaseStaleLeads(supabase)
+
     const { data, error } = await supabase
       .from('leads')
       .select('*')
@@ -33,7 +36,8 @@ export async function GET(req) {
 }
 
 // POST /api/sales/leads — create a new lead, automatically attributed to
-// the logged-in rep.
+// the logged-in rep. original_sales_rep_id is set once here and never
+// changes, even if ownership later transfers via the 90-day rule.
 export async function POST(req) {
   const repId = await getSalesRepId(req)
   if (!repId) return NextResponse.json({ error: 'Not signed in.' }, { status: 401 })
@@ -48,6 +52,7 @@ export async function POST(req) {
       .from('leads')
       .insert({
         sales_rep_id: repId,
+        original_sales_rep_id: repId,
         business_name: body.business_name.trim(),
         contact_name: (body.contact_name || '').trim() || null,
         contact_email: (body.contact_email || '').trim() || null,
