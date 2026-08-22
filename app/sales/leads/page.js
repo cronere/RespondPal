@@ -11,10 +11,16 @@ const STAGES = [
 ]
 
 export default function SalesLeads() {
+  const [tab, setTab] = useState('mine')
   const [leads, setLeads] = useState([])
+  const [openLeads, setOpenLeads] = useState([])
+  const [clients, setClients] = useState([])
   const [loading, setLoading] = useState(true)
+  const [loadingOpen, setLoadingOpen] = useState(false)
+  const [loadingClients, setLoadingClients] = useState(false)
   const [showAdd, setShowAdd] = useState(false)
   const [saving, setSaving] = useState(false)
+  const [claiming, setClaiming] = useState(null)
   const [error, setError] = useState('')
   const [newLead, setNewLead] = useState({
     business_name: '', contact_name: '', contact_email: '', contact_phone: '',
@@ -33,7 +39,61 @@ export default function SalesLeads() {
     setLoading(false)
   }
 
+  const loadOpen = async () => {
+    setLoadingOpen(true)
+    try {
+      const res = await fetch('/api/sales/leads/open')
+      const data = await res.json()
+      if (res.ok) setOpenLeads(data.leads || [])
+    } catch {
+      setError('Failed to load open leads.')
+    }
+    setLoadingOpen(false)
+  }
+
+  const loadClients = async () => {
+    setLoadingClients(true)
+    try {
+      const res = await fetch('/api/sales/clients')
+      const data = await res.json()
+      if (res.ok) setClients(data.clients || [])
+    } catch {
+      setError('Failed to load clients.')
+    }
+    setLoadingClients(false)
+  }
+
   useEffect(() => { load() }, [])
+  useEffect(() => {
+    if (tab === 'open' && openLeads.length === 0) loadOpen()
+    if (tab === 'clients' && clients.length === 0) loadClients()
+  }, [tab])
+
+  const claimLead = async (leadId) => {
+    setClaiming(leadId)
+    try {
+      // Claiming works exactly like any other real action on an unclaimed
+      // lead — moving it to "Contacting" is both the claim and the first
+      // real pipeline step, not a separate mechanism.
+      const res = await fetch(`/api/sales/leads/${leadId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ stage: 'contacting' }),
+      })
+      if (res.ok) {
+        setOpenLeads((prev) => prev.filter((l) => l.id !== leadId))
+        load()
+        setTab('mine')
+      } else {
+        const data = await res.json().catch(() => ({}))
+        setError(data.error || 'Failed to claim lead — someone may have just claimed it.')
+        loadOpen()
+      }
+    } catch {
+      setError('Something went wrong.')
+    }
+    setClaiming(null)
+  }
 
   const createLead = async () => {
     if (!newLead.business_name.trim() || saving) return
@@ -76,44 +136,127 @@ export default function SalesLeads() {
   return (
     <div className="admin-page">
       <header className="admin-page-head">
-        <h1>My Leads</h1>
-        <p className="admin-page-sub">Your own pipeline. Only you can see these.</p>
-        <button className="rev-ai-btn" onClick={() => setShowAdd(true)} style={{ marginTop: '1rem' }}>+ Add Lead</button>
+        <h1>Leads</h1>
+        <p className="admin-page-sub">
+          Your pipeline, what&apos;s up for grabs, and who&apos;s already a client — so nobody works the same business twice.
+        </p>
+        {tab === 'mine' && (
+          <button className="rev-ai-btn" onClick={() => setShowAdd(true)} style={{ marginTop: '1rem' }}>+ Add Lead</button>
+        )}
       </header>
+
+      <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.25rem', borderBottom: '1px solid #e5e7eb' }}>
+        {[
+          { key: 'mine', label: 'My Leads' },
+          { key: 'open', label: 'Open Leads' },
+          { key: 'clients', label: 'Existing Clients' },
+        ].map((t) => (
+          <button
+            key={t.key}
+            onClick={() => setTab(t.key)}
+            style={{
+              padding: '0.6rem 1rem', border: 'none', background: 'none', cursor: 'pointer',
+              fontWeight: 700, fontSize: '0.9rem',
+              color: tab === t.key ? '#C2410C' : '#6b7280',
+              borderBottom: tab === t.key ? '2px solid #C2410C' : '2px solid transparent',
+              marginBottom: '-1px',
+            }}
+          >
+            {t.label}
+          </button>
+        ))}
+      </div>
 
       {error && <div className="admin-error">{error}</div>}
 
-      {loading ? (
-        <p className="admin-page-sub">Loading…</p>
-      ) : leads.length === 0 ? (
-        <p className="admin-page-sub">No leads yet. Add your first one above.</p>
-      ) : (
-        <div className="demo-list">
-          {leads.map((l) => (
-            <div className="response-demo-card" key={l.id} style={{ flexDirection: 'column', alignItems: 'stretch', gap: '0.5rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <div>
-                  <div className="demo-card-name">{l.business_name}</div>
-                  <div className="demo-card-meta">
-                    {l.industry || 'Industry not set'}
-                    {l.contact_name ? ` · ${l.contact_name}` : ''}
-                    {l.contact_phone ? ` · ${l.contact_phone}` : ''}
+      {tab === 'mine' && (
+        loading ? (
+          <p className="admin-page-sub">Loading…</p>
+        ) : leads.length === 0 ? (
+          <p className="admin-page-sub">No leads yet. Add your first one above.</p>
+        ) : (
+          <div className="demo-list">
+            {leads.map((l) => (
+              <div className="response-demo-card" key={l.id} style={{ flexDirection: 'column', alignItems: 'stretch', gap: '0.5rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                  <div>
+                    <div className="demo-card-name">{l.business_name}</div>
+                    <div className="demo-card-meta">
+                      {l.industry || 'Industry not set'}
+                      {l.contact_name ? ` · ${l.contact_name}` : ''}
+                      {l.contact_phone ? ` · ${l.contact_phone}` : ''}
+                    </div>
                   </div>
+                  <select
+                    value={l.stage}
+                    onChange={(e) => changeStage(l.id, e.target.value)}
+                    style={{ padding: '0.4rem 0.6rem', borderRadius: 6, border: '1px solid #e5e7eb', fontSize: '0.85rem', fontWeight: 600 }}
+                  >
+                    {STAGES.map((s) => (
+                      <option key={s.key} value={s.key}>{s.label}</option>
+                    ))}
+                  </select>
                 </div>
-                <select
-                  value={l.stage}
-                  onChange={(e) => changeStage(l.id, e.target.value)}
-                  style={{ padding: '0.4rem 0.6rem', borderRadius: 6, border: '1px solid #e5e7eb', fontSize: '0.85rem', fontWeight: 600 }}
-                >
-                  {STAGES.map((s) => (
-                    <option key={s.key} value={s.key}>{s.label}</option>
-                  ))}
-                </select>
+                {l.notes && <div style={{ fontSize: '0.85rem', color: '#6b7280' }}>{l.notes}</div>}
               </div>
-              {l.notes && <div style={{ fontSize: '0.85rem', color: '#6b7280' }}>{l.notes}</div>}
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )
+      )}
+
+      {tab === 'open' && (
+        loadingOpen ? (
+          <p className="admin-page-sub">Loading…</p>
+        ) : openLeads.length === 0 ? (
+          <p className="admin-page-sub">No open leads right now. Anything nobody&apos;s touched in 90 days lands here.</p>
+        ) : (
+          <div className="demo-list">
+            {openLeads.map((l) => (
+              <div className="response-demo-card" key={l.id} style={{ flexDirection: 'column', alignItems: 'stretch', gap: '0.5rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                  <div>
+                    <div className="demo-card-name">{l.business_name}</div>
+                    <div className="demo-card-meta">
+                      {l.industry || 'Industry not set'}
+                      {l.contact_name ? ` · ${l.contact_name}` : ''}
+                      {l.contact_phone ? ` · ${l.contact_phone}` : ''}
+                    </div>
+                  </div>
+                  <button
+                    className="rev-mini-btn"
+                    onClick={() => claimLead(l.id)}
+                    disabled={claiming === l.id}
+                  >
+                    {claiming === l.id ? 'Claiming…' : 'Claim'}
+                  </button>
+                </div>
+                {l.notes && <div style={{ fontSize: '0.85rem', color: '#6b7280' }}>{l.notes}</div>}
+              </div>
+            ))}
+          </div>
+        )
+      )}
+
+      {tab === 'clients' && (
+        loadingClients ? (
+          <p className="admin-page-sub">Loading…</p>
+        ) : clients.length === 0 ? (
+          <p className="admin-page-sub">No active clients yet.</p>
+        ) : (
+          <div className="demo-list">
+            {clients.map((c) => (
+              <div className="response-demo-card" key={c.id} style={{ cursor: 'default' }}>
+                <div>
+                  <div className="demo-card-name">{c.business_name}</div>
+                  <div className="demo-card-meta">{c.industry || 'Industry not set'}</div>
+                </div>
+                <span style={{ fontSize: '0.78rem', fontWeight: 700, textTransform: 'capitalize', color: '#6b7280' }}>
+                  {c.status}
+                </span>
+              </div>
+            ))}
+          </div>
+        )
       )}
 
       {showAdd && (
