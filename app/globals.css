@@ -596,6 +596,15 @@ a {
   margin-top: 2.5rem;
 }
 
+/* Used where exactly 4 feature cards need a clean 2x2 layout on desktop
+   instead of the default 3-column grid (which would leave the 4th card
+   alone on its own row). Collapses to a single column on mobile via the
+   existing .feat-grid mobile rule below, since both classes are applied
+   together and the mobile rule targets both. */
+.feat-grid-2up {
+  grid-template-columns: repeat(2, 1fr);
+}
+
 .feat {
   background: var(--black);
   padding: 2rem;
@@ -1285,7 +1294,8 @@ footer a:hover {
   .final-cta::before {
     font-size: 120px;
   }
-  .feat-grid {
+  .feat-grid,
+  .feat-grid-2up {
     grid-template-columns: 1fr;
   }
   .ai-cards {
