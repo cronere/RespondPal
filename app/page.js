@@ -212,9 +212,9 @@ export default function Home() {
                   </div>
                 </div>
                 <p className="review-text">&ldquo;{r.review}&rdquo;</p>
-                <div className="response-block">
+                <div className="response-box">
                   <div className="response-label">Owner response · within 24 hrs</div>
-                  <p>{r.response}</p>
+                  <p className="response-text">{r.response}</p>
                 </div>
               </div>
             ))}
