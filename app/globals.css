@@ -5220,7 +5220,7 @@ footer a:hover {
 .rev-textarea:focus { outline: none; border-color: var(--orange); }
 
 .demo-list { display: flex; flex-direction: column; gap: 0.6rem; }
-.demo-card {
+.response-demo-card {
   display: flex;
   align-items: center;
   justify-content: space-between;
