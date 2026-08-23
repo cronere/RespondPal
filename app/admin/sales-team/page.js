@@ -2,6 +2,16 @@
 
 import { useState, useEffect } from 'react'
 
+// Duplicated from app/lib/stripe.js rather than imported — that file pulls
+// in the Stripe SDK itself, which is server-only and shouldn't end up in a
+// client-side bundle. This is just the label-lookup subset, pure data.
+const TIER_LABELS = {
+  '1_location': '1 Location',
+  '2_locations': '2 Locations',
+  '3_locations': '3 Locations',
+  'cleanup': 'Cleanup add-on',
+}
+
 const STAGE_LABELS = {
   lead: 'Lead',
   contacting: 'Contacting',
@@ -230,6 +240,26 @@ export default function SalesTeam() {
               <button className="drawer-close" onClick={() => setSelectedRep(null)}>×</button>
             </div>
             <div className="drawer-body">
+              <div style={{ marginBottom: '1.5rem', paddingBottom: '1.25rem', borderBottom: '1px solid #e5e7eb' }}>
+                <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#6b7280', textTransform: 'uppercase', marginBottom: '0.6rem' }}>
+                  Stripe Payment Links
+                </div>
+                {!selectedRep.stripe_payment_links || Object.keys(selectedRep.stripe_payment_links).length === 0 ? (
+                  <p style={{ fontSize: '0.82rem', color: '#9ca3af' }}>
+                    Not generated yet — check that STRIPE_SECRET_KEY and the tier price IDs are set.
+                  </p>
+                ) : (
+                  Object.entries(selectedRep.stripe_payment_links).map(([tier, url]) => (
+                    <div key={tier} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
+                      <span style={{ fontSize: '0.85rem', color: '#1a1a1a' }}>{TIER_LABELS[tier] || tier}</span>
+                      <a href={url} target="_blank" rel="noreferrer" style={{ fontSize: '0.8rem', color: '#C2410C' }}>
+                        {url.replace('https://', '')}
+                      </a>
+                    </div>
+                  ))
+                )}
+              </div>
+
               {loadingLeads ? (
                 <p className="admin-page-sub">Loading…</p>
               ) : repLeads.length === 0 ? (
