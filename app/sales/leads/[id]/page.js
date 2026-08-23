@@ -266,38 +266,34 @@ export default function LeadDetail() {
           </button>
         </div>
 
-        {tasks.filter((t) => !t.completed).length === 0 && tasks.filter((t) => t.completed).length === 0 ? (
+        {tasks.length === 0 ? (
           <p style={{ fontSize: '0.85rem', color: '#9ca3af', margin: 0 }}>No tasks yet.</p>
         ) : (
-          <>
-            {tasks.filter((t) => !t.completed).map((t) => {
-              const overdue = isOverdue(t.due_date)
-              return (
-                <div key={t.id} style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', padding: '0.4rem 0', borderBottom: '1px solid #f3f4f6' }}>
-                  <input type="checkbox" checked={false} onChange={() => toggleTask(t)} style={{ width: 16, height: 16, cursor: 'pointer' }} />
-                  <div style={{ flex: 1, fontSize: '0.88rem', color: '#1a1a1a' }}>{t.title}</div>
-                  {t.due_date && (
-                    <span style={{ fontSize: '0.75rem', fontWeight: 700, color: overdue ? '#b23b30' : '#6b7280' }}>
-                      {overdue ? 'Overdue · ' : ''}{formatDueDate(t.due_date)}
-                    </span>
-                  )}
-                  <button onClick={() => deleteTask(t.id)} style={{ background: 'none', border: 'none', color: '#9ca3af', cursor: 'pointer', fontSize: '0.9rem', padding: '0 0.2rem' }}>×</button>
+          [...tasks].sort((a, b) => {
+            // Open tasks first, completed tasks after — but nothing ever
+            // disappears from view. A checked-off task should visibly stay
+            // put with a strikethrough, not vanish into a collapsed
+            // section, which reads as "did this even save?" even when it
+            // did.
+            if (a.completed !== b.completed) return a.completed ? 1 : -1
+            return 0
+          }).map((t) => {
+            const overdue = isOverdue(t.due_date)
+            return (
+              <div key={t.id} style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', padding: '0.4rem 0', borderBottom: '1px solid #f3f4f6' }}>
+                <input type="checkbox" checked={t.completed} onChange={() => toggleTask(t)} style={{ width: 16, height: 16, cursor: 'pointer' }} />
+                <div style={{ flex: 1, fontSize: '0.88rem', color: t.completed ? '#9ca3af' : '#1a1a1a', textDecoration: t.completed ? 'line-through' : 'none' }}>
+                  {t.title}
                 </div>
-              )
-            })}
-            {tasks.filter((t) => t.completed).length > 0 && (
-              <details style={{ marginTop: '0.5rem' }}>
-                <summary style={{ fontSize: '0.78rem', color: '#9ca3af', cursor: 'pointer' }}>{tasks.filter((t) => t.completed).length} completed</summary>
-                {tasks.filter((t) => t.completed).map((t) => (
-                  <div key={t.id} style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', padding: '0.4rem 0' }}>
-                    <input type="checkbox" checked={true} onChange={() => toggleTask(t)} style={{ width: 16, height: 16, cursor: 'pointer' }} />
-                    <div style={{ flex: 1, fontSize: '0.88rem', color: '#9ca3af', textDecoration: 'line-through' }}>{t.title}</div>
-                    <button onClick={() => deleteTask(t.id)} style={{ background: 'none', border: 'none', color: '#9ca3af', cursor: 'pointer', fontSize: '0.9rem', padding: '0 0.2rem' }}>×</button>
-                  </div>
-                ))}
-              </details>
-            )}
-          </>
+                {t.due_date && !t.completed && (
+                  <span style={{ fontSize: '0.75rem', fontWeight: 700, color: overdue ? '#b23b30' : '#6b7280' }}>
+                    {overdue ? 'Overdue · ' : ''}{formatDueDate(t.due_date)}
+                  </span>
+                )}
+                <button onClick={() => deleteTask(t.id)} style={{ background: 'none', border: 'none', color: '#9ca3af', cursor: 'pointer', fontSize: '0.9rem', padding: '0 0.2rem' }}>×</button>
+              </div>
+            )
+          })
         )}
       </div>
 
