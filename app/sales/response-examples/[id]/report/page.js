@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { useParams } from 'next/navigation'
-import { isHipaaIndustry } from '../../../../../lib/aiDrafting'
 
 // Deliberately near-identical to app/admin/response-examples/[id]/report —
 // this is a client-facing document, and the brand experience should be the
@@ -10,10 +9,16 @@ import { isHipaaIndustry } from '../../../../../lib/aiDrafting'
 // across the two auth-gated route trees (admin vs sales), which was the
 // same tradeoff made for the lead detail page earlier — genuinely simpler
 // and lower-risk than forcing a shared component across two separate
-// permission boundaries for a template that won't change often. The one
-// thing NOT duplicated is the HIPAA keyword list itself, which imports
-// from the shared lib — that's the part that actually needs to stay in
-// sync, and duplicating it was exactly the bug pattern fixed earlier today.
+// permission boundaries for a template that won't change often.
+//
+// One real difference from the admin version: no HIPAA protection box here
+// at all, and no isHipaaIndustry import. Response Examples creation is
+// blocked server-side for any healthcare industry (see
+// /api/sales/response-examples POST) — healthcare leads go through Request
+// an Audit instead, so a rep-generated report can never legitimately be for
+// a HIPAA-covered business. Keeping the conditional box here anyway would
+// just be confusing dead code that can never fire — which is exactly what
+// caused the original confusion this file was built to resolve.
 export default function SalesResponseExampleReport() {
   const { id } = useParams()
   const [demo, setDemo] = useState(null)
@@ -52,7 +57,6 @@ export default function SalesResponseExampleReport() {
   if (loading) return <div style={{ padding: '2rem', textAlign: 'center' }}>Loading…</div>
   if (error || !demo) return <div style={{ padding: '2rem', textAlign: 'center', color: '#b91c1c' }}>{error || 'Not found.'}</div>
 
-  const isHipaa = isHipaaIndustry(demo.industry)
   const FLAGGED_STATES = ['blocked_needs_human_review', 'concedes_fault_needs_review']
   const allDrafted = (demo.reviews || []).filter((r) => r.draft_response)
   // Flagged responses are excluded automatically — this report is a
@@ -97,10 +101,6 @@ export default function SalesResponseExampleReport() {
         .body { font-size: 9.5pt; color: #374151; margin-bottom: 10px; }
         h2.section-h { font-size: 13pt; font-weight: 700; color: #111827; margin: 20px 0 8px; }
         .why-box { background: #F9FAFB; border: 1px solid #e5e7eb; border-radius: 6px; padding: 12px 14px; margin: 12px 0; }
-        .protect-box { background: #F0FDF4; border: 1px solid #86EFAC; border-radius: 6px; padding: 14px 16px; margin: 12px 0; }
-        .protect-box h3 { font-size: 11pt; color: #15803d; margin: 0 0 8px; }
-        .protect-item { display: flex; gap: 8px; margin-bottom: 6px; font-size: 9pt; color: #374151; }
-        .protect-check { color: #15803d; font-weight: 700; flex-shrink: 0; }
         .review-card { border: 1px solid #e5e7eb; border-radius: 6px; margin-bottom: 12px; overflow: hidden; page-break-inside: avoid; }
         .review-head { background: #F9FAFB; padding: 8px 12px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #e5e7eb; }
         .review-stars { color: #F59E0B; font-size: 10pt; letter-spacing: 1px; }
@@ -194,26 +194,6 @@ export default function SalesResponseExampleReport() {
             signal to both future customers and the AI tools now influencing where they go.
           </span>
         </div>
-
-        {isHipaa && (
-          <div className="protect-box">
-            <h3>How We Protect Your Practice</h3>
-            <p className="body" style={{ marginBottom: 10 }}>
-              Every response below was written under strict compliance rules — the same ones we&apos;d
-              apply to your account every day. Specifically, our system never:
-            </p>
-            <div className="protect-item"><span className="protect-check">✓</span><span>Confirms or denies that a reviewer is a patient — even when they identify themselves first</span></div>
-            <div className="protect-item"><span className="protect-check">✓</span><span>References specific treatment, procedure, diagnosis, or billing details tied to a reviewer</span></div>
-            <div className="protect-item"><span className="protect-check">✓</span><span>Implies an ongoing or future care relationship (no &quot;see you at your next visit&quot;)</span></div>
-            <div className="protect-item"><span className="protect-check">✓</span><span>Names a specific provider or staff member in connection with a reviewer&apos;s care</span></div>
-            <div className="protect-item"><span className="protect-check">✓</span><span>References a records search in any direction — confirmed, denied, or otherwise</span></div>
-            <div className="protect-item"><span className="protect-check">✓</span><span>Concedes fault or validates a disputed claim in writing — even indirectly, like agreeing a second opinion was &quot;the right call&quot; — since this can be used against a practice legally and often reconfirms the exact situation a reviewer described</span></div>
-            <p className="body" style={{ marginTop: 10, marginBottom: 0, fontSize: '8.5pt', color: '#166534' }}>
-              Every response also passes through a second, independent compliance review before you ever see it —
-              and a final human check before anything is posted publicly.
-            </p>
-          </div>
-        )}
 
         <h2 className="section-h page-break">Sample Responses</h2>
 
