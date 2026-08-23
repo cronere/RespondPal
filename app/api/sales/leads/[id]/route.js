@@ -7,6 +7,9 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY
 )
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 const VALID_STAGES = ['lead', 'contacting', 'response_sent', 'won', 'lost']
 
 // GET /api/sales/leads/[id] — single lead, for the detail page. Same
@@ -101,5 +104,33 @@ export async function PATCH(req, { params }) {
     return NextResponse.json({ lead: data })
   } catch (err) {
     return NextResponse.json({ error: 'Failed to update lead.' }, { status: 500 })
+  }
+}
+
+// DELETE /api/sales/leads/[id] — only the current owning rep can delete a
+// lead. Tasks and activity log entries cascade-delete via the foreign key
+// (on delete cascade), so nothing orphaned is left behind. An unclaimed
+// lead (sales_rep_id null) can't be deleted this way — there's no owning
+// rep to authorize it.
+export async function DELETE(req, { params }) {
+  const repId = await getSalesRepId(req)
+  if (!repId) return NextResponse.json({ error: 'Not signed in.' }, { status: 401 })
+
+  try {
+    const { data, error } = await supabase
+      .from('leads')
+      .delete()
+      .eq('id', params.id)
+      .eq('sales_rep_id', repId)
+      .select()
+      .single()
+
+    if (error || !data) {
+      return NextResponse.json({ error: 'Lead not found, or it belongs to another rep.' }, { status: 404 })
+    }
+    return NextResponse.json({ success: true })
+  } catch (err) {
+    console.error('Lead delete error:', err)
+    return NextResponse.json({ error: 'Failed to delete lead.' }, { status: 500 })
   }
 }
