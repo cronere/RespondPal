@@ -18,11 +18,16 @@ import { isHipaaIndustry } from '../../../../lib/aiDrafting'
 export default function SalesAuditReport() {
   const { id } = useParams()
   const [audit, setAudit] = useState(null)
+  const [rep, setRep] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [generating, setGenerating] = useState(false)
   const [scriptLoaded, setScriptLoaded] = useState(false)
   const reportRef = useRef(null)
+
+  useEffect(() => {
+    fetch('/api/sales/me').then((r) => r.json()).then((d) => setRep(d.rep)).catch(() => {})
+  }, [])
 
   useEffect(() => {
     if (typeof window !== 'undefined' && !window.html2pdf) {
@@ -271,6 +276,62 @@ export default function SalesAuditReport() {
           {generating ? 'Generating PDF...' : scriptLoaded ? 'Download PDF' : 'Loading...'}
         </button>
       </div>
+
+      {audit.loom_talking_points && audit.loom_talking_points.length > 0 && (
+        <div className="no-print" style={{ maxWidth: 780, margin: '0 auto', padding: '1rem 1.5rem' }}>
+          <div style={{ background: '#FFF7ED', border: '1px solid #FDBA74', borderRadius: 8, padding: '0.85rem 1rem' }}>
+            <div style={{ fontWeight: 700, fontSize: '0.85rem', color: '#C2410C' }}>
+              🎥 Loom Script <span style={{ fontWeight: 400, fontSize: '0.75rem', color: '#9A3412' }}>(for you only — never shown to the client, and not included in the PDF above)</span>
+            </div>
+            <p style={{ fontSize: '0.8rem', color: '#9A3412', marginTop: '0.2rem', marginBottom: '0.75rem' }}>
+              Read the opening and close as written. Ad-lib through the bullets in the middle using this report on screen.
+            </p>
+
+            <p style={{ fontSize: '0.85rem', color: '#1a1a1a', lineHeight: 1.6, marginBottom: '0.5rem' }}>
+              Hi {audit.contact_name ? `Dr. ${audit.contact_name.split(' ').pop()}` : 'Dr. [LastName]'} — It&apos;s {rep?.name || '[Your Name]'} here from RespondPal.
+              <br />I put together a Reputation Risk Audit for you and wanted to walk you through what I found.
+              In particular I saw very similar patterns in your reviews that have resulted in HHS fines at other
+              practices, so hopefully this is valuable intel for you.
+            </p>
+
+            <ul style={{ margin: '0 0 0.75rem', paddingLeft: '1.1rem' }}>
+              {audit.loom_talking_points.map((point, i) => (
+                <li key={i} style={{ fontSize: '0.85rem', color: '#1a1a1a', marginBottom: '0.4rem', lineHeight: 1.5 }}>
+                  {point}
+                </li>
+              ))}
+            </ul>
+
+            <hr style={{ border: 'none', borderTop: '1px solid #FDBA74', margin: '0.6rem 0' }} />
+
+            <p style={{ fontSize: '0.85rem', color: '#1a1a1a', lineHeight: 1.6, marginBottom: '0.5rem' }}>
+              Honestly, you&apos;re in a hard spot in today&apos;s world. AI is using review responses — or the
+              lack of a response, not just the rating — to decide whether to promote you in search engines. But
+              you also need to stay HIPAA and privacy compliant.
+              <br /><br />
+              That&apos;s where we come in. Our proprietary AI has reviewed tens of thousands of healthcare
+              reviews to identify how to respond without confirming patient status, never referencing treatment
+              or billing.
+              <br /><br />
+              Yet it still provides empathy for negative reviews, stays on brand for your business, and
+              doesn&apos;t rotate the same five canned templates. And then we boost your reputation in the
+              marketplace with a 24-hour response guarantee — all while staying compliant and simply taking this
+              task off your plate.
+            </p>
+
+            <hr style={{ border: 'none', borderTop: '1px solid #FDBA74', margin: '0.6rem 0' }} />
+
+            <p style={{ fontSize: '0.85rem', color: '#1a1a1a', lineHeight: 1.6 }}>
+              If you want us to simply help clean up the flagged reviews, we charge a one-time $197 fee. We do
+              have a monthly service to protect you and take this off your plate moving forward.
+              <br /><br />
+              Either way, this report is yours to keep.
+              <br /><br />
+              If working together makes sense, let me know. Enjoy the day.
+            </p>
+          </div>
+        </div>
+      )}
 
       <div className="report" ref={reportRef}>
         <div className="top-bar" />
