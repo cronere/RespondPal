@@ -150,7 +150,7 @@ export default function LeadDetail() {
       )}
 
       <div className="drawer-section" style={{ maxWidth: 560, background: '#fafafa', border: '1px solid #e5e7eb', borderRadius: 8, padding: '1rem' }}>
-        <div style={{ fontWeight: 700, fontSize: '0.9rem', marginBottom: '0.6rem' }}>Log a contact</div>
+        <div style={{ fontWeight: 700, fontSize: '0.9rem', marginBottom: '0.6rem', color: '#1a1a1a' }}>Log a contact</div>
         <textarea
           value={contactNote}
           onChange={(e) => setContactNote(e.target.value)}
@@ -171,7 +171,7 @@ export default function LeadDetail() {
                 <div style={{ color: '#6b7280', fontSize: '0.78rem' }}>
                   {formatDate(a.created_at)}{a.sales_reps?.name ? ` · ${a.sales_reps.name}` : ''}
                 </div>
-                <div>{a.note}</div>
+                <div style={{ color: '#1a1a1a' }}>{a.note}</div>
               </div>
             ))}
           </div>
