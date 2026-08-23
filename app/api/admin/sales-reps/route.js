@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { supabaseAdmin } from '../../../lib/supabaseAdmin'
 import { hashPassword, generateSalt } from '../../../lib/salesAuth'
+import { getStripeClient, TIER_PRICE_IDS } from '../../../lib/stripe'
 import nodemailer from 'nodemailer'
 
 const transporter = nodemailer.createTransport({
@@ -22,7 +23,7 @@ export async function GET() {
   try {
     const { data, error } = await supabaseAdmin
       .from('sales_reps')
-      .select('id, name, email, active, created_at')
+      .select('id, name, email, active, created_at, stripe_payment_links')
       .order('created_at', { ascending: false })
 
     if (error) {
@@ -74,6 +75,41 @@ export async function POST(req) {
       }
       console.error('Sales rep create error:', error)
       return NextResponse.json({ error: error.message }, { status: 500 })
+    }
+
+    // Generate this rep's own Stripe payment links — one per pricing tier,
+    // each with sales_rep_id embedded in Stripe metadata so a payment made
+    // through it is attributed automatically, independent of the
+    // onboarding form. Tolerates missing Stripe config entirely (no key,
+    // no price IDs set yet) — rep creation still succeeds either way, same
+    // pattern as the welcome email above. Logs exactly what's missing so
+    // it's easy to diagnose once Stripe is actually configured.
+    try {
+      const stripe = getStripeClient()
+      if (!stripe) {
+        console.warn('Skipping Stripe link generation — STRIPE_SECRET_KEY not set.')
+      } else {
+        const links = {}
+        for (const [tier, priceId] of Object.entries(TIER_PRICE_IDS)) {
+          if (!priceId) {
+            console.warn(`Skipping Stripe link for tier "${tier}" — price ID not set.`)
+            continue
+          }
+          const link = await stripe.paymentLinks.create({
+            line_items: [{ price: priceId, quantity: 1 }],
+            metadata: { sales_rep_id: data.id, sales_rep_name: data.name },
+          })
+          links[tier] = link.url
+        }
+        if (Object.keys(links).length > 0) {
+          await supabaseAdmin
+            .from('sales_reps')
+            .update({ stripe_payment_links: links })
+            .eq('id', data.id)
+        }
+      }
+    } catch (stripeErr) {
+      console.error('Stripe payment link generation error:', stripeErr)
     }
 
     // Email the new rep their login credentials. Sent after the DB insert
