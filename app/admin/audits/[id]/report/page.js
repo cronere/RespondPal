@@ -295,9 +295,6 @@ export default function AuditReport() {
         .cta-head { font-size: 15pt; font-weight: 700; color: #111827; margin-bottom: 6px; }
         .cta-body { font-size: 10pt; color: #374151; margin-bottom: 8px; }
         .cta-price { font-size: 13pt; font-weight: 700; color: #C2410C; margin-bottom: 4px; }
-        .sig { font-size: 10pt; color: #374151; margin-top: 16px; }
-        .sig-name { font-weight: 700; }
-        .sig-title { font-size: 8pt; color: #6b7280; }
         .fine-print { font-size: 8pt; color: #6b7280; font-style: italic; margin-top: 16px; }
         .footer { font-size: 7.5pt; color: #6b7280; text-align: center; margin-top: 20px; padding-top: 8px; border-top: 1px solid #e5e7eb; }
         .print-btn { background: #C2410C; color: white; border: none; padding: 10px 24px; font-size: 13px; font-weight: 600; border-radius: 6px; cursor: pointer; margin: 1rem auto; display: block; }
@@ -529,15 +526,6 @@ export default function AuditReport() {
           <div className="cta-body" style={{ marginTop: 10 }}>
             And if you want it handled permanently — every new review, every platform, within 24 hours — our monthly service starts at $397/mo.
           </div>
-        </div>
-
-        <div className="sig">
-          I'll follow up with you this week to walk through the findings and answer anything that comes up — no pressure, just want to make sure this actually gets fixed. If a specific day works better for you, just reply and let me know.
-        </div>
-        <div className="sig" style={{ marginTop: 8 }}>
-          <span className="sig-name">Jacob Merkley</span><br />
-          <span className="sig-title">Founder, RespondPal</span><br />
-          <span className="sig-title">jacob@respondpal.ai &nbsp;|&nbsp; respondpal.ai</span>
         </div>
 
         <p className="fine-print">
