@@ -7,6 +7,9 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY
 )
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 // GET /api/sales/me — returns the logged-in rep's own id/name/email.
 // Every other sales API route independently re-verifies the session itself
 // rather than trusting this — this endpoint exists purely for the UI to
