@@ -7,6 +7,9 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY
 )
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 // GET /api/sales/response-examples/[id] — single demo. Ownership boundary:
 // only viewable by the rep who created it.
 export async function GET(req, { params }) {
