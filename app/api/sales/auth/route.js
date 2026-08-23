@@ -34,7 +34,7 @@ export async function POST(req) {
       return NextResponse.json({ error: 'Incorrect email or password.' }, { status: 401 })
     }
     if (!rep.active) {
-      return NextResponse.json({ error: 'This account has been deactivated. Contact Jacob.' }, { status: 403 })
+      return NextResponse.json({ error: 'This account has been archived. Contact Jacob.' }, { status: 403 })
     }
 
     const valid = await verifyPassword(password, rep.password_salt, rep.password_hash)
