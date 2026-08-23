@@ -9,6 +9,7 @@ export default function ResponseExampleDetail() {
   const [demo, setDemo] = useState(null)
   const [loading, setLoading] = useState(true)
   const [generating, setGenerating] = useState(false)
+  const [deleting, setDeleting] = useState(false)
   const [error, setError] = useState('')
   const [warning, setWarning] = useState('')
   const [copiedIdx, setCopiedIdx] = useState(null)
@@ -31,6 +32,24 @@ export default function ResponseExampleDetail() {
   }
 
   useEffect(() => { load() }, [id])
+
+  const deleteDemo = async () => {
+    if (!confirm(`Delete this Response Examples PDF for ${demo.business_name}? This can't be undone.`)) return
+    setDeleting(true)
+    try {
+      const res = await fetch(`/api/sales/response-examples/${id}`, { method: 'DELETE' })
+      if (res.ok) {
+        router.push('/sales/response-examples')
+      } else {
+        const data = await res.json().catch(() => ({}))
+        setError(data.error || 'Failed to delete.')
+        setDeleting(false)
+      }
+    } catch {
+      setError('Something went wrong.')
+      setDeleting(false)
+    }
+  }
 
   const generate = async () => {
     setGenerating(true)
@@ -73,7 +92,16 @@ export default function ResponseExampleDetail() {
 
   return (
     <div className="admin-page">
-      <button className="rev-mini-btn" onClick={() => router.push('/sales/response-examples')} style={{ marginBottom: '1rem' }}>← Back to Response Examples</button>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+        <button className="rev-mini-btn" onClick={() => router.push('/sales/response-examples')}>← Back to Response Examples</button>
+        <button
+          onClick={deleteDemo}
+          disabled={deleting}
+          style={{ background: 'none', border: 'none', color: '#b23b30', fontSize: '0.82rem', cursor: 'pointer', fontWeight: 600 }}
+        >
+          {deleting ? 'Deleting…' : 'Delete & Start Over'}
+        </button>
+      </div>
 
       <header className="admin-page-head">
         <h1>{demo.business_name}</h1>
