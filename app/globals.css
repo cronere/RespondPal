@@ -3649,6 +3649,23 @@ footer a:hover {
   margin-bottom: 1rem;
 }
 
+/* This class was used across 10 files (all the new Sales HQ pages, plus
+   several pre-existing admin pages) but never actually defined — every
+   error message rendered with it was silently inheriting the near-white
+   marketing-page body color, the same missing-color issue fixed a couple
+   rounds back on individual elements, just at wider scale here since it's
+   a whole class rather than one inline style. Matches admin-error-banner's
+   styling exactly rather than introducing a third variant. */
+.admin-error {
+  background: #fdecea;
+  border: 1px solid #f5c6c0;
+  color: #b23b30;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  margin-bottom: 1rem;
+}
+
 /* Toolbar */
 .clients-toolbar {
   display: flex;
