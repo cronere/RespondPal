@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-import { getSalesRepId } from '../../../../lib/salesAuth'
+import { getSalesRepId } from '../../../../../lib/salesAuth'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -10,127 +10,61 @@ const supabase = createClient(
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
-const VALID_STAGES = ['lead', 'contacting', 'response_sent', 'won', 'lost']
-
-// GET /api/sales/leads/[id] — single lead, for the detail page. Same
-// ownership boundary as PATCH: viewable if the requesting rep owns it, or
-// if it's currently unclaimed. A lead owned by a different rep returns
-// 403 rather than leaking its details.
-export async function GET(req, { params }) {
-  const repId = await getSalesRepId(req)
-  if (!repId) return NextResponse.json({ error: 'Not signed in.' }, { status: 401 })
-
-  try {
-    const { data, error } = await supabase
-      .from('leads')
-      .select('*')
-      .eq('id', params.id)
-      .single()
-
-    if (error || !data) {
-      return NextResponse.json({ error: 'Lead not found.' }, { status: 404 })
-    }
-    if (data.sales_rep_id && data.sales_rep_id !== repId) {
-      return NextResponse.json({ error: 'This lead belongs to another rep.' }, { status: 403 })
-    }
-    return NextResponse.json({ lead: data })
-  } catch (err) {
-    return NextResponse.json({ error: 'Failed to load lead.' }, { status: 500 })
-  }
-}
-
-// PATCH /api/sales/leads/[id] — update any editable field on a lead,
-// including logging a contact.
-//
-// Ownership rule: a rep can update a lead if they already own it, OR if
-// it's currently unclaimed (sales_rep_id is null) — taking real action on
-// an unclaimed lead is what claims it, per the 90-day ownership policy.
-// A lead still actively owned by a DIFFERENT rep is not touchable — the
-// fetch-then-check below is the actual security boundary there.
+// PATCH /api/sales/tasks/[id] — edit title/due date, or check it off.
+// Scoped by sales_rep_id — a task belongs to whoever created it, not
+// tied to current lead ownership, since a task is a personal reminder.
 export async function PATCH(req, { params }) {
   const repId = await getSalesRepId(req)
   if (!repId) return NextResponse.json({ error: 'Not signed in.' }, { status: 401 })
 
   try {
-    const { data: existing, error: fetchError } = await supabase
-      .from('leads')
-      .select('id, sales_rep_id')
-      .eq('id', params.id)
-      .single()
-
-    if (fetchError || !existing) {
-      return NextResponse.json({ error: 'Lead not found.' }, { status: 404 })
-    }
-    if (existing.sales_rep_id && existing.sales_rep_id !== repId) {
-      return NextResponse.json({ error: 'This lead belongs to another rep.' }, { status: 403 })
-    }
-
     const body = await req.json()
-    const updates = { updated_at: new Date().toISOString() }
-
-    // Claiming: if it was unclaimed, this action makes the requesting rep
-    // the new current owner. original_sales_rep_id is untouched — it
-    // stays whoever found it first, forever.
-    if (!existing.sales_rep_id) {
-      updates.sales_rep_id = repId
+    const updates = {}
+    if (body.title !== undefined) updates.title = body.title
+    if (body.due_date !== undefined) updates.due_date = body.due_date
+    if (body.completed !== undefined) {
+      updates.completed = body.completed
+      updates.completed_at = body.completed ? new Date().toISOString() : null
     }
 
-    if (body.stage !== undefined) {
-      if (!VALID_STAGES.includes(body.stage)) {
-        return NextResponse.json({ error: 'Invalid stage.' }, { status: 400 })
-      }
-      updates.stage = body.stage
+    if (Object.keys(updates).length === 0) {
+      return NextResponse.json({ error: 'No valid fields to update.' }, { status: 400 })
     }
-    if (body.business_name !== undefined) updates.business_name = body.business_name
-    if (body.industry !== undefined) updates.industry = body.industry
-    if (body.google_url !== undefined) updates.google_url = body.google_url
-    if (body.yelp_url !== undefined) updates.yelp_url = body.yelp_url
-    if (body.notes !== undefined) updates.notes = body.notes
-    if (body.contact_name !== undefined) updates.contact_name = body.contact_name
-    if (body.contact_email !== undefined) updates.contact_email = body.contact_email
-    if (body.contact_phone !== undefined) updates.contact_phone = body.contact_phone
 
     const { data, error } = await supabase
-      .from('leads')
+      .from('lead_tasks')
       .update(updates)
-      .eq('id', params.id)
-      .select()
-      .single()
-
-    if (error || !data) {
-      console.error('Lead update error:', error)
-      return NextResponse.json({ error: error?.message || 'Failed to update lead.' }, { status: 500 })
-    }
-    return NextResponse.json({ lead: data })
-  } catch (err) {
-    return NextResponse.json({ error: 'Failed to update lead.' }, { status: 500 })
-  }
-}
-
-// DELETE /api/sales/leads/[id] — only the current owning rep can delete a
-// lead. Tasks and activity log entries cascade-delete via the foreign key
-// (on delete cascade), so nothing orphaned is left behind. An unclaimed
-// lead (sales_rep_id null) can't be deleted this way — there's no owning
-// rep to authorize it.
-export async function DELETE(req, { params }) {
-  const repId = await getSalesRepId(req)
-  if (!repId) return NextResponse.json({ error: 'Not signed in.' }, { status: 401 })
-
-  try {
-    const { data, error } = await supabase
-      .from('leads')
-      .delete()
       .eq('id', params.id)
       .eq('sales_rep_id', repId)
       .select()
       .single()
 
     if (error || !data) {
-      return NextResponse.json({ error: 'Lead not found, or it belongs to another rep.' }, { status: 404 })
+      return NextResponse.json({ error: error?.message || 'Task not found.' }, { status: 404 })
+    }
+    return NextResponse.json({ task: data })
+  } catch (err) {
+    return NextResponse.json({ error: 'Failed to update task.' }, { status: 500 })
+  }
+}
+
+// DELETE /api/sales/tasks/[id]
+export async function DELETE(req, { params }) {
+  const repId = await getSalesRepId(req)
+  if (!repId) return NextResponse.json({ error: 'Not signed in.' }, { status: 401 })
+
+  try {
+    const { error } = await supabase
+      .from('lead_tasks')
+      .delete()
+      .eq('id', params.id)
+      .eq('sales_rep_id', repId)
+
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 500 })
     }
     return NextResponse.json({ success: true })
   } catch (err) {
-    console.error('Lead delete error:', err)
-    return NextResponse.json({ error: 'Failed to delete lead.' }, { status: 500 })
+    return NextResponse.json({ error: 'Failed to delete task.' }, { status: 500 })
   }
 }
