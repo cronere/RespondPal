@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-import { getSalesRepId } from '../../../../../lib/salesAuth'
+import { getSalesRepId } from '../../../../lib/salesAuth'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
