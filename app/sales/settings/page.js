@@ -50,6 +50,24 @@ export default function SalesSettings() {
         <p className="admin-page-sub">Change your Sales HQ password.</p>
       </header>
 
+      <div style={{ maxWidth: 420, background: '#FFFBEB', border: '1px solid #FDE68A', borderRadius: 8, padding: '1rem', marginBottom: '1.5rem' }}>
+        <div style={{ fontWeight: 700, fontSize: '0.9rem', color: '#92400E', marginBottom: '0.4rem' }}>
+          Complete your tax & payment setup
+        </div>
+        <p style={{ fontSize: '0.82rem', color: '#92400E', marginBottom: '0.75rem' }}>
+          Required before your first commission payout — fill out your W-9 and add your banking
+          details so we can pay you directly.
+        </p>
+        <a
+          href="https://quickbooks.intuit.com/payroll/contractor-payments/"
+          target="_blank"
+          rel="noreferrer"
+          className="rev-mini-btn"
+        >
+          Set up payment info →
+        </a>
+      </div>
+
       <div className="drawer-section" style={{ maxWidth: 420 }}>
         <label className="field">
           <span className="field-label">Current password</span>
