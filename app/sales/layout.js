@@ -6,6 +6,7 @@ import { usePathname, useRouter } from 'next/navigation'
 
 const NAV = [
   { href: '/sales', label: 'Dashboard', exact: true },
+  { href: '/sales/toolkit', label: 'Sales Toolkit' },
   { href: '/sales/leads', label: 'My Leads' },
   { href: '/sales/audit-request', label: 'Request Audit' },
   { href: '/sales/response-examples', label: 'Response Examples' },
