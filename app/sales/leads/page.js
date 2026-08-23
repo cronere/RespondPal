@@ -160,7 +160,7 @@ export default function SalesLeads() {
     setClaiming(null)
   }
 
-  const createLead = async () => {
+  const createLead = async (confirmDuplicate = false) => {
     if (!newLead.business_name.trim() || saving) return
     setSaving(true)
     setError('')
@@ -168,13 +168,22 @@ export default function SalesLeads() {
       const res = await fetch('/api/sales/leads', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newLead),
+        body: JSON.stringify({ ...newLead, confirmDuplicate }),
       })
       const data = await res.json()
       if (res.ok) {
         setShowAdd(false)
         setNewLead({ business_name: '', contact_name: '', contact_email: '', contact_phone: '', industry: '', google_url: '', yelp_url: '', notes: '' })
         load()
+      } else if (res.status === 409 && data.needsConfirmation) {
+        setSaving(false)
+        const proceed = confirm(
+          `"${data.match.businessName}" looks like it may already be ${data.match.ownedBy}'s lead. Add it anyway?`
+        )
+        if (proceed) {
+          createLead(true)
+          return
+        }
       } else {
         setError(data.error || 'Failed to create lead.')
       }
@@ -516,7 +525,7 @@ export default function SalesLeads() {
 
                 {error && <div className="admin-error">{error}</div>}
 
-                <button className="rev-ai-btn" onClick={createLead} disabled={saving} style={{ marginTop: '0.5rem' }}>
+                <button className="rev-ai-btn" onClick={() => createLead()} disabled={saving} style={{ marginTop: '0.5rem' }}>
                   {saving ? 'Adding…' : 'Add Lead'}
                 </button>
               </div>
