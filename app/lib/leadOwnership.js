@@ -1,20 +1,37 @@
 // Lead ownership expiration — lazy pattern, no cron job needed. Every time
 // leads are read (a rep's own list, or the open/unclaimed pool), this runs
-// first: any lead still assigned to a rep but with no activity (no stage
-// change, no note update — updated_at is the proxy for both) in 90 days
-// gets released back to unclaimed (sales_rep_id set to null). The lead's
-// own row stays intact — original_sales_rep_id preserves who found it,
-// stage/notes/everything else is untouched, only current ownership opens
-// up. Whoever next takes real action on it (the PATCH route) reclaims it
-// automatically.
+// first: any lead still assigned to a rep but with no logged contact in 90
+// days gets released back to unclaimed (sales_rep_id set to null). Keyed
+// off last_contacted_at specifically — not updated_at, which changes on
+// ANY edit (a rep fixing a typo shouldn't reset the clock the same way an
+// actual conversation does). Falls back to created_at for a lead that's
+// never been logged as contacted at all. The lead's own row stays intact
+// — original_sales_rep_id preserves who found it, stage/notes/everything
+// else is untouched, only current ownership opens up. Whoever next takes
+// real action on it (the PATCH route) reclaims it automatically.
 export async function releaseStaleLeads(supabase) {
   const ninetyDaysAgo = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString()
   try {
+    // Two passes rather than one combined OR condition — clearer to read,
+    // and Supabase's query builder doesn't cleanly express "column A is
+    // null AND column B is old, OR column A is old" in one chain without
+    // a raw filter string, which is exactly the kind of uncertain syntax
+    // that already caused one real bug in this file.
     await supabase
       .from('leads')
       .update({ sales_rep_id: null })
       .not('sales_rep_id', 'is', null)
-      .lt('updated_at', ninetyDaysAgo)
+      .not('last_contacted_at', 'is', null)
+      .lt('last_contacted_at', ninetyDaysAgo)
+      .neq('stage', 'won')
+      .neq('stage', 'lost')
+
+    await supabase
+      .from('leads')
+      .update({ sales_rep_id: null })
+      .not('sales_rep_id', 'is', null)
+      .is('last_contacted_at', null)
+      .lt('created_at', ninetyDaysAgo)
       .neq('stage', 'won')
       .neq('stage', 'lost')
   } catch (err) {
