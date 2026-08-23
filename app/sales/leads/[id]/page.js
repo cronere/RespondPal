@@ -164,7 +164,7 @@ export default function LeadDetail() {
         {activities.length > 0 && (
           <div style={{ marginTop: '1.25rem', borderTop: '1px solid #e5e7eb', paddingTop: '0.9rem' }}>
             <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#6b7280', textTransform: 'uppercase', marginBottom: '0.6rem' }}>
-              Contact history
+              Activity Log
             </div>
             {activities.map((a) => (
               <div key={a.id} style={{ fontSize: '0.85rem', marginBottom: '0.6rem' }}>
