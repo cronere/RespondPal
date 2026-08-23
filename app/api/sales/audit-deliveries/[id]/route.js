@@ -7,6 +7,9 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY
 )
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 // GET /api/sales/audit-deliveries/[id] — single audit, for the rep's
 // report-viewing page. Only viewable if it's this rep's AND has actually
 // been pushed (delivered/converted) — a rep can't peek at an audit Jacob
