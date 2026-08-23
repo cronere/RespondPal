@@ -7,6 +7,9 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY
 )
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 // GET /api/sales/clients — read-only list of active/onboarding/paused
 // clients, business name + industry only. Exists so a rep can check
 // whether a prospect is already a client before pursuing them as a new
