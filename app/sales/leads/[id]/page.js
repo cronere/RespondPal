@@ -22,9 +22,11 @@ export default function LeadDetail() {
   const { id } = useParams()
   const router = useRouter()
   const [lead, setLead] = useState(null)
+  const [activities, setActivities] = useState([])
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [loggingContact, setLoggingContact] = useState(false)
+  const [contactNote, setContactNote] = useState('')
   const [error, setError] = useState('')
   const [saved, setSaved] = useState(false)
 
@@ -32,13 +34,18 @@ export default function LeadDetail() {
     setLoading(true)
     setError('')
     try {
-      const res = await fetch(`/api/sales/leads/${id}`)
-      const data = await res.json()
-      if (res.ok) {
-        setLead(data.lead)
+      const [leadRes, activitiesRes] = await Promise.all([
+        fetch(`/api/sales/leads/${id}`),
+        fetch(`/api/sales/leads/${id}/activities`),
+      ])
+      const leadData = await leadRes.json()
+      if (leadRes.ok) {
+        setLead(leadData.lead)
       } else {
-        setError(data.error || 'Failed to load this lead.')
+        setError(leadData.error || 'Failed to load this lead.')
       }
+      const activitiesData = await activitiesRes.json()
+      if (activitiesRes.ok) setActivities(activitiesData.activities || [])
     } catch {
       setError('Something went wrong.')
     }
@@ -84,17 +91,28 @@ export default function LeadDetail() {
   }
 
   const logContact = async () => {
+    if (!contactNote.trim() || contactNote.trim().length < 3) {
+      setError('Add a brief note about the contact first — even "left voicemail" counts.')
+      return
+    }
     setLoggingContact(true)
+    setError('')
     try {
-      const res = await fetch(`/api/sales/leads/${id}`, {
-        method: 'PATCH',
+      const res = await fetch(`/api/sales/leads/${id}/activities`, {
+        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ logContact: true }),
+        body: JSON.stringify({ note: contactNote.trim() }),
       })
       const data = await res.json()
-      if (res.ok) setLead(data.lead)
+      if (res.ok) {
+        setLead(data.lead)
+        setContactNote('')
+        load() // refresh full activity history, not just prepend locally
+      } else {
+        setError(data.error || 'Failed to log contact.')
+      }
     } catch {
-      // non-critical — the timestamp just won't update this click
+      setError('Something went wrong.')
     }
     setLoggingContact(false)
   }
@@ -122,9 +140,6 @@ export default function LeadDetail() {
           Last contacted: <strong>{formatDate(lead.last_contacted_at)}</strong>
           {' · '}Added {formatDate(lead.created_at)}
         </p>
-        <button className="rev-ai-btn" onClick={logContact} disabled={loggingContact} style={{ marginTop: '1rem' }}>
-          {loggingContact ? 'Logging…' : '📞 Log Contact (just now)'}
-        </button>
       </header>
 
       {error && <div className="admin-error">{error}</div>}
@@ -133,6 +148,35 @@ export default function LeadDetail() {
           Saved.
         </div>
       )}
+
+      <div className="drawer-section" style={{ maxWidth: 560, background: '#fafafa', border: '1px solid #e5e7eb', borderRadius: 8, padding: '1rem' }}>
+        <div style={{ fontWeight: 700, fontSize: '0.9rem', marginBottom: '0.6rem' }}>Log a contact</div>
+        <textarea
+          value={contactNote}
+          onChange={(e) => setContactNote(e.target.value)}
+          placeholder="What happened? e.g. &quot;Left voicemail, will try again Thursday&quot; or &quot;Spoke with office manager, wants pricing details&quot;"
+          style={{ minHeight: 60, width: '100%', padding: '0.6rem', borderRadius: 6, border: '1px solid #d1d5db', fontFamily: 'inherit', fontSize: '0.9rem', marginBottom: '0.6rem' }}
+        />
+        <button className="rev-ai-btn" onClick={logContact} disabled={loggingContact}>
+          {loggingContact ? 'Logging…' : '📞 Log Contact'}
+        </button>
+
+        {activities.length > 0 && (
+          <div style={{ marginTop: '1.25rem', borderTop: '1px solid #e5e7eb', paddingTop: '0.9rem' }}>
+            <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#6b7280', textTransform: 'uppercase', marginBottom: '0.6rem' }}>
+              Contact history
+            </div>
+            {activities.map((a) => (
+              <div key={a.id} style={{ fontSize: '0.85rem', marginBottom: '0.6rem' }}>
+                <div style={{ color: '#6b7280', fontSize: '0.78rem' }}>
+                  {formatDate(a.created_at)}{a.sales_reps?.name ? ` · ${a.sales_reps.name}` : ''}
+                </div>
+                <div>{a.note}</div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
 
       <div className="drawer-section" style={{ maxWidth: 560 }}>
         <label className="field">
