@@ -8,6 +8,9 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY
 )
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 // GET /api/sales/leads — list ONLY the logged-in rep's own leads. Every
 // query in this file filters by sales_rep_id from the verified session,
 // never from anything the client sends — a rep cannot see or affect
