@@ -32,6 +32,17 @@ export default function SalesLeads() {
   })
   const [newTask, setNewTask] = useState({ lead_id: '', title: '', due_date: '' })
   const [addingTask, setAddingTask] = useState(false)
+  const [tasksDue, setTasksDue] = useState(0)
+
+  const loadCounts = async () => {
+    try {
+      const res = await fetch('/api/sales/counts', { cache: 'no-store' })
+      const data = await res.json()
+      if (res.ok) setTasksDue(data.tasksDue || 0)
+    } catch {
+      // badge just won't show this cycle — not worth surfacing an error for
+    }
+  }
 
   const load = async () => {
     setLoading(true)
@@ -81,7 +92,7 @@ export default function SalesLeads() {
     setLoadingClients(false)
   }
 
-  useEffect(() => { load() }, [])
+  useEffect(() => { load(); loadCounts() }, [])
   useEffect(() => {
     if (tab === 'open' && openLeads.length === 0) loadOpen()
     if (tab === 'clients' && clients.length === 0) loadClients()
@@ -120,6 +131,7 @@ export default function SalesLeads() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ completed: !task.completed }),
       })
+      loadCounts()
     } catch {
       loadTasks()
     }
@@ -129,6 +141,7 @@ export default function SalesLeads() {
     setTasks((prev) => prev.filter((t) => t.id !== taskId))
     try {
       await fetch(`/api/sales/tasks/${taskId}`, { method: 'DELETE' })
+      loadCounts()
     } catch {
       loadTasks()
     }
@@ -235,9 +248,18 @@ export default function SalesLeads() {
               color: tab === t.key ? '#C2410C' : '#6b7280',
               borderBottom: tab === t.key ? '2px solid #C2410C' : '2px solid transparent',
               marginBottom: '-1px',
+              display: 'flex', alignItems: 'center', gap: '0.4rem',
             }}
           >
             {t.label}
+            {t.key === 'tasks' && tasksDue > 0 && (
+              <span style={{
+                background: '#DC2626', color: 'white', fontSize: '0.72rem', fontWeight: 700,
+                borderRadius: 999, padding: '0.1rem 0.45rem', minWidth: 18, textAlign: 'center',
+              }}>
+                {tasksDue}
+              </span>
+            )}
           </button>
         ))}
       </div>
