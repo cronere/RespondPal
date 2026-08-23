@@ -2,23 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { useParams } from 'next/navigation'
-
-const HIPAA_KEYWORDS = ['dental', 'dentist', 'orthodont', 'medical', 'doctor', 'physician',
-  'chiropractic', 'chiropractor', 'med spa', 'medspa', 'dermatology', 'dermatologist',
-  'cosmetic surg', 'plastic surg', 'optometry', 'optometrist', 'ophthalmol',
-  'behavioral health', 'mental health', 'psychiatr', 'psycholog', 'therapy',
-  'physical therapy', 'urgent care', 'clinic', 'healthcare', 'health care',
-  'oral surg', 'periodon', 'endodont', 'pediatric', 'obgyn', 'ob-gyn',
-  'aesthetic', 'esthetic', 'wellness', 'injectable', 'botox', 'filler',
-  'iv therapy', 'iv hydration', 'weight loss clinic', 'hormone', 'laser clinic',
-  'natural medicine', 'functional medicine', 'integrative medicine', 'naturopath',
-  'acupunctur', 'nutritionist', 'dietitian', 'rehab', 'recovery center',
-  'urgent', 'family practice', 'internal medicine', 'nurse practitioner', 'nurse pract']
-
-function isHipaaIndustry(industry) {
-  const ind = (industry || '').toLowerCase()
-  return HIPAA_KEYWORDS.some(kw => ind.includes(kw))
-}
+import { isHipaaIndustry } from '../../../../../lib/aiDrafting'
 
 export default function ResponseDemoReport() {
   const { id } = useParams()
