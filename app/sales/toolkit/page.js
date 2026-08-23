@@ -5,6 +5,7 @@ import { useState } from 'react'
 const TABS = [
   { key: 'why', label: 'Why This Works' },
   { key: 'sell', label: 'How You Sell' },
+  { key: 'loom', label: 'Loom Script' },
   { key: 'commission', label: 'Commission' },
   { key: 'ownership', label: 'Ownership Rules' },
 ]
@@ -217,6 +218,69 @@ export default function SalesToolkit() {
           <div style={cardStyle}>
             {['No contracts — cancel anytime', 'Live within 48 hours of signup', '24-hour response guarantee', 'Google AND Yelp covered', 'Industry-calibrated AI, human-approved before posting', 'HIPAA-compliant for healthcare businesses', 'No passwords shared — official manager access only'].map((fact, i) => (
               <div key={i} style={{ fontSize: '0.88rem', color: '#374151', marginBottom: '0.4rem' }}>✓ {fact}</div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ── LOOM SCRIPT ── */}
+      {tab === 'loom' && (
+        <div style={{ maxWidth: 720 }}>
+          <div style={cardStyle}>
+            <p style={{ ...pStyle, marginBottom: 0 }}>
+              Whether you&apos;re delivering an Audit or a Response Examples PDF, a short Loom walking
+              through it does more work than the PDF alone — it&apos;s the difference between an email
+              they might skim and a report they actually watch someone explain. Keep it under 3 minutes.
+              Screen-share the report, don&apos;t just talk about it.
+            </p>
+          </div>
+
+          <h2 style={h2Style}>Opening</h2>
+          <div style={cardStyle}>
+            <p style={{ ...pStyle, marginBottom: 0, fontStyle: 'italic' }}>
+              &quot;Hey [Name], this is [Your Name] with RespondPal. I put together a quick report on
+              your Google reviews — figured a short video would be faster than a wall of text, so let
+              me walk you through what I found.&quot;
+            </p>
+          </div>
+
+          <h2 style={h2Style}>Walking through the report</h2>
+          <div style={cardStyle}>
+            <p style={pStyle}>
+              <b>For an Audit (healthcare):</b> Lead with the stat bar — response rate and critical
+              finding count. Then open one of the flagged findings and read the highlighted phrase out
+              loud. Let the violation speak for itself; don&apos;t over-explain the compliance angle,
+              just point at it: &quot;this response here — see this line — that&apos;s the kind of
+              phrase that&apos;s actually resulted in fines at other practices.&quot;
+            </p>
+            <p style={{ ...pStyle, marginBottom: 0 }}>
+              <b>For Response Examples (everyone else):</b> Open with one of their real reviews, then
+              show the drafted response right next to it. The contrast between what they have now
+              (nothing, or something generic) and what a real response looks like is the whole pitch —
+              let them see it side by side rather than describing it.
+            </p>
+          </div>
+
+          <h2 style={h2Style}>Closing</h2>
+          <div style={cardStyle}>
+            <p style={{ ...pStyle, marginBottom: 0, fontStyle: 'italic' }}>
+              &quot;That&apos;s the gist of it — I&apos;ll follow up in a day or two, but if you want to
+              chat sooner just reply to my email or call me back. No pressure either way, just wanted
+              you to actually see this instead of a report sitting unopened in your inbox.&quot;
+            </p>
+          </div>
+
+          <h2 style={h2Style}>What to avoid</h2>
+          <div style={cardStyle}>
+            {[
+              'Reading the report out loud top to bottom — pick the one or two most compelling findings and stop there',
+              'Sounding like you\'re selling something — you\'re a consultant sharing something you noticed, not pitching',
+              'Going over 3 minutes — if it runs long, they won\'t finish it',
+              'Naming a specific dollar fine amount for their practice — reference the pattern, not a guaranteed outcome',
+            ].map((item, i) => (
+              <div key={i} style={{ display: 'flex', gap: '0.5rem', fontSize: '0.88rem', color: '#374151', marginBottom: i < 3 ? '0.5rem' : 0 }}>
+                <span style={{ color: '#b91c1c', fontWeight: 700 }}>✗</span> {item}
+              </div>
             ))}
           </div>
         </div>
