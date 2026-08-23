@@ -396,7 +396,17 @@ function AuditDrawer({ audit, onClose, onUpdate, onDelete }) {
     setAnalyzing(false)
   }
 
-  const markDelivered = () => patch({ status: 'delivered' }, 'Marked delivered.')
+  const markDelivered = () => {
+    // For rep-sourced audits, this same action IS "Push to Sales Rep" —
+    // status becomes 'delivered' either way (admin's job is done), but the
+    // rep gets their own separate ready-to-deliver/delivered tracking on
+    // top of this via rep_delivered_at, which starts null the moment this
+    // fires and only gets set when the rep confirms THEY'VE sent it.
+    const message = audit.sales_rep_id
+      ? 'Pushed to sales rep — they can now see and deliver this report.'
+      : 'Marked delivered.'
+    patch({ status: 'delivered' }, message)
+  }
   const markConverted = () => patch({ status: 'converted' }, 'Marked converted — nice close!')
   const archive = () => patch({ status: 'archived' }, 'Archived.')
 
@@ -920,7 +930,9 @@ function AuditDrawer({ audit, onClose, onUpdate, onDelete }) {
             </button>
           )}
           {audit.status === 'ready' && (
-            <button className="drawer-btn-secondary" onClick={markDelivered} disabled={saving}>Mark delivered</button>
+            <button className="drawer-btn-secondary" onClick={markDelivered} disabled={saving}>
+              {audit.sales_rep_id ? 'Push to Sales Rep' : 'Mark delivered'}
+            </button>
           )}
           {audit.status === 'delivered' && (
             <button className="drawer-btn-primary" onClick={markConverted} disabled={saving}>Mark converted ✓</button>
