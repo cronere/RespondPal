@@ -257,9 +257,19 @@ export default function AuditRequest() {
                       <div className="demo-card-name">{a.business_name}</div>
                       <div className="demo-card-meta">{a.industry || 'Industry not set'}</div>
                     </div>
-                    <button className="rev-ai-btn" onClick={() => markRepDelivered(a.id)} disabled={markingId === a.id}>
-                      {markingId === a.id ? 'Marking…' : 'Mark Delivered'}
-                    </button>
+                    <div style={{ display: 'flex', gap: '0.5rem' }}>
+                      <a
+                        href={`/sales/audit-deliveries/${a.id}/report`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="rev-mini-btn"
+                      >
+                        View Report
+                      </a>
+                      <button className="rev-ai-btn" onClick={() => markRepDelivered(a.id)} disabled={markingId === a.id}>
+                        {markingId === a.id ? 'Marking…' : 'Mark Delivered'}
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -280,9 +290,19 @@ export default function AuditRequest() {
                         {a.industry || 'Industry not set'} · Delivered {new Date(a.rep_delivered_at).toLocaleDateString()}
                       </div>
                     </div>
-                    {a.status === 'converted' && (
-                      <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#15803d' }}>Converted 🎉</span>
-                    )}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                      <a
+                        href={`/sales/audit-deliveries/${a.id}/report`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="rev-mini-btn"
+                      >
+                        View Report
+                      </a>
+                      {a.status === 'converted' && (
+                        <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#15803d' }}>Converted 🎉</span>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>
