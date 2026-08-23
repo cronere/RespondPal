@@ -11,7 +11,11 @@ export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
 // GET /api/sales/counts — badge counts for the Sales HQ sidebar.
-// tasksDue: incomplete tasks with a due date today or earlier.
+// tasksDue: incomplete tasks that are STRICTLY overdue — due_date before
+// today, not due today. A task due today still has today to get done; it
+// shouldn't show as a red flag until the day has actually passed. Matches
+// the isOverdue() definition already used on the lead detail page and the
+// Tasks tab, so "overdue" means the same thing everywhere in Sales HQ.
 // auditsReady: audits pushed to this rep that they haven't marked
 // delivered yet (same "Ready to Deliver" definition used on the
 // My Audit Requests tab).
@@ -28,7 +32,7 @@ export async function GET(req) {
         .select('id', { count: 'exact', head: true })
         .eq('sales_rep_id', repId)
         .eq('completed', false)
-        .lte('due_date', today)
+        .lt('due_date', today)
         .not('due_date', 'is', null),
       supabase
         .from('audits')
