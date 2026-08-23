@@ -47,6 +47,21 @@ export default function SalesTeam() {
 
   useEffect(() => { load() }, [])
 
+  const toggleActive = async (rep, e) => {
+    e.stopPropagation() // don't trigger the row's "view leads" click
+    try {
+      const res = await fetch(`/api/admin/sales-reps/${rep.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ active: !rep.active }),
+      })
+      if (res.ok) load()
+      else setError('Failed to update rep status.')
+    } catch {
+      setError('Something went wrong.')
+    }
+  }
+
   const viewRepLeads = async (rep) => {
     setSelectedRep(rep)
     setLoadingLeads(true)
@@ -117,8 +132,16 @@ export default function SalesTeam() {
                 <div className="demo-card-name">{r.name}</div>
                 <div className="demo-card-meta">{r.email} · added {new Date(r.created_at).toLocaleDateString()}</div>
               </div>
-              <div className={`demo-status ${r.active ? 'demo-status-generated' : 'demo-status-draft'}`}>
-                {r.active ? 'Active' : 'Inactive'}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                <div className={`demo-status ${r.active ? 'demo-status-generated' : 'demo-status-draft'}`}>
+                  {r.active ? 'Active' : 'Archived'}
+                </div>
+                <button
+                  className="rev-mini-btn"
+                  onClick={(e) => toggleActive(r, e)}
+                >
+                  {r.active ? 'Archive' : 'Reactivate'}
+                </button>
               </div>
             </div>
           ))}
