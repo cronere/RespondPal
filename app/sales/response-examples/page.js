@@ -9,10 +9,13 @@ function emptyReview() {
 
 export default function SalesResponseExamples() {
   const [demos, setDemos] = useState([])
+  const [leads, setLeads] = useState([])
   const [loading, setLoading] = useState(true)
   const [showAdd, setShowAdd] = useState(false)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
+  const [mode, setMode] = useState('existing') // 'existing' or 'new'
+  const [selectedLeadId, setSelectedLeadId] = useState('')
   const [form, setForm] = useState({
     business_name: '', industry: '', contact_name: '', contact_email: '',
     google_url: '', yelp_url: '',
@@ -22,9 +25,14 @@ export default function SalesResponseExamples() {
   const load = async () => {
     setLoading(true)
     try {
-      const res = await fetch('/api/sales/response-examples')
-      const data = await res.json()
-      if (res.ok) setDemos(data.demos || [])
+      const [demosRes, leadsRes] = await Promise.all([
+        fetch('/api/sales/response-examples'),
+        fetch('/api/sales/leads'),
+      ])
+      const demosData = await demosRes.json()
+      if (demosRes.ok) setDemos(demosData.demos || [])
+      const leadsData = await leadsRes.json()
+      if (leadsRes.ok) setLeads(leadsData.leads || [])
     } catch {
       setError('Failed to load response examples.')
     }
@@ -43,19 +51,27 @@ export default function SalesResponseExamples() {
   const openAdd = () => {
     setForm({ business_name: '', industry: '', contact_name: '', contact_email: '', google_url: '', yelp_url: '' })
     setReviews([emptyReview()])
+    setSelectedLeadId('')
+    setMode(leads.length > 0 ? 'existing' : 'new')
     setError('')
     setShowAdd(true)
   }
 
   const create = async () => {
-    if (!form.business_name.trim() || saving) return
+    if (mode === 'existing' && !selectedLeadId) return
+    if (mode === 'new' && !form.business_name.trim()) return
+    if (saving) return
     setSaving(true)
     setError('')
     try {
+      const payload = mode === 'existing'
+        ? { lead_id: selectedLeadId, reviews: reviews.filter((r) => r.review_text.trim()) }
+        : { ...form, reviews: reviews.filter((r) => r.review_text.trim()) }
+
       const res = await fetch('/api/sales/response-examples', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...form, reviews: reviews.filter((r) => r.review_text.trim()) }),
+        body: JSON.stringify(payload),
       })
       const data = await res.json()
       if (res.ok) {
@@ -117,20 +133,66 @@ export default function SalesResponseExamples() {
             </div>
             <div className="drawer-body">
               <div className="drawer-section">
-                <label className="field">
-                  <span className="field-label">Business name *</span>
-                  <input value={form.business_name} onChange={(e) => setField('business_name', e.target.value)} placeholder="e.g. Joe's Auto Shop" />
-                </label>
-                <div className="drawer-grid">
-                  <label className="field">
-                    <span className="field-label">Industry</span>
-                    <input value={form.industry} onChange={(e) => setField('industry', e.target.value)} placeholder="e.g. Auto Repair, Restaurant" />
-                  </label>
-                  <label className="field">
-                    <span className="field-label">Contact name</span>
-                    <input value={form.contact_name} onChange={(e) => setField('contact_name', e.target.value)} />
-                  </label>
+                <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
+                  <button
+                    type="button"
+                    className={mode === 'existing' ? 'rev-ai-btn' : 'rev-mini-btn'}
+                    onClick={() => setMode('existing')}
+                    disabled={leads.length === 0}
+                  >
+                    Pick an existing lead
+                  </button>
+                  <button
+                    type="button"
+                    className={mode === 'new' ? 'rev-ai-btn' : 'rev-mini-btn'}
+                    onClick={() => setMode('new')}
+                  >
+                    + New business
+                  </button>
                 </div>
+
+                {mode === 'existing' ? (
+                  leads.length === 0 ? (
+                    <p style={{ fontSize: '0.85rem', color: '#6b7280' }}>
+                      No leads yet — add one in My Leads first, or switch to &quot;New business&quot; and
+                      it&apos;ll be added to your leads automatically.
+                    </p>
+                  ) : (
+                    <label className="field">
+                      <span className="field-label">Which lead is this for? *</span>
+                      <select
+                        value={selectedLeadId}
+                        onChange={(e) => setSelectedLeadId(e.target.value)}
+                        style={{ padding: '0.55rem 0.7rem', borderRadius: 6, border: '1px solid #d1d5db', fontSize: '0.9rem', width: '100%' }}
+                      >
+                        <option value="">Select a lead…</option>
+                        {leads.map((l) => (
+                          <option key={l.id} value={l.id}>{l.business_name}{l.industry ? ` (${l.industry})` : ''}</option>
+                        ))}
+                      </select>
+                    </label>
+                  )
+                ) : (
+                  <>
+                    <label className="field">
+                      <span className="field-label">Business name *</span>
+                      <input value={form.business_name} onChange={(e) => setField('business_name', e.target.value)} placeholder="e.g. Joe's Auto Shop" />
+                    </label>
+                    <div className="drawer-grid">
+                      <label className="field">
+                        <span className="field-label">Industry</span>
+                        <input value={form.industry} onChange={(e) => setField('industry', e.target.value)} placeholder="e.g. Auto Repair, Restaurant" />
+                      </label>
+                      <label className="field">
+                        <span className="field-label">Contact name</span>
+                        <input value={form.contact_name} onChange={(e) => setField('contact_name', e.target.value)} />
+                      </label>
+                    </div>
+                    <p style={{ fontSize: '0.78rem', color: '#6b7280', marginTop: '-0.3rem' }}>
+                      This will also be added to your leads automatically.
+                    </p>
+                  </>
+                )}
               </div>
 
               <div className="drawer-section">
@@ -174,7 +236,12 @@ export default function SalesResponseExamples() {
 
               {error && <div className="admin-error">{error}</div>}
 
-              <button className="rev-ai-btn" onClick={create} disabled={saving} style={{ marginTop: '0.5rem' }}>
+              <button
+                className="rev-ai-btn"
+                onClick={create}
+                disabled={saving || (mode === 'existing' ? !selectedLeadId : !form.business_name.trim())}
+                style={{ marginTop: '0.5rem' }}
+              >
                 {saving ? 'Creating…' : 'Create'}
               </button>
             </div>
