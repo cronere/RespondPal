@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Link from 'next/link'
 
 const STAGES = [
   { key: 'lead', label: 'Lead' },
@@ -180,7 +181,9 @@ export default function SalesLeads() {
               <div className="response-demo-card" key={l.id} style={{ flexDirection: 'column', alignItems: 'stretch', gap: '0.5rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                   <div>
-                    <div className="demo-card-name">{l.business_name}</div>
+                    <Link href={`/sales/leads/${l.id}`} style={{ textDecoration: 'none' }}>
+                      <div className="demo-card-name" style={{ color: '#C2410C' }}>{l.business_name}</div>
+                    </Link>
                     <div className="demo-card-meta">
                       {l.industry || 'Industry not set'}
                       {l.contact_name ? ` · ${l.contact_name}` : ''}
