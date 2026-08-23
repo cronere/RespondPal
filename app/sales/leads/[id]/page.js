@@ -18,25 +18,46 @@ function formatDate(iso) {
   })
 }
 
+function formatDueDate(dateStr) {
+  if (!dateStr) return null
+  const [y, m, d] = dateStr.split('-').map(Number)
+  return new Date(y, m - 1, d).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
+}
+
+function isOverdue(dateStr) {
+  if (!dateStr) return false
+  const [y, m, d] = dateStr.split('-').map(Number)
+  const due = new Date(y, m - 1, d)
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  return due < today
+}
+
 export default function LeadDetail() {
   const { id } = useParams()
   const router = useRouter()
   const [lead, setLead] = useState(null)
   const [activities, setActivities] = useState([])
+  const [tasks, setTasks] = useState([])
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
+  const [deleting, setDeleting] = useState(false)
   const [loggingContact, setLoggingContact] = useState(false)
   const [contactNote, setContactNote] = useState('')
   const [error, setError] = useState('')
   const [saved, setSaved] = useState(false)
+  const [newTaskTitle, setNewTaskTitle] = useState('')
+  const [newTaskDue, setNewTaskDue] = useState('')
+  const [addingTask, setAddingTask] = useState(false)
 
   const load = async () => {
     setLoading(true)
     setError('')
     try {
-      const [leadRes, activitiesRes] = await Promise.all([
+      const [leadRes, activitiesRes, tasksRes] = await Promise.all([
         fetch(`/api/sales/leads/${id}`),
         fetch(`/api/sales/leads/${id}/activities`),
+        fetch(`/api/sales/leads/${id}/tasks`),
       ])
       const leadData = await leadRes.json()
       if (leadRes.ok) {
@@ -46,6 +67,8 @@ export default function LeadDetail() {
       }
       const activitiesData = await activitiesRes.json()
       if (activitiesRes.ok) setActivities(activitiesData.activities || [])
+      const tasksData = await tasksRes.json()
+      if (tasksRes.ok) setTasks(tasksData.tasks || [])
     } catch {
       setError('Something went wrong.')
     }
@@ -90,6 +113,69 @@ export default function LeadDetail() {
     setSaving(false)
   }
 
+  const deleteLead = async () => {
+    if (!confirm(`Delete ${lead.business_name}? This can't be undone.`)) return
+    setDeleting(true)
+    try {
+      const res = await fetch(`/api/sales/leads/${id}`, { method: 'DELETE' })
+      if (res.ok) {
+        router.push('/sales/leads')
+      } else {
+        const data = await res.json().catch(() => ({}))
+        setError(data.error || 'Failed to delete lead.')
+        setDeleting(false)
+      }
+    } catch {
+      setError('Something went wrong.')
+      setDeleting(false)
+    }
+  }
+
+  const addTask = async () => {
+    if (!newTaskTitle.trim() || addingTask) return
+    setAddingTask(true)
+    try {
+      const res = await fetch(`/api/sales/leads/${id}/tasks`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title: newTaskTitle.trim(), due_date: newTaskDue || null }),
+      })
+      const data = await res.json()
+      if (res.ok) {
+        setTasks((prev) => [data.task, ...prev])
+        setNewTaskTitle('')
+        setNewTaskDue('')
+      } else {
+        setError(data.error || 'Failed to add task.')
+      }
+    } catch {
+      setError('Something went wrong.')
+    }
+    setAddingTask(false)
+  }
+
+  const toggleTask = async (task) => {
+    setTasks((prev) => prev.map((t) => (t.id === task.id ? { ...t, completed: !t.completed } : t)))
+    try {
+      await fetch(`/api/sales/tasks/${task.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ completed: !task.completed }),
+      })
+    } catch {
+      load()
+    }
+  }
+
+  const deleteTask = async (taskId) => {
+    setTasks((prev) => prev.filter((t) => t.id !== taskId))
+    try {
+      await fetch(`/api/sales/tasks/${taskId}`, { method: 'DELETE' })
+    } catch {
+      load()
+    }
+  }
+
   const logContact = async () => {
     if (!contactNote.trim() || contactNote.trim().length < 3) {
       setError('Add a brief note about the contact first — even "left voicemail" counts.')
@@ -132,7 +218,16 @@ export default function LeadDetail() {
 
   return (
     <div className="admin-page">
-      <button className="rev-mini-btn" onClick={() => router.push('/sales/leads')} style={{ marginBottom: '1rem' }}>← Back to Leads</button>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+        <button className="rev-mini-btn" onClick={() => router.push('/sales/leads')}>← Back to Leads</button>
+        <button
+          onClick={deleteLead}
+          disabled={deleting}
+          style={{ background: 'none', border: 'none', color: '#b23b30', fontSize: '0.82rem', cursor: 'pointer', fontWeight: 600 }}
+        >
+          {deleting ? 'Deleting…' : 'Delete Lead'}
+        </button>
+      </div>
 
       <header className="admin-page-head">
         <h1>{lead.business_name}</h1>
@@ -144,10 +239,67 @@ export default function LeadDetail() {
 
       {error && <div className="admin-error">{error}</div>}
       {saved && (
-        <div style={{ background: '#F0FDF4', border: '1px solid #86EFAC', borderRadius: 8, padding: '0.6rem 0.9rem', fontSize: '0.85rem', marginBottom: '1rem', maxWidth: 480 }}>
+        <div style={{ background: '#F0FDF4', border: '1px solid #86EFAC', borderRadius: 8, padding: '0.6rem 0.9rem', fontSize: '0.85rem', marginBottom: '1rem', maxWidth: 480, color: '#166534' }}>
           Saved.
         </div>
       )}
+
+      {/* ── TASKS ── */}
+      <div style={{ maxWidth: 560, background: 'white', border: '1px solid #e5e7eb', borderRadius: 8, padding: '1rem', marginBottom: '1.25rem' }}>
+        <div style={{ fontWeight: 700, fontSize: '0.9rem', marginBottom: '0.75rem', color: '#1a1a1a' }}>Tasks</div>
+        <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.9rem' }}>
+          <input
+            value={newTaskTitle}
+            onChange={(e) => setNewTaskTitle(e.target.value)}
+            onKeyDown={(e) => { if (e.key === 'Enter') addTask() }}
+            placeholder="e.g. Follow up on pricing question"
+            style={{ flex: 1, padding: '0.5rem 0.7rem', borderRadius: 6, border: '1px solid #d1d5db', fontSize: '0.85rem', color: '#1a1a1a' }}
+          />
+          <input
+            type="date"
+            value={newTaskDue}
+            onChange={(e) => setNewTaskDue(e.target.value)}
+            style={{ padding: '0.5rem 0.6rem', borderRadius: 6, border: '1px solid #d1d5db', fontSize: '0.85rem', color: '#1a1a1a' }}
+          />
+          <button className="rev-mini-btn" onClick={addTask} disabled={addingTask || !newTaskTitle.trim()}>
+            {addingTask ? 'Adding…' : '+ Add'}
+          </button>
+        </div>
+
+        {tasks.filter((t) => !t.completed).length === 0 && tasks.filter((t) => t.completed).length === 0 ? (
+          <p style={{ fontSize: '0.85rem', color: '#9ca3af', margin: 0 }}>No tasks yet.</p>
+        ) : (
+          <>
+            {tasks.filter((t) => !t.completed).map((t) => {
+              const overdue = isOverdue(t.due_date)
+              return (
+                <div key={t.id} style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', padding: '0.4rem 0', borderBottom: '1px solid #f3f4f6' }}>
+                  <input type="checkbox" checked={false} onChange={() => toggleTask(t)} style={{ width: 16, height: 16, cursor: 'pointer' }} />
+                  <div style={{ flex: 1, fontSize: '0.88rem', color: '#1a1a1a' }}>{t.title}</div>
+                  {t.due_date && (
+                    <span style={{ fontSize: '0.75rem', fontWeight: 700, color: overdue ? '#b23b30' : '#6b7280' }}>
+                      {overdue ? 'Overdue · ' : ''}{formatDueDate(t.due_date)}
+                    </span>
+                  )}
+                  <button onClick={() => deleteTask(t.id)} style={{ background: 'none', border: 'none', color: '#9ca3af', cursor: 'pointer', fontSize: '0.9rem', padding: '0 0.2rem' }}>×</button>
+                </div>
+              )
+            })}
+            {tasks.filter((t) => t.completed).length > 0 && (
+              <details style={{ marginTop: '0.5rem' }}>
+                <summary style={{ fontSize: '0.78rem', color: '#9ca3af', cursor: 'pointer' }}>{tasks.filter((t) => t.completed).length} completed</summary>
+                {tasks.filter((t) => t.completed).map((t) => (
+                  <div key={t.id} style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', padding: '0.4rem 0' }}>
+                    <input type="checkbox" checked={true} onChange={() => toggleTask(t)} style={{ width: 16, height: 16, cursor: 'pointer' }} />
+                    <div style={{ flex: 1, fontSize: '0.88rem', color: '#9ca3af', textDecoration: 'line-through' }}>{t.title}</div>
+                    <button onClick={() => deleteTask(t.id)} style={{ background: 'none', border: 'none', color: '#9ca3af', cursor: 'pointer', fontSize: '0.9rem', padding: '0 0.2rem' }}>×</button>
+                  </div>
+                ))}
+              </details>
+            )}
+          </>
+        )}
+      </div>
 
       <div className="drawer-section" style={{ maxWidth: 560, background: '#fafafa', border: '1px solid #e5e7eb', borderRadius: 8, padding: '1rem' }}>
         <div style={{ fontWeight: 700, fontSize: '0.9rem', marginBottom: '0.6rem', color: '#1a1a1a' }}>Log a contact</div>
@@ -160,22 +312,6 @@ export default function LeadDetail() {
         <button className="rev-ai-btn" onClick={logContact} disabled={loggingContact}>
           {loggingContact ? 'Logging…' : '📞 Log Contact'}
         </button>
-
-        {activities.length > 0 && (
-          <div style={{ marginTop: '1.25rem', borderTop: '1px solid #e5e7eb', paddingTop: '0.9rem' }}>
-            <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#6b7280', textTransform: 'uppercase', marginBottom: '0.6rem' }}>
-              Activity Log
-            </div>
-            {activities.map((a) => (
-              <div key={a.id} style={{ fontSize: '0.85rem', marginBottom: '0.6rem' }}>
-                <div style={{ color: '#6b7280', fontSize: '0.78rem' }}>
-                  {formatDate(a.created_at)}{a.sales_reps?.name ? ` · ${a.sales_reps.name}` : ''}
-                </div>
-                <div style={{ color: '#1a1a1a' }}>{a.note}</div>
-              </div>
-            ))}
-          </div>
-        )}
       </div>
 
       <div className="drawer-section" style={{ maxWidth: 560 }}>
@@ -235,6 +371,25 @@ export default function LeadDetail() {
         <button className="rev-ai-btn" onClick={save} disabled={saving} style={{ marginTop: '0.5rem' }}>
           {saving ? 'Saving…' : 'Save Changes'}
         </button>
+      </div>
+
+      {/* ── ACTIVITY LOG ── */}
+      <div style={{ maxWidth: 560, marginTop: '2rem', paddingTop: '1.5rem', borderTop: '1px solid #e5e7eb' }}>
+        <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#6b7280', textTransform: 'uppercase', marginBottom: '0.9rem' }}>
+          Activity Log
+        </div>
+        {activities.length === 0 ? (
+          <p style={{ fontSize: '0.85rem', color: '#9ca3af' }}>No activity logged yet.</p>
+        ) : (
+          activities.map((a) => (
+            <div key={a.id} style={{ fontSize: '0.85rem', marginBottom: '0.7rem' }}>
+              <div style={{ color: '#6b7280', fontSize: '0.78rem' }}>
+                {formatDate(a.created_at)}{a.sales_reps?.name ? ` · ${a.sales_reps.name}` : ''}
+              </div>
+              <div style={{ color: '#1a1a1a' }}>{a.note}</div>
+            </div>
+          ))
+        )}
       </div>
     </div>
   )
