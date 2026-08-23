@@ -11,10 +11,13 @@ export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
 // GET /api/sales/clients — read-only list of active/onboarding/paused
-// clients, business name + industry only. Exists so a rep can check
-// whether a prospect is already a client before pursuing them as a new
-// lead — deliberately minimal fields, this isn't a full client-management
-// view, just a "don't go after this one" check.
+// clients, with enough identifying detail that a rep can be certain which
+// business this is — name alone isn't enough once there are multiple
+// locations or similarly-named businesses. No editing capability here;
+// this exists purely so a rep can positively identify a business before
+// deciding whether to pursue it as a new lead. There's no dedicated
+// "website" field in the clients table — google_profile_email and
+// yelp_url are the closest equivalents, included instead.
 export async function GET(req) {
   const repId = await getSalesRepId(req)
   if (!repId) return NextResponse.json({ error: 'Not signed in.' }, { status: 401 })
@@ -22,7 +25,7 @@ export async function GET(req) {
   try {
     const { data, error } = await supabase
       .from('clients')
-      .select('id, business_name, industry, status')
+      .select('id, business_name, industry, status, phone, owner_name, rep_name, google_profile_email, yelp_url')
       .in('status', ['active', 'onboarding', 'paused'])
       .order('business_name', { ascending: true })
 
