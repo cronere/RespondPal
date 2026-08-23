@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { getSalesRepId } from '../../../lib/salesAuth'
+import { isHipaaIndustry } from '../../../lib/aiDrafting'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -42,6 +43,18 @@ export async function POST(req) {
     const body = await req.json()
     if (!body.business_name || !body.business_name.trim()) {
       return NextResponse.json({ error: 'Business name is required.' }, { status: 400 })
+    }
+
+    // Real enforcement, not just page copy: healthcare leads go through
+    // Request an Audit so Jacob personally reviews every finding — Response
+    // Examples is for non-healthcare only. Checked server-side because this
+    // is the actual security/policy boundary; the client-side warning is
+    // just a courtesy that catches the mistake earlier.
+    if (isHipaaIndustry(body.industry)) {
+      return NextResponse.json(
+        { error: 'This looks like a healthcare business. Please use "Request an Audit" instead — healthcare leads need Jacob\'s compliance review.' },
+        { status: 400 }
+      )
     }
 
     const reviews = (body.reviews || []).slice(0, 5).map((r) => ({
