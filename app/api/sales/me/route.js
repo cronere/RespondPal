@@ -22,14 +22,14 @@ export async function GET(req) {
     }
     const { data: rep, error } = await supabase
       .from('sales_reps')
-      .select('id, name, email, active')
+      .select('id, name, email, active, stripe_payment_links')
       .eq('id', repId)
       .single()
 
     if (error || !rep || !rep.active) {
       return NextResponse.json({ error: 'Not signed in.' }, { status: 401 })
     }
-    return NextResponse.json({ rep: { id: rep.id, name: rep.name, email: rep.email } })
+    return NextResponse.json({ rep: { id: rep.id, name: rep.name, email: rep.email, stripe_payment_links: rep.stripe_payment_links } })
   } catch (err) {
     return NextResponse.json({ error: 'Failed to load rep.' }, { status: 500 })
   }
