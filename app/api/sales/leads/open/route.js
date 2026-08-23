@@ -8,6 +8,9 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY
 )
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 // GET /api/sales/leads/open — every unclaimed lead (sales_rep_id is null),
 // visible to any signed-in rep. Just needs a valid session, not ownership
 // of anything specific — that's the point of this endpoint.
