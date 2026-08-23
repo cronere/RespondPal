@@ -78,9 +78,16 @@ export default function ResponseExampleDetail() {
       <header className="admin-page-head">
         <h1>{demo.business_name}</h1>
         <p className="admin-page-sub">{demo.industry || 'Industry not set'} · {reviews.length} review{reviews.length === 1 ? '' : 's'}</p>
-        <button className="rev-ai-btn" onClick={generate} disabled={generating} style={{ marginTop: '1rem' }}>
-          {generating ? 'Generating…' : anyGenerated ? 'Generate Remaining' : 'Generate Responses'}
-        </button>
+        <div style={{ display: 'flex', gap: '0.6rem', marginTop: '1rem' }}>
+          <button className="rev-ai-btn" onClick={generate} disabled={generating}>
+            {generating ? 'Generating…' : anyGenerated ? 'Generate Remaining' : 'Generate Responses'}
+          </button>
+          {anyGenerated && (
+            <a href={`/sales/response-examples/${id}/report`} target="_blank" rel="noreferrer" className="rev-mini-btn">
+              View Report / Download PDF →
+            </a>
+          )}
+        </div>
       </header>
 
       {error && <div className="admin-error">{error}</div>}
