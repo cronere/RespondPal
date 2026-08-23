@@ -2,12 +2,16 @@
 
 import { useState, useEffect } from 'react'
 
-const STRIPE_LINKS = [
-  { plan: '1 Location', price: '$397/mo', url: 'https://buy.stripe.com/00w7sNfC78JR3ndeo9ebu00' },
-  { plan: '2 Locations', price: '$649/mo', url: 'https://buy.stripe.com/28E5kF89FbW3g9Z2Frebu01' },
-  { plan: '3 Locations', price: '$897/mo', url: 'https://buy.stripe.com/00w3cx89F2lt8Hxeo9ebu02' },
-  { plan: 'Cleanup add-on', price: '$197', url: 'https://buy.stripe.com/9B6fZj61x2lt7Dt7ZLebu04' },
-]
+// Fallback only — used if this rep's personal links haven't been generated
+// yet (Stripe wasn't configured when their account was created, or they
+// predate this feature). Once generated, rep.stripe_payment_links takes
+// priority so payments are attributed automatically via Stripe metadata.
+const FALLBACK_LINKS = {
+  '1_location': { plan: '1 Location', price: '$397/mo', url: 'https://buy.stripe.com/00w7sNfC78JR3ndeo9ebu00' },
+  '2_locations': { plan: '2 Locations', price: '$649/mo', url: 'https://buy.stripe.com/28E5kF89FbW3g9Z2Frebu01' },
+  '3_locations': { plan: '3 Locations', price: '$897/mo', url: 'https://buy.stripe.com/00w3cx89F2lt8Hxeo9ebu02' },
+  'cleanup': { plan: 'Cleanup add-on', price: '$197', url: 'https://buy.stripe.com/9B6fZj61x2lt7Dt7ZLebu04' },
+}
 
 export default function SalesOnboarding() {
   const [rep, setRep] = useState(null)
@@ -20,6 +24,15 @@ export default function SalesOnboarding() {
   const onboardingLink = rep
     ? `https://respondpal.ai/onboarding?rep=${encodeURIComponent(rep.name)}`
     : ''
+
+  const hasPersonalLinks = rep?.stripe_payment_links && Object.keys(rep.stripe_payment_links).length > 0
+
+  const stripeLinks = Object.entries(FALLBACK_LINKS).map(([tier, fallback]) => ({
+    ...fallback,
+    tier,
+    url: hasPersonalLinks && rep.stripe_payment_links[tier] ? rep.stripe_payment_links[tier] : fallback.url,
+    personal: !!(hasPersonalLinks && rep.stripe_payment_links[tier]),
+  }))
 
   const copy = (text, key) => {
     navigator.clipboard.writeText(text)
@@ -69,17 +82,21 @@ export default function SalesOnboarding() {
         <div className="drawer-section-label">Stripe payment links</div>
         <p style={{ fontSize: '0.82rem', color: '#6b7280', marginBottom: '0.9rem' }}>
           Text or read one of these while on the phone. 4+ locations — text Jacob directly, don't quote a price.
+          {hasPersonalLinks && ' These are your own links — payments through them are automatically credited to you.'}
         </p>
         <div className="demo-list">
-          {STRIPE_LINKS.map((l) => (
-            <div className="response-demo-card" key={l.plan} style={{ cursor: 'default' }}>
+          {stripeLinks.map((l) => (
+            <div className="response-demo-card" key={l.tier} style={{ cursor: 'default' }}>
               <div>
-                <div className="demo-card-name">{l.plan}</div>
+                <div className="demo-card-name">
+                  {l.plan}
+                  {l.personal && <span style={{ marginLeft: '0.5rem', fontSize: '0.72rem', fontWeight: 700, color: '#15803d' }}>● Yours</span>}
+                </div>
                 <div className="demo-card-meta">{l.price}</div>
               </div>
               <div style={{ display: 'flex', gap: '0.5rem' }}>
-                <button className="rev-mini-btn" onClick={() => copy(l.url, l.plan)}>
-                  {copied === l.plan ? 'Copied!' : 'Copy Link'}
+                <button className="rev-mini-btn" onClick={() => copy(l.url, l.tier)}>
+                  {copied === l.tier ? 'Copied!' : 'Copy Link'}
                 </button>
                 <a href={l.url} target="_blank" rel="noreferrer" className="rev-mini-btn">
                   Open
