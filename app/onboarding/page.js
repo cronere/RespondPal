@@ -1,9 +1,12 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, Suspense } from 'react'
+import { useSearchParams } from 'next/navigation'
 import Image from 'next/image'
 
-export default function Onboarding() {
+function OnboardingForm() {
+  const searchParams = useSearchParams()
+  const repFromLink = searchParams.get('rep')
   const [step, setStep] = useState(1)
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
@@ -26,6 +29,15 @@ export default function Onboarding() {
     additional_notes: '',
     sales_rep: '',
   })
+
+  // A rep-generated link (?rep=Their+Name) pre-fills and locks attribution
+  // — removes the "customer forgot to type the rep's name, or misspelled
+  // it" failure mode that a bare free-text field has on its own.
+  useEffect(() => {
+    if (repFromLink) {
+      setForm((prev) => ({ ...prev, sales_rep: repFromLink }))
+    }
+  }, [repFromLink])
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value })
@@ -334,13 +346,19 @@ export default function Onboarding() {
               </div>
               <div className="ob-group">
                 <label>Sales representative</label>
-                <p className="ob-hint">If a RespondPal representative helped you sign up, enter their name here so we can credit them.</p>
+                <p className="ob-hint">
+                  {repFromLink
+                    ? `Credited to ${repFromLink} — this was set automatically from the link you used.`
+                    : 'If a RespondPal representative helped you sign up, enter their name here so we can credit them.'}
+                </p>
                 <input
                   name="sales_rep"
                   type="text"
                   placeholder="Rep's full name"
                   value={form.sales_rep}
                   onChange={handleChange}
+                  readOnly={!!repFromLink}
+                  style={repFromLink ? { background: '#f3f4f6', color: '#6b7280' } : undefined}
                 />
               </div>
             </div>
@@ -376,5 +394,17 @@ export default function Onboarding() {
         </div>
       </form>
     </div>
+  )
+}
+
+// useSearchParams() requires a Suspense boundary in Next.js App Router,
+// otherwise the build warns and the route deopts to fully client-side
+// rendering for the whole page rather than just this part — same pattern
+// already used successfully on /audit/started.
+export default function Onboarding() {
+  return (
+    <Suspense fallback={null}>
+      <OnboardingForm />
+    </Suspense>
   )
 }
