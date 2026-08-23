@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 
 export default function AuditRequest() {
+  const [pageTab, setPageTab] = useState('submit')
   const [leads, setLeads] = useState([])
   const [mode, setMode] = useState('existing')
   const [selectedLeadId, setSelectedLeadId] = useState('')
@@ -14,6 +15,38 @@ export default function AuditRequest() {
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
   const [submitted, setSubmitted] = useState(null)
+
+  const [deliveries, setDeliveries] = useState([])
+  const [loadingDeliveries, setLoadingDeliveries] = useState(false)
+  const [markingId, setMarkingId] = useState(null)
+
+  const loadDeliveries = async () => {
+    setLoadingDeliveries(true)
+    try {
+      const res = await fetch('/api/sales/audit-deliveries')
+      const data = await res.json()
+      if (res.ok) setDeliveries(data.audits || [])
+    } catch {
+      setError('Failed to load your audit requests.')
+    }
+    setLoadingDeliveries(false)
+  }
+
+  useEffect(() => {
+    if (pageTab === 'track' && deliveries.length === 0) loadDeliveries()
+  }, [pageTab])
+
+  const markRepDelivered = async (auditId) => {
+    setMarkingId(auditId)
+    try {
+      const res = await fetch(`/api/sales/audit-deliveries/${auditId}/deliver`, { method: 'POST' })
+      if (res.ok) loadDeliveries()
+      else setError('Failed to mark delivered.')
+    } catch {
+      setError('Something went wrong.')
+    }
+    setMarkingId(null)
+  }
 
   useEffect(() => {
     fetch('/api/sales/leads')
@@ -69,18 +102,41 @@ export default function AuditRequest() {
         </p>
       </header>
 
-      {submitted && (
-        <div style={{ background: '#F0FDF4', border: '1px solid #86EFAC', borderRadius: 8, padding: '1rem', marginBottom: '1.5rem', maxWidth: 560, color: '#166534' }}>
-          <strong>Submitted — {submitted}</strong> is now in the queue and logged in your Leads
-          pipeline. Jacob will review it and the report typically goes out within 48 hours.
-          {' '}
-          <Link href="/sales/leads" style={{ color: '#15803d', fontWeight: 700 }}>View your leads →</Link>
-        </div>
-      )}
+      <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.25rem', borderBottom: '1px solid #e5e7eb' }}>
+        {[
+          { key: 'submit', label: 'Submit a Request' },
+          { key: 'track', label: 'My Audit Requests' },
+        ].map((t) => (
+          <button
+            key={t.key}
+            onClick={() => setPageTab(t.key)}
+            style={{
+              padding: '0.6rem 1rem', border: 'none', background: 'none', cursor: 'pointer',
+              fontWeight: 700, fontSize: '0.9rem',
+              color: pageTab === t.key ? '#C2410C' : '#6b7280',
+              borderBottom: pageTab === t.key ? '2px solid #C2410C' : '2px solid transparent',
+              marginBottom: '-1px',
+            }}
+          >
+            {t.label}
+          </button>
+        ))}
+      </div>
 
       {error && <div className="admin-error">{error}</div>}
 
-      <div className="drawer-section" style={{ maxWidth: 560 }}>
+      {pageTab === 'submit' && (
+      <>
+        {submitted && (
+          <div style={{ background: '#F0FDF4', border: '1px solid #86EFAC', borderRadius: 8, padding: '1rem', marginBottom: '1.5rem', maxWidth: 560, color: '#166534' }}>
+            <strong>Submitted — {submitted}</strong> is now in the queue and logged in your Leads
+            pipeline. Jacob will review it and the report typically goes out within 48 hours.
+            {' '}
+            <Link href="/sales/leads" style={{ color: '#15803d', fontWeight: 700 }}>View your leads →</Link>
+          </div>
+        )}
+
+        <div className="drawer-section" style={{ maxWidth: 560 }}>
         <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
           <button
             type="button"
@@ -175,7 +231,65 @@ export default function AuditRequest() {
         >
           {submitting ? 'Submitting…' : 'Submit Audit Request'}
         </button>
-      </div>
+        </div>
+      </>
+      )}
+
+      {pageTab === 'track' && (
+        loadingDeliveries ? (
+          <p className="admin-page-sub">Loading…</p>
+        ) : deliveries.length === 0 ? (
+          <p className="admin-page-sub">
+            Nothing here yet — audits show up once Jacob finishes reviewing and pushes them to you.
+          </p>
+        ) : (
+          <>
+            <h2 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#1a1a1a', marginBottom: '0.75rem' }}>
+              Ready to Deliver
+            </h2>
+            {deliveries.filter((a) => !a.rep_delivered_at).length === 0 ? (
+              <p style={{ fontSize: '0.85rem', color: '#6b7280', marginBottom: '1.5rem' }}>Nothing waiting right now.</p>
+            ) : (
+              <div className="demo-list" style={{ marginBottom: '2rem' }}>
+                {deliveries.filter((a) => !a.rep_delivered_at).map((a) => (
+                  <div className="response-demo-card" key={a.id} style={{ cursor: 'default' }}>
+                    <div>
+                      <div className="demo-card-name">{a.business_name}</div>
+                      <div className="demo-card-meta">{a.industry || 'Industry not set'}</div>
+                    </div>
+                    <button className="rev-ai-btn" onClick={() => markRepDelivered(a.id)} disabled={markingId === a.id}>
+                      {markingId === a.id ? 'Marking…' : 'Mark Delivered'}
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <h2 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#1a1a1a', marginBottom: '0.75rem' }}>
+              Delivered
+            </h2>
+            {deliveries.filter((a) => a.rep_delivered_at).length === 0 ? (
+              <p style={{ fontSize: '0.85rem', color: '#6b7280' }}>None delivered yet.</p>
+            ) : (
+              <div className="demo-list">
+                {deliveries.filter((a) => a.rep_delivered_at).map((a) => (
+                  <div className="response-demo-card" key={a.id} style={{ cursor: 'default' }}>
+                    <div>
+                      <div className="demo-card-name">{a.business_name}</div>
+                      <div className="demo-card-meta">
+                        {a.industry || 'Industry not set'} · Delivered {new Date(a.rep_delivered_at).toLocaleDateString()}
+                      </div>
+                    </div>
+                    {a.status === 'converted' && (
+                      <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#15803d' }}>Converted 🎉</span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </>
+        )
+      )}
     </div>
   )
 }
