@@ -7,6 +7,9 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY
 )
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 // Ownership check shared by both handlers below — a rep can see/log
 // activity on a lead they own, or one that's currently unclaimed (which,
 // per the PATCH route's existing rule, claims it for them).
