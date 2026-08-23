@@ -1,9 +1,12 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 
 export default function AuditRequest() {
+  const [leads, setLeads] = useState([])
+  const [mode, setMode] = useState('existing')
+  const [selectedLeadId, setSelectedLeadId] = useState('')
   const [form, setForm] = useState({
     business_name: '', contact_name: '', contact_email: '', contact_phone: '',
     industry: '', google_url: '', yelp_url: '', notes: '',
@@ -12,22 +15,40 @@ export default function AuditRequest() {
   const [error, setError] = useState('')
   const [submitted, setSubmitted] = useState(null)
 
+  useEffect(() => {
+    fetch('/api/sales/leads')
+      .then((r) => r.json())
+      .then((d) => {
+        const fetchedLeads = d.leads || []
+        setLeads(fetchedLeads)
+        if (fetchedLeads.length === 0) setMode('new')
+      })
+      .catch(() => {})
+  }, [])
+
   const set = (field, value) => setForm((prev) => ({ ...prev, [field]: value }))
 
   const submit = async () => {
-    if (!form.business_name.trim() || submitting) return
+    if (mode === 'existing' && !selectedLeadId) return
+    if (mode === 'new' && !form.business_name.trim()) return
+    if (submitting) return
     setSubmitting(true)
     setError('')
     try {
+      const payload = mode === 'existing' ? { lead_id: selectedLeadId } : form
       const res = await fetch('/api/sales/audit-request', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+        body: JSON.stringify(payload),
       })
       const data = await res.json()
       if (res.ok) {
-        setSubmitted(form.business_name)
+        const name = mode === 'existing'
+          ? leads.find((l) => l.id === selectedLeadId)?.business_name
+          : form.business_name
+        setSubmitted(name)
         setForm({ business_name: '', contact_name: '', contact_email: '', contact_phone: '', industry: '', google_url: '', yelp_url: '', notes: '' })
+        setSelectedLeadId('')
       } else {
         setError(data.error || 'Failed to submit audit request.')
       }
@@ -50,7 +71,7 @@ export default function AuditRequest() {
 
       {submitted && (
         <div style={{ background: '#F0FDF4', border: '1px solid #86EFAC', borderRadius: 8, padding: '1rem', marginBottom: '1.5rem', maxWidth: 560, color: '#166534' }}>
-          <strong>Submitted — {submitted}</strong> is now in the queue and also added to your Leads
+          <strong>Submitted — {submitted}</strong> is now in the queue and logged in your Leads
           pipeline. Jacob will review it and the report typically goes out within 48 hours.
           {' '}
           <Link href="/sales/leads" style={{ color: '#15803d', fontWeight: 700 }}>View your leads →</Link>
@@ -60,47 +81,98 @@ export default function AuditRequest() {
       {error && <div className="admin-error">{error}</div>}
 
       <div className="drawer-section" style={{ maxWidth: 560 }}>
-        <label className="field">
-          <span className="field-label">Business name *</span>
-          <input value={form.business_name} onChange={(e) => set('business_name', e.target.value)} placeholder="e.g. Mesa Dental" />
-        </label>
-
-        <div className="drawer-grid">
-          <label className="field">
-            <span className="field-label">Contact name</span>
-            <input value={form.contact_name} onChange={(e) => set('contact_name', e.target.value)} />
-          </label>
-          <label className="field">
-            <span className="field-label">Industry</span>
-            <input value={form.industry} onChange={(e) => set('industry', e.target.value)} placeholder="e.g. Dental, Chiropractic" />
-          </label>
+        <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
+          <button
+            type="button"
+            className={mode === 'existing' ? 'rev-ai-btn' : 'rev-mini-btn'}
+            onClick={() => setMode('existing')}
+            disabled={leads.length === 0}
+          >
+            Pick an existing lead
+          </button>
+          <button
+            type="button"
+            className={mode === 'new' ? 'rev-ai-btn' : 'rev-mini-btn'}
+            onClick={() => setMode('new')}
+          >
+            + New business
+          </button>
         </div>
 
-        <div className="drawer-grid">
-          <label className="field">
-            <span className="field-label">Email</span>
-            <input type="email" value={form.contact_email} onChange={(e) => set('contact_email', e.target.value)} />
-          </label>
-          <label className="field">
-            <span className="field-label">Phone</span>
-            <input value={form.contact_phone} onChange={(e) => set('contact_phone', e.target.value)} />
-          </label>
-        </div>
+        {mode === 'existing' ? (
+          leads.length === 0 ? (
+            <p style={{ fontSize: '0.85rem', color: '#6b7280' }}>
+              No leads yet — add one in My Leads first, or switch to &quot;New business&quot; and
+              it&apos;ll be added to your leads automatically.
+            </p>
+          ) : (
+            <label className="field">
+              <span className="field-label">Which lead is this for? *</span>
+              <select
+                value={selectedLeadId}
+                onChange={(e) => setSelectedLeadId(e.target.value)}
+                style={{ padding: '0.55rem 0.7rem', borderRadius: 6, border: '1px solid #d1d5db', fontSize: '0.9rem', width: '100%' }}
+              >
+                <option value="">Select a lead…</option>
+                {leads.map((l) => (
+                  <option key={l.id} value={l.id}>{l.business_name}{l.industry ? ` (${l.industry})` : ''}</option>
+                ))}
+              </select>
+            </label>
+          )
+        ) : (
+          <>
+            <label className="field">
+              <span className="field-label">Business name *</span>
+              <input value={form.business_name} onChange={(e) => set('business_name', e.target.value)} placeholder="e.g. Mesa Dental" />
+            </label>
 
-        <label className="field">
-          <span className="field-label">Google Maps link</span>
-          <input value={form.google_url} onChange={(e) => set('google_url', e.target.value)} />
-        </label>
-        <label className="field">
-          <span className="field-label">Yelp link</span>
-          <input value={form.yelp_url} onChange={(e) => set('yelp_url', e.target.value)} />
-        </label>
-        <label className="field">
-          <span className="field-label">Notes</span>
-          <textarea value={form.notes} onChange={(e) => set('notes', e.target.value)} style={{ minHeight: 70 }} />
-        </label>
+            <div className="drawer-grid">
+              <label className="field">
+                <span className="field-label">Contact name</span>
+                <input value={form.contact_name} onChange={(e) => set('contact_name', e.target.value)} />
+              </label>
+              <label className="field">
+                <span className="field-label">Industry</span>
+                <input value={form.industry} onChange={(e) => set('industry', e.target.value)} placeholder="e.g. Dental, Chiropractic" />
+              </label>
+            </div>
 
-        <button className="rev-ai-btn" onClick={submit} disabled={submitting} style={{ marginTop: '0.5rem' }}>
+            <div className="drawer-grid">
+              <label className="field">
+                <span className="field-label">Email</span>
+                <input type="email" value={form.contact_email} onChange={(e) => set('contact_email', e.target.value)} />
+              </label>
+              <label className="field">
+                <span className="field-label">Phone</span>
+                <input value={form.contact_phone} onChange={(e) => set('contact_phone', e.target.value)} />
+              </label>
+            </div>
+
+            <label className="field">
+              <span className="field-label">Google Maps link</span>
+              <input value={form.google_url} onChange={(e) => set('google_url', e.target.value)} />
+            </label>
+            <label className="field">
+              <span className="field-label">Yelp link</span>
+              <input value={form.yelp_url} onChange={(e) => set('yelp_url', e.target.value)} />
+            </label>
+            <label className="field">
+              <span className="field-label">Notes</span>
+              <textarea value={form.notes} onChange={(e) => set('notes', e.target.value)} style={{ minHeight: 70 }} />
+            </label>
+            <p style={{ fontSize: '0.78rem', color: '#6b7280', marginTop: '-0.3rem' }}>
+              This will also be added to your leads automatically.
+            </p>
+          </>
+        )}
+
+        <button
+          className="rev-ai-btn"
+          onClick={submit}
+          disabled={submitting || (mode === 'existing' ? !selectedLeadId : !form.business_name.trim())}
+          style={{ marginTop: '0.5rem' }}
+        >
           {submitting ? 'Submitting…' : 'Submit Audit Request'}
         </button>
       </div>
