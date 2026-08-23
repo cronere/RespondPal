@@ -87,13 +87,6 @@ export async function PATCH(req, { params }) {
     if (body.contact_email !== undefined) updates.contact_email = body.contact_email
     if (body.contact_phone !== undefined) updates.contact_phone = body.contact_phone
 
-    // logContact: true is a distinct signal from "any field changed" —
-    // deliberately set by the rep via a "Log Contact" action, not implied
-    // by editing an unrelated field like notes.
-    if (body.logContact === true) {
-      updates.last_contacted_at = new Date().toISOString()
-    }
-
     const { data, error } = await supabase
       .from('leads')
       .update(updates)
