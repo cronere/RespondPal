@@ -7,6 +7,9 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY
 )
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 // GET /api/sales/audit-deliveries — audits Jacob has pushed to this rep
 // (status = 'delivered' or 'converted' from admin's side, meaning his part
 // is done). Split into ready-to-deliver vs delivered on the frontend using
