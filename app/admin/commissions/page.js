@@ -24,6 +24,11 @@ export default function CommissionEvents() {
   const [error, setError] = useState('')
   const [resolving, setResolving] = useState(null)
   const [resolveForm, setResolveForm] = useState({ sales_rep_id: '', client_id: '' })
+  const [editing, setEditing] = useState(null)
+  const [editForm, setEditForm] = useState({ commission_amount_cents: '', adjustment_note: '' })
+  const [showAdjustment, setShowAdjustment] = useState(false)
+  const [adjustmentForm, setAdjustmentForm] = useState({ sales_rep_id: '', client_id: '', amount_dollars: '', effective_date: '', note: '' })
+  const [savingAdjustment, setSavingAdjustment] = useState(false)
 
   const load = async () => {
     setLoading(true)
@@ -54,8 +59,9 @@ export default function CommissionEvents() {
     setLoadingPeriods(false)
   }
 
-  const approvePeriod = async (period) => {
-    setApproving(period.period_start)
+  const approvePeriod = async (period, rep) => {
+    const approvalKey = `${period.period_start}::${rep.sales_rep_id}`
+    setApproving(approvalKey)
     try {
       const res = await fetch('/api/admin/payout-periods/approve', {
         method: 'POST',
@@ -64,6 +70,7 @@ export default function CommissionEvents() {
           period_start: period.period_start,
           period_end: period.period_end,
           payout_date: period.payout_date,
+          sales_rep_id: rep.sales_rep_id,
         }),
       })
       if (res.ok) loadPeriods()
@@ -111,6 +118,84 @@ export default function CommissionEvents() {
     }
   }
 
+  const openEdit = (event) => {
+    setEditing(event.id)
+    setEditForm({
+      commission_amount_cents: event.commission_amount_cents != null ? (event.commission_amount_cents / 100).toFixed(2) : '',
+      adjustment_note: '',
+    })
+  }
+
+  const submitEdit = async (eventId) => {
+    const cents = Math.round(parseFloat(editForm.commission_amount_cents) * 100)
+    if (isNaN(cents)) {
+      setError('Enter a valid dollar amount.')
+      return
+    }
+    if (!editForm.adjustment_note.trim()) {
+      setError('A note explaining the correction is required.')
+      return
+    }
+    try {
+      const res = await fetch(`/api/admin/commission-events/${eventId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ commission_amount_cents: cents, adjustment_note: editForm.adjustment_note }),
+      })
+      if (res.ok) {
+        setEditing(null)
+        load()
+      } else {
+        const data = await res.json().catch(() => ({}))
+        setError(data.error || 'Failed to save correction.')
+      }
+    } catch {
+      setError('Something went wrong.')
+    }
+  }
+
+  const submitAdjustment = async () => {
+    const cents = Math.round(parseFloat(adjustmentForm.amount_dollars) * 100)
+    if (!adjustmentForm.sales_rep_id) {
+      setError('Choose a sales rep.')
+      return
+    }
+    if (isNaN(cents) || cents === 0) {
+      setError('Enter a non-zero dollar amount (negative is fine, for a deduction).')
+      return
+    }
+    if (!adjustmentForm.note.trim()) {
+      setError('A note explaining this adjustment is required.')
+      return
+    }
+    setSavingAdjustment(true)
+    try {
+      const res = await fetch('/api/admin/commission-events/adjustment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sales_rep_id: adjustmentForm.sales_rep_id,
+          client_id: adjustmentForm.client_id || null,
+          amount_cents: cents,
+          effective_date: adjustmentForm.effective_date || null,
+          note: adjustmentForm.note,
+        }),
+      })
+      if (res.ok) {
+        setShowAdjustment(false)
+        setAdjustmentForm({ sales_rep_id: '', client_id: '', amount_dollars: '', effective_date: '', note: '' })
+        if (tab === 'payout_periods') loadPeriods()
+        else load()
+      } else {
+        const data = await res.json().catch(() => ({}))
+        setError(data.error || 'Failed to create adjustment.')
+      }
+    } catch {
+      setError('Something went wrong.')
+    }
+    setSavingAdjustment(false)
+  }
+
   const needsReviewCount = events.filter((e) => e.status === 'needs_review').length
 
   return (
@@ -118,11 +203,85 @@ export default function CommissionEvents() {
       <header className="admin-page-head">
         <h1>Commission Events</h1>
         <p className="admin-page-sub">
-          Every payment and chargeback the Stripe webhook has received. Matched and reviewed
-          payments show their calculated commission automatically. Payout periods and statements
-          aren&apos;t built yet, so nothing here is finalized as actually payable.
+          Every payment, chargeback, and manual adjustment. Matched and reviewed payments show
+          their calculated commission automatically. Approve a rep&apos;s portion of a payout
+          period on the Payout Periods tab once you&apos;re confident it&apos;s correct.
         </p>
+        <button className="rev-mini-btn" onClick={() => setShowAdjustment(true)} style={{ marginTop: '0.75rem' }}>
+          + Add Manual Adjustment
+        </button>
       </header>
+
+      {showAdjustment && (
+        <div className="drawer-overlay" onClick={() => setShowAdjustment(false)}>
+          <div className="drawer" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 480 }}>
+            <div className="drawer-head">
+              <h2>Manual Adjustment</h2>
+              <button className="drawer-close" onClick={() => setShowAdjustment(false)}>×</button>
+            </div>
+            <div className="drawer-body">
+              <div className="drawer-section">
+                <p style={{ fontSize: '0.82rem', color: '#6b7280', marginBottom: '0.9rem' }}>
+                  For a one-off correction, bonus, or manually-applied clawback that isn&apos;t tied
+                  to a real Stripe payment. Flows into the same payout period and approval workflow
+                  as everything else. Use a negative amount for a deduction.
+                </p>
+                <label className="field">
+                  <span className="field-label">Sales rep *</span>
+                  <select
+                    value={adjustmentForm.sales_rep_id}
+                    onChange={(e) => setAdjustmentForm({ ...adjustmentForm, sales_rep_id: e.target.value })}
+                    style={{ padding: '0.55rem 0.7rem', borderRadius: 6, border: '1px solid #d1d5db', fontSize: '0.9rem', width: '100%' }}
+                  >
+                    <option value="">Select a rep…</option>
+                    {reps.map((r) => <option key={r.id} value={r.id}>{r.name}</option>)}
+                  </select>
+                </label>
+                <label className="field">
+                  <span className="field-label">Client (optional)</span>
+                  <select
+                    value={adjustmentForm.client_id}
+                    onChange={(e) => setAdjustmentForm({ ...adjustmentForm, client_id: e.target.value })}
+                    style={{ padding: '0.55rem 0.7rem', borderRadius: 6, border: '1px solid #d1d5db', fontSize: '0.9rem', width: '100%' }}
+                  >
+                    <option value="">— none —</option>
+                    {clients.map((c) => <option key={c.id} value={c.id}>{c.business_name}</option>)}
+                  </select>
+                </label>
+                <label className="field">
+                  <span className="field-label">Amount ($) *</span>
+                  <input
+                    value={adjustmentForm.amount_dollars}
+                    onChange={(e) => setAdjustmentForm({ ...adjustmentForm, amount_dollars: e.target.value })}
+                    placeholder="e.g. 50.00 or -25.00"
+                  />
+                </label>
+                <label className="field">
+                  <span className="field-label">Effective date (defaults to today)</span>
+                  <input
+                    type="date"
+                    value={adjustmentForm.effective_date}
+                    onChange={(e) => setAdjustmentForm({ ...adjustmentForm, effective_date: e.target.value })}
+                  />
+                </label>
+                <label className="field">
+                  <span className="field-label">Note *</span>
+                  <textarea
+                    value={adjustmentForm.note}
+                    onChange={(e) => setAdjustmentForm({ ...adjustmentForm, note: e.target.value })}
+                    placeholder="Why this adjustment exists"
+                    style={{ minHeight: 70 }}
+                  />
+                </label>
+                {error && <div className="admin-error">{error}</div>}
+                <button className="rev-ai-btn" onClick={submitAdjustment} disabled={savingAdjustment} style={{ marginTop: '0.5rem' }}>
+                  {savingAdjustment ? 'Saving…' : 'Add Adjustment'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.25rem', borderBottom: '1px solid #e5e7eb' }}>
         {[
@@ -176,7 +335,13 @@ export default function CommissionEvents() {
                     <span style={{ fontWeight: 700, color: '#1a1a1a' }}>{formatMoney(e.amount_cents)}</span>
                     {e.commission_amount_cents != null && (
                       <span style={{ fontSize: '0.8rem', color: '#15803d', fontWeight: 700 }}>
-                        → {formatMoney(e.commission_amount_cents)} commission (month {e.commission_month}, {(e.commission_rate * 100).toFixed(0)}%)
+                        → {formatMoney(e.commission_amount_cents)} commission
+                        {e.commission_month != null && ` (month ${e.commission_month}, ${(e.commission_rate * 100).toFixed(0)}%)`}
+                      </span>
+                    )}
+                    {e.adjusted && (
+                      <span style={{ fontSize: '0.7rem', fontWeight: 700, color: '#92400E', background: '#FFFBEB', padding: '0.1rem 0.4rem', borderRadius: 999 }}>
+                        manually adjusted
                       </span>
                     )}
                   </div>
@@ -194,12 +359,43 @@ export default function CommissionEvents() {
                   {e.review_note && (
                     <div style={{ fontSize: '0.8rem', color: '#92400E', marginTop: '0.3rem' }}>{e.review_note}</div>
                   )}
+                  {e.adjustment_note && (
+                    <div style={{ fontSize: '0.8rem', color: '#92400E', marginTop: '0.3rem' }}>Adjustment: {e.adjustment_note}</div>
+                  )}
                   <div style={{ fontSize: '0.75rem', color: '#9ca3af', marginTop: '0.3rem' }}>{formatDate(e.created_at)}</div>
                 </div>
-                {e.status === 'needs_review' && resolving !== e.id && (
-                  <button className="rev-mini-btn" onClick={() => openResolve(e)}>Resolve</button>
-                )}
+                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                  {e.status === 'needs_review' && resolving !== e.id && (
+                    <button className="rev-mini-btn" onClick={() => openResolve(e)}>Resolve</button>
+                  )}
+                  {e.event_type !== 'chargeback' && editing !== e.id && (
+                    <button className="rev-mini-btn" onClick={() => openEdit(e)}>Correct Amount</button>
+                  )}
+                </div>
               </div>
+
+              {editing === e.id && (
+                <div style={{ marginTop: '0.9rem', paddingTop: '0.9rem', borderTop: '1px solid #f3f4f6', display: 'flex', gap: '0.5rem', alignItems: 'flex-end', flexWrap: 'wrap' }}>
+                  <label style={{ fontSize: '0.8rem' }}>
+                    <span style={{ display: 'block', color: '#6b7280', marginBottom: '0.2rem' }}>Correct commission amount ($)</span>
+                    <input
+                      value={editForm.commission_amount_cents}
+                      onChange={(ev) => setEditForm({ ...editForm, commission_amount_cents: ev.target.value })}
+                      style={{ padding: '0.45rem 0.6rem', borderRadius: 6, border: '1px solid #d1d5db', fontSize: '0.85rem', width: 120 }}
+                    />
+                  </label>
+                  <label style={{ fontSize: '0.8rem', flex: 1, minWidth: 200 }}>
+                    <span style={{ display: 'block', color: '#6b7280', marginBottom: '0.2rem' }}>Why is this being corrected?</span>
+                    <input
+                      value={editForm.adjustment_note}
+                      onChange={(ev) => setEditForm({ ...editForm, adjustment_note: ev.target.value })}
+                      style={{ padding: '0.45rem 0.6rem', borderRadius: 6, border: '1px solid #d1d5db', fontSize: '0.85rem', width: '100%' }}
+                    />
+                  </label>
+                  <button className="rev-ai-btn" onClick={() => submitEdit(e.id)}>Save</button>
+                  <button className="rev-mini-btn" onClick={() => setEditing(null)}>Cancel</button>
+                </div>
+              )}
 
               {resolving === e.id && (
                 <div style={{ marginTop: '0.9rem', paddingTop: '0.9rem', borderTop: '1px solid #f3f4f6', display: 'flex', gap: '0.5rem', alignItems: 'flex-end', flexWrap: 'wrap' }}>
@@ -245,33 +441,37 @@ export default function CommissionEvents() {
               <div key={p.period_start} style={{ background: 'white', border: '1px solid #e5e7eb', borderRadius: 10, padding: '1.1rem', marginBottom: '0.9rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.6rem' }}>
                   <div>
-                    <div style={{ fontWeight: 700, color: '#1a1a1a' }}>
-                      {p.period_start} to {p.period_end}
-                      <span style={{
-                        marginLeft: '0.6rem', fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase',
-                        color: p.status === 'approved' ? '#15803d' : '#92400E',
-                        background: p.status === 'approved' ? '#F0FDF4' : '#FFFBEB',
-                        padding: '0.15rem 0.5rem', borderRadius: 999,
-                      }}>
-                        {p.status}
-                      </span>
-                    </div>
+                    <div style={{ fontWeight: 700, color: '#1a1a1a' }}>{p.period_start} to {p.period_end}</div>
                     <div style={{ fontSize: '0.82rem', color: '#6b7280' }}>Payout date: {p.payout_date}</div>
                   </div>
-                  <div style={{ textAlign: 'right' }}>
-                    <div style={{ fontWeight: 800, fontSize: '1.2rem', color: '#1a1a1a' }}>{formatMoney(p.total_cents)}</div>
-                    {p.status !== 'approved' && (
-                      <button className="rev-ai-btn" onClick={() => approvePeriod(p)} disabled={approving === p.period_start} style={{ marginTop: '0.4rem' }}>
-                        {approving === p.period_start ? 'Approving…' : 'Approve Period'}
-                      </button>
-                    )}
-                  </div>
+                  <div style={{ fontWeight: 800, fontSize: '1.2rem', color: '#1a1a1a' }}>{formatMoney(p.total_cents)}</div>
                 </div>
                 <div style={{ borderTop: '1px solid #f3f4f6', paddingTop: '0.6rem' }}>
                   {p.reps.map((r) => (
-                    <div key={r.sales_rep_id || 'unassigned'} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', color: '#374151', marginBottom: '0.3rem' }}>
-                      <span>{r.name} ({r.count} payment{r.count === 1 ? '' : 's'})</span>
-                      <span style={{ fontWeight: 700 }}>{formatMoney(r.total_cents)}</span>
+                    <div key={r.sales_rep_id || 'unassigned'} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.85rem', color: '#374151', marginBottom: '0.5rem' }}>
+                      <span>
+                        {r.name} ({r.count} payment{r.count === 1 ? '' : 's'})
+                        <span style={{
+                          marginLeft: '0.5rem', fontSize: '0.68rem', fontWeight: 700, textTransform: 'uppercase',
+                          color: r.status === 'approved' ? '#15803d' : '#92400E',
+                          background: r.status === 'approved' ? '#F0FDF4' : '#FFFBEB',
+                          padding: '0.1rem 0.4rem', borderRadius: 999,
+                        }}>
+                          {r.status}
+                        </span>
+                      </span>
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                        <span style={{ fontWeight: 700 }}>{formatMoney(r.total_cents)}</span>
+                        {r.status !== 'approved' && r.sales_rep_id && (
+                          <button
+                            className="rev-mini-btn"
+                            onClick={() => approvePeriod(p, r)}
+                            disabled={approving === `${p.period_start}::${r.sales_rep_id}`}
+                          >
+                            {approving === `${p.period_start}::${r.sales_rep_id}` ? 'Approving…' : 'Approve'}
+                          </button>
+                        )}
+                      </span>
                     </div>
                   ))}
                 </div>
