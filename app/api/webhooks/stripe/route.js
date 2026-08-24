@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { getStripeClient } from '../../../lib/stripe'
+import { calculateAndRecordCommission } from '../../../lib/commissions'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -175,24 +176,39 @@ async function handleInvoicePaid(stripe, event) {
     if (!reviewNote) reviewNote = 'Error while attempting to look up the paying customer.'
   }
 
-  const { error: insertError } = await supabase.from('commission_events').insert({
-    stripe_event_id: event.id,
-    event_type: 'payment',
-    stripe_customer_id: customerId,
-    stripe_subscription_id: subscriptionId,
-    stripe_invoice_id: invoice.id,
-    stripe_charge_id: chargeId,
-    amount_cents: amountCents,
-    match_method: matchMethod,
-    sales_rep_id: salesRepId,
-    client_id: clientId,
-    status,
-    review_note: reviewNote,
-  })
+  const { data: insertedEvent, error: insertError } = await supabase
+    .from('commission_events')
+    .insert({
+      stripe_event_id: event.id,
+      event_type: 'payment',
+      stripe_customer_id: customerId,
+      stripe_subscription_id: subscriptionId,
+      stripe_invoice_id: invoice.id,
+      stripe_charge_id: chargeId,
+      amount_cents: amountCents,
+      match_method: matchMethod,
+      sales_rep_id: salesRepId,
+      client_id: clientId,
+      status,
+      review_note: reviewNote,
+    })
+    .select()
+    .single()
 
   if (insertError) {
     console.error('Failed to insert commission event:', insertError)
     throw insertError // triggers the 500 response, so Stripe retries
+  }
+
+  // Only confidently auto-matched events get calculated immediately.
+  // needs_review events wait until Jacob manually resolves them — see the
+  // admin resolve endpoint, which triggers the same calculation function
+  // once a client is actually assigned.
+  if (status === 'matched' && insertedEvent) {
+    const result = await calculateAndRecordCommission(supabase, insertedEvent.id)
+    if (result.error) {
+      console.error('Commission calculation failed for event', insertedEvent.id, result.error)
+    }
   }
 }
 
