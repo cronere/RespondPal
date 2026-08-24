@@ -36,6 +36,7 @@ export async function GET(req) {
     const { data: periodRows } = await supabase
       .from('payout_periods')
       .select('period_start, status, approved_at')
+      .eq('sales_rep_id', repId)
     const statusByPeriod = {}
     for (const p of periodRows || []) statusByPeriod[p.period_start] = p
 
