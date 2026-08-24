@@ -235,6 +235,36 @@ export default function CommissionEvents() {
     setSavingAdjustment(false)
   }
 
+  // Clients don't inherently belong to whichever rep is selected in a
+  // form — any client could theoretically need reassigning to a
+  // different rep than what's on file, so nothing gets hidden. But
+  // showing all clients with no regard to the selected rep meant Jacob
+  // had to scroll the entire client list every time, regardless of who
+  // he'd already picked. This groups the selected rep's own clients
+  // (via clients.rep_name) to the top, everyone else below.
+  const groupedClientOptions = (selectedRepId) => {
+    const selectedRep = reps.find((r) => r.id === selectedRepId)
+    if (!selectedRep) {
+      return clients.map((c) => <option key={c.id} value={c.id}>{c.business_name}</option>)
+    }
+    const repNameLower = selectedRep.name.trim().toLowerCase()
+    const theirs = clients.filter((c) => c.rep_name && c.rep_name.trim().toLowerCase() === repNameLower)
+    const theirIds = new Set(theirs.map((c) => c.id))
+    const others = clients.filter((c) => !theirIds.has(c.id))
+    return (
+      <>
+        {theirs.length > 0 && (
+          <optgroup label={`${selectedRep.name}'s clients`}>
+            {theirs.map((c) => <option key={c.id} value={c.id}>{c.business_name}</option>)}
+          </optgroup>
+        )}
+        <optgroup label={theirs.length > 0 ? 'All other clients' : 'All clients'}>
+          {others.map((c) => <option key={c.id} value={c.id}>{c.business_name}</option>)}
+        </optgroup>
+      </>
+    )
+  }
+
   const needsReviewCount = events.filter((e) => e.status === 'needs_review').length
 
   return (
@@ -284,7 +314,7 @@ export default function CommissionEvents() {
                     style={{ padding: '0.55rem 0.7rem', borderRadius: 6, border: '1px solid #d1d5db', fontSize: '0.9rem', width: '100%' }}
                   >
                     <option value="">— none —</option>
-                    {clients.map((c) => <option key={c.id} value={c.id}>{c.business_name}</option>)}
+                    {groupedClientOptions(adjustmentForm.sales_rep_id)}
                   </select>
                 </label>
                 <label className="field">
@@ -466,7 +496,7 @@ export default function CommissionEvents() {
                       style={{ padding: '0.45rem 0.6rem', borderRadius: 6, border: '1px solid #d1d5db', fontSize: '0.85rem' }}
                     >
                       <option value="">— none —</option>
-                      {clients.map((c) => <option key={c.id} value={c.id}>{c.business_name}</option>)}
+                      {groupedClientOptions(resolveForm.sales_rep_id)}
                     </select>
                   </label>
                   <button className="rev-ai-btn" onClick={() => submitResolve(e.id)}>Save</button>
