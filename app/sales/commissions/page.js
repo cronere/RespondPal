@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Link from 'next/link'
 
 function formatMoney(cents) {
   return `$${(cents / 100).toFixed(2)}`
@@ -149,7 +150,18 @@ export default function MyCommissions() {
                           : `Scheduled payout: ${p.payout_date}`}
                     </div>
                   </div>
-                  <div style={{ fontWeight: 800, fontSize: '1.2rem', color: '#1a1a1a' }}>{formatMoney(p.total_cents)}</div>
+                  <div style={{ textAlign: 'right' }}>
+                    <div style={{ fontWeight: 800, fontSize: '1.2rem', color: '#1a1a1a' }}>{formatMoney(p.total_cents)}</div>
+                    {p.status === 'paid' && p.statement_id && (
+                      <Link
+                        href={`/sales/statements/${p.statement_id}`}
+                        onClick={(e) => e.stopPropagation()}
+                        style={{ fontSize: '0.75rem', color: '#C2410C' }}
+                      >
+                        View Statement →
+                      </Link>
+                    )}
+                  </div>
                 </div>
 
                 {expanded === p.period_start && (
