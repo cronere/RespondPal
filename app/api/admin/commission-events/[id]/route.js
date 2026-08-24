@@ -5,16 +5,8 @@ import { calculateAndRecordCommission } from '../../../../lib/commissions'
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
-// PATCH /api/admin/commission-events/[id] — Jacob manually resolves a
-// needs_review row: assign the correct rep and/or client, and mark it
-// reviewed. This is the only way a needs_review event ever becomes
-// something the commission calculation engine will count — nothing here
-// auto-promotes itself to matched. If a client is now assigned (and this
-// is a payment event that hasn't been calculated yet), calculation runs
-// immediately, same as it would have if the webhook had matched it
-// automatically in the first place.
-// PATCH /api/admin/commission-events/[id] — two distinct things happen
-// here, depending on what's in the request body:
+// PATCH /api/admin/commission-events/[id] — three distinct things can
+// happen here, depending on what's in the request body:
 //
 // 1. Resolving a needs_review row: assign the correct rep and/or client,
 //    mark it reviewed. If this is a payment event that hasn't been
@@ -27,9 +19,29 @@ export const revalidate = 0
 //    set, so this is the only path to fix a mistake after the fact. A
 //    note is required — this directly overrides a dollar amount, so there
 //    needs to be a real audit trail of why.
+//
+// 3. Resolving a rep-initiated dispute — triggered when resolveDispute is
+//    true in the body. Just clears the disputed flag; dispute_note and
+//    disputed_at stay as a historical record of what was raised. If the
+//    dispute was valid, use mode 2 above (in a separate request) to
+//    actually correct the amount — this mode only marks it as handled.
 export async function PATCH(req, { params }) {
   try {
     const body = await req.json()
+
+    if (body.resolveDispute === true) {
+      const { data, error } = await supabaseAdmin
+        .from('commission_events')
+        .update({ disputed: false })
+        .eq('id', params.id)
+        .select('*, sales_reps(name), clients(business_name)')
+        .single()
+
+      if (error || !data) {
+        return NextResponse.json({ error: error?.message || 'Event not found.' }, { status: 404 })
+      }
+      return NextResponse.json({ event: data })
+    }
 
     if (body.commission_amount_cents !== undefined) {
       if (!body.adjustment_note || !body.adjustment_note.trim()) {
