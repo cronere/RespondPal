@@ -13,7 +13,7 @@ export async function GET() {
     const { data: events, error } = await supabaseAdmin
       .from('commission_events')
       .select('payout_period_start, payout_period_end, payout_date, sales_rep_id, commission_amount_cents, sales_reps(name)')
-      .eq('event_type', 'payment')
+      .in('event_type', ['payment', 'adjustment'])
       .in('status', ['matched', 'reviewed'])
       .not('payout_period_start', 'is', null)
 
@@ -53,6 +53,7 @@ export async function GET() {
           count: 0,
           status: repStatus?.status || 'pending',
           approved_at: repStatus?.approved_at || null,
+          paid_at: repStatus?.paid_at || null,
         }
       }
       periods[key].reps[repId].total_cents += e.commission_amount_cents || 0
