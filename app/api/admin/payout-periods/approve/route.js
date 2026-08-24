@@ -4,16 +4,17 @@ import { supabaseAdmin } from '../../../../lib/supabaseAdmin'
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
-// POST /api/admin/payout-periods/approve — Jacob explicitly approves a
-// payout period. Body: { period_start, period_end, payout_date }. This is
-// the actual finalization gate — reps can see everything accruing toward
-// a period in real time, but it's only treated as officially payable once
-// this creates or updates a row here with status 'approved'.
+// POST /api/admin/payout-periods/approve — approves ONE rep's portion of
+// ONE payout period. Body: { period_start, period_end, payout_date,
+// sales_rep_id }. Deliberately per-rep, not period-wide — this is the
+// actual fix for "I don't want to approve this period for someone because
+// their commissions look wrong": approve everyone else, hold that one
+// rep's portion back, without blocking the whole period.
 export async function POST(req) {
   try {
-    const { period_start, period_end, payout_date } = await req.json()
-    if (!period_start || !period_end || !payout_date) {
-      return NextResponse.json({ error: 'period_start, period_end, and payout_date are required.' }, { status: 400 })
+    const { period_start, period_end, payout_date, sales_rep_id } = await req.json()
+    if (!period_start || !period_end || !payout_date || !sales_rep_id) {
+      return NextResponse.json({ error: 'period_start, period_end, payout_date, and sales_rep_id are all required.' }, { status: 400 })
     }
 
     const { data, error } = await supabaseAdmin
@@ -23,10 +24,11 @@ export async function POST(req) {
           period_start,
           period_end,
           payout_date,
+          sales_rep_id,
           status: 'approved',
           approved_at: new Date().toISOString(),
         },
-        { onConflict: 'period_start' }
+        { onConflict: 'period_start,sales_rep_id' }
       )
       .select()
       .single()
