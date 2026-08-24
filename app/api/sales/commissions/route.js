@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { getSalesRepId } from '../../../lib/salesAuth'
+import { getCommissionRate } from '../../../lib/commissions'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -11,9 +12,15 @@ export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
 // GET /api/sales/commissions — the logged-in rep's own calculated
-// commissions, grouped by payout period, each labeled pending or approved.
-// "Pending" means it's accruing but Jacob hasn't signed off on the period
-// yet — real-time visibility without implying anything is finalized.
+// commissions: grouped by payout period (pending vs approved), a lifetime
+// total across all time, and a per-client breakdown showing what each
+// client has generated so far plus their current ongoing monthly value.
+//
+// Includes 'payment' and 'adjustment' event types — chargebacks are
+// deliberately excluded here, since they don't yet have a calculated
+// commission_amount_cents (the clawback-execution logic that would give
+// them one isn't built yet), so including them would just show as
+// confusing zeros rather than anything meaningful.
 export async function GET(req) {
   const repId = await getSalesRepId(req)
   if (!repId) return NextResponse.json({ error: 'Not signed in.' }, { status: 401 })
@@ -21,8 +28,8 @@ export async function GET(req) {
   try {
     const { data: events, error } = await supabase
       .from('commission_events')
-      .select('id, payout_period_start, payout_period_end, payout_date, commission_amount_cents, commission_month, commission_rate, amount_cents, created_at, clients(business_name)')
-      .eq('event_type', 'payment')
+      .select('id, event_type, payout_period_start, payout_period_end, payout_date, commission_amount_cents, commission_month, commission_rate, amount_cents, created_at, disputed, dispute_note, client_id, clients(business_name)')
+      .in('event_type', ['payment', 'adjustment'])
       .eq('sales_rep_id', repId)
       .in('status', ['matched', 'reviewed'])
       .not('payout_period_start', 'is', null)
@@ -41,6 +48,9 @@ export async function GET(req) {
     for (const p of periodRows || []) statusByPeriod[p.period_start] = p
 
     const periods = {}
+    let lifetimeTotalCents = 0
+    const clientTotals = {} // client_id -> lifetime_cents from this client
+
     for (const e of events || []) {
       const key = e.payout_period_start
       if (!periods[key]) {
@@ -53,12 +63,53 @@ export async function GET(req) {
           events: [],
         }
       }
-      periods[key].total_cents += e.commission_amount_cents || 0
+      const cents = e.commission_amount_cents || 0
+      periods[key].total_cents += cents
       periods[key].events.push(e)
+      lifetimeTotalCents += cents
+
+      if (e.client_id) {
+        clientTotals[e.client_id] = (clientTotals[e.client_id] || 0) + cents
+      }
     }
 
+    // Fetch current state for every client this rep has ever earned from,
+    // to compute what each is generating on an ongoing monthly basis right
+    // now — not just what's been earned historically.
+    const clientIds = Object.keys(clientTotals)
+    let clientValues = []
+    if (clientIds.length > 0) {
+      const { data: clientRows } = await supabase
+        .from('clients')
+        .select('id, business_name, status, monthly_rate, commission_months_completed')
+        .in('id', clientIds)
+
+      clientValues = (clientRows || []).map((c) => {
+        // A cancelled client generates no ongoing residual, regardless of
+        // what the tier math would otherwise produce — they're not paying
+        // anymore, full stop.
+        const isActive = c.status === 'active' || c.status === 'onboarding' || c.status === 'paused'
+        const currentRate = isActive ? getCommissionRate(c.commission_months_completed || 1) : 0
+        const monthlyRateCents = Math.round((c.monthly_rate || 0) * 100)
+        return {
+          client_id: c.id,
+          business_name: c.business_name,
+          status: c.status,
+          lifetime_cents: clientTotals[c.id] || 0,
+          monthly_residual_cents: isActive ? Math.round(monthlyRateCents * currentRate) : 0,
+        }
+      }).sort((a, b) => b.lifetime_cents - a.lifetime_cents)
+    }
+
+    const totalMonthlyResidualCents = clientValues.reduce((sum, c) => sum + c.monthly_residual_cents, 0)
+
     const result = Object.values(periods).sort((a, b) => (a.period_start < b.period_start ? 1 : -1))
-    return NextResponse.json({ periods: result })
+    return NextResponse.json({
+      periods: result,
+      lifetime_total_cents: lifetimeTotalCents,
+      total_monthly_residual_cents: totalMonthlyResidualCents,
+      client_values: clientValues,
+    })
   } catch (err) {
     console.error('Rep commissions error:', err)
     return NextResponse.json({ error: 'Failed to load commissions.' }, { status: 500 })
