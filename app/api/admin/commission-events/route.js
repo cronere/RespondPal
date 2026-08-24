@@ -4,12 +4,14 @@ import { supabaseAdmin } from '../../../lib/supabaseAdmin'
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
-// GET /api/admin/commission-events?status=needs_review — list commission
-// events, newest first. status is optional; omitted returns everything.
+// GET /api/admin/commission-events?status=needs_review or ?disputed=true
+// — list commission events, newest first. Both filters are optional and
+// independent, since disputed is a flag that can coexist with any status.
 export async function GET(req) {
   try {
     const { searchParams } = new URL(req.url)
     const status = searchParams.get('status')
+    const disputed = searchParams.get('disputed')
 
     let query = supabaseAdmin
       .from('commission_events')
@@ -18,6 +20,7 @@ export async function GET(req) {
       .limit(200)
 
     if (status) query = query.eq('status', status)
+    if (disputed === 'true') query = query.eq('disputed', true)
 
     const { data, error } = await query
 
