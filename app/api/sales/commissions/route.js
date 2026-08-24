@@ -47,6 +47,13 @@ export async function GET(req) {
     const statusByPeriod = {}
     for (const p of periodRows || []) statusByPeriod[p.period_start] = p
 
+    const { data: statementRows } = await supabase
+      .from('statements')
+      .select('id, period_start')
+      .eq('sales_rep_id', repId)
+    const statementByPeriod = {}
+    for (const s of statementRows || []) statementByPeriod[s.period_start] = s.id
+
     const periods = {}
     let lifetimeTotalCents = 0
     let ytdTotalCents = 0
@@ -62,6 +69,7 @@ export async function GET(req) {
           payout_date: e.payout_date,
           status: statusByPeriod[key]?.status || 'pending',
           paid_at: statusByPeriod[key]?.paid_at || null,
+          statement_id: statementByPeriod[key] || null,
           total_cents: 0,
           events: [],
         }
