@@ -104,9 +104,19 @@ export default function StatementDetail() {
 
       <div className="statement" ref={reportRef}>
         <div className="top-bar" />
-        <div className="label">Commission Statement</div>
-        <h1 className="title">{statement.rep_name}</h1>
-        <div className="subtitle">{statement.rep_email}</div>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/logo-dark.png" alt="RespondPal" style={{ height: 24, marginBottom: '1rem', display: 'block' }} />
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+          <div>
+            <div className="label">Commission Statement</div>
+            <h1 className="title">{statement.rep_name}</h1>
+            <div className="subtitle">{statement.rep_email}</div>
+          </div>
+          <div style={{ textAlign: 'right', fontSize: '8pt', color: '#9ca3af' }}>
+            <div>Statement #{statement.id.slice(0, 8).toUpperCase()}</div>
+            <div>Issued {formatDate(statement.created_at)}</div>
+          </div>
+        </div>
 
         <div className="meta-row">
           <div>
