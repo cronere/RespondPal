@@ -17,7 +17,10 @@ export default function CommissionEvents() {
   const [events, setEvents] = useState([])
   const [reps, setReps] = useState([])
   const [clients, setClients] = useState([])
+  const [periods, setPeriods] = useState([])
   const [loading, setLoading] = useState(true)
+  const [loadingPeriods, setLoadingPeriods] = useState(false)
+  const [approving, setApproving] = useState(null)
   const [error, setError] = useState('')
   const [resolving, setResolving] = useState(null)
   const [resolveForm, setResolveForm] = useState({ sales_rep_id: '', client_id: '' })
@@ -37,7 +40,47 @@ export default function CommissionEvents() {
     setLoading(false)
   }
 
-  useEffect(() => { load() }, [tab])
+  const loadPeriods = async () => {
+    setLoadingPeriods(true)
+    setError('')
+    try {
+      const res = await fetch('/api/admin/payout-periods')
+      const data = await res.json()
+      if (res.ok) setPeriods(data.periods || [])
+      else setError(data.error || 'Failed to load payout periods.')
+    } catch {
+      setError('Something went wrong.')
+    }
+    setLoadingPeriods(false)
+  }
+
+  const approvePeriod = async (period) => {
+    setApproving(period.period_start)
+    try {
+      const res = await fetch('/api/admin/payout-periods/approve', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          period_start: period.period_start,
+          period_end: period.period_end,
+          payout_date: period.payout_date,
+        }),
+      })
+      if (res.ok) loadPeriods()
+      else {
+        const data = await res.json().catch(() => ({}))
+        setError(data.error || 'Failed to approve.')
+      }
+    } catch {
+      setError('Something went wrong.')
+    }
+    setApproving(null)
+  }
+
+  useEffect(() => {
+    if (tab === 'payout_periods') loadPeriods()
+    else load()
+  }, [tab])
 
   useEffect(() => {
     fetch('/api/admin/sales-reps').then((r) => r.json()).then((d) => setReps(d.reps || [])).catch(() => {})
@@ -87,6 +130,7 @@ export default function CommissionEvents() {
           { key: 'matched', label: 'Matched' },
           { key: 'reviewed', label: 'Reviewed' },
           { key: 'all', label: 'All' },
+          { key: 'payout_periods', label: 'Payout Periods' },
         ].map((t) => (
           <button
             key={t.key}
@@ -106,7 +150,7 @@ export default function CommissionEvents() {
 
       {error && <div className="admin-error">{error}</div>}
 
-      {loading ? (
+      {tab === 'payout_periods' ? null : loading ? (
         <p className="admin-page-sub">Loading…</p>
       ) : events.length === 0 ? (
         <p className="admin-page-sub">
@@ -190,7 +234,54 @@ export default function CommissionEvents() {
         </div>
       )}
 
-      {needsReviewCount > 0 && tab !== 'needs_review' && (
+      {tab === 'payout_periods' && (
+        loadingPeriods ? (
+          <p className="admin-page-sub">Loading…</p>
+        ) : periods.length === 0 ? (
+          <p className="admin-page-sub">No payout periods yet — these appear once at least one commission has been calculated.</p>
+        ) : (
+          <div className="demo-list">
+            {periods.map((p) => (
+              <div key={p.period_start} style={{ background: 'white', border: '1px solid #e5e7eb', borderRadius: 10, padding: '1.1rem', marginBottom: '0.9rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.6rem' }}>
+                  <div>
+                    <div style={{ fontWeight: 700, color: '#1a1a1a' }}>
+                      {p.period_start} to {p.period_end}
+                      <span style={{
+                        marginLeft: '0.6rem', fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase',
+                        color: p.status === 'approved' ? '#15803d' : '#92400E',
+                        background: p.status === 'approved' ? '#F0FDF4' : '#FFFBEB',
+                        padding: '0.15rem 0.5rem', borderRadius: 999,
+                      }}>
+                        {p.status}
+                      </span>
+                    </div>
+                    <div style={{ fontSize: '0.82rem', color: '#6b7280' }}>Payout date: {p.payout_date}</div>
+                  </div>
+                  <div style={{ textAlign: 'right' }}>
+                    <div style={{ fontWeight: 800, fontSize: '1.2rem', color: '#1a1a1a' }}>{formatMoney(p.total_cents)}</div>
+                    {p.status !== 'approved' && (
+                      <button className="rev-ai-btn" onClick={() => approvePeriod(p)} disabled={approving === p.period_start} style={{ marginTop: '0.4rem' }}>
+                        {approving === p.period_start ? 'Approving…' : 'Approve Period'}
+                      </button>
+                    )}
+                  </div>
+                </div>
+                <div style={{ borderTop: '1px solid #f3f4f6', paddingTop: '0.6rem' }}>
+                  {p.reps.map((r) => (
+                    <div key={r.sales_rep_id || 'unassigned'} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', color: '#374151', marginBottom: '0.3rem' }}>
+                      <span>{r.name} ({r.count} payment{r.count === 1 ? '' : 's'})</span>
+                      <span style={{ fontWeight: 700 }}>{formatMoney(r.total_cents)}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        )
+      )}
+
+      {tab !== 'payout_periods' && needsReviewCount > 0 && tab !== 'needs_review' && (
         <p style={{ fontSize: '0.8rem', color: '#92400E', marginTop: '1rem' }}>
           {needsReviewCount} event{needsReviewCount === 1 ? '' : 's'} on this tab still need review.
         </p>
