@@ -42,13 +42,15 @@ export async function GET(req) {
 
     const { data: periodRows } = await supabase
       .from('payout_periods')
-      .select('period_start, status, approved_at')
+      .select('period_start, status, approved_at, paid_at')
       .eq('sales_rep_id', repId)
     const statusByPeriod = {}
     for (const p of periodRows || []) statusByPeriod[p.period_start] = p
 
     const periods = {}
     let lifetimeTotalCents = 0
+    let ytdTotalCents = 0
+    const currentYear = new Date().getFullYear()
     const clientTotals = {} // client_id -> lifetime_cents from this client
 
     for (const e of events || []) {
@@ -59,6 +61,7 @@ export async function GET(req) {
           period_end: e.payout_period_end,
           payout_date: e.payout_date,
           status: statusByPeriod[key]?.status || 'pending',
+          paid_at: statusByPeriod[key]?.paid_at || null,
           total_cents: 0,
           events: [],
         }
@@ -67,6 +70,9 @@ export async function GET(req) {
       periods[key].total_cents += cents
       periods[key].events.push(e)
       lifetimeTotalCents += cents
+      if (new Date(e.created_at).getFullYear() === currentYear) {
+        ytdTotalCents += cents
+      }
 
       if (e.client_id) {
         clientTotals[e.client_id] = (clientTotals[e.client_id] || 0) + cents
@@ -107,6 +113,7 @@ export async function GET(req) {
     return NextResponse.json({
       periods: result,
       lifetime_total_cents: lifetimeTotalCents,
+      ytd_total_cents: ytdTotalCents,
       total_monthly_residual_cents: totalMonthlyResidualCents,
       client_values: clientValues,
     })
