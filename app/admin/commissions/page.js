@@ -34,7 +34,9 @@ export default function CommissionEvents() {
     setLoading(true)
     setError('')
     try {
-      const url = tab === 'all' ? '/api/admin/commission-events' : `/api/admin/commission-events?status=${tab}`
+      const url = tab === 'all' ? '/api/admin/commission-events'
+        : tab === 'disputed' ? '/api/admin/commission-events?disputed=true'
+        : `/api/admin/commission-events?status=${tab}`
       const res = await fetch(url)
       const data = await res.json()
       if (res.ok) setEvents(data.events || [])
@@ -148,6 +150,23 @@ export default function CommissionEvents() {
       } else {
         const data = await res.json().catch(() => ({}))
         setError(data.error || 'Failed to save correction.')
+      }
+    } catch {
+      setError('Something went wrong.')
+    }
+  }
+
+  const resolveDispute = async (eventId) => {
+    try {
+      const res = await fetch(`/api/admin/commission-events/${eventId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ resolveDispute: true }),
+      })
+      if (res.ok) load()
+      else {
+        const data = await res.json().catch(() => ({}))
+        setError(data.error || 'Failed to resolve dispute.')
       }
     } catch {
       setError('Something went wrong.')
@@ -288,6 +307,7 @@ export default function CommissionEvents() {
           { key: 'needs_review', label: 'Needs Review' },
           { key: 'matched', label: 'Matched' },
           { key: 'reviewed', label: 'Reviewed' },
+          { key: 'disputed', label: 'Disputed' },
           { key: 'all', label: 'All' },
           { key: 'payout_periods', label: 'Payout Periods' },
         ].map((t) => (
@@ -362,6 +382,11 @@ export default function CommissionEvents() {
                   {e.adjustment_note && (
                     <div style={{ fontSize: '0.8rem', color: '#92400E', marginTop: '0.3rem' }}>Adjustment: {e.adjustment_note}</div>
                   )}
+                  {e.disputed && (
+                    <div style={{ fontSize: '0.8rem', color: '#b23b30', marginTop: '0.3rem', fontWeight: 600 }}>
+                      🚩 Disputed by rep: {e.dispute_note}
+                    </div>
+                  )}
                   <div style={{ fontSize: '0.75rem', color: '#9ca3af', marginTop: '0.3rem' }}>{formatDate(e.created_at)}</div>
                 </div>
                 <div style={{ display: 'flex', gap: '0.5rem' }}>
@@ -370,6 +395,9 @@ export default function CommissionEvents() {
                   )}
                   {e.event_type !== 'chargeback' && editing !== e.id && (
                     <button className="rev-mini-btn" onClick={() => openEdit(e)}>Correct Amount</button>
+                  )}
+                  {e.disputed && (
+                    <button className="rev-mini-btn" onClick={() => resolveDispute(e.id)}>Mark Dispute Resolved</button>
                   )}
                 </div>
               </div>
