@@ -86,6 +86,26 @@ export default function CommissionEvents() {
     setApproving(null)
   }
 
+  const markPaid = async (period, rep) => {
+    const key = `${period.period_start}::${rep.sales_rep_id}`
+    setApproving(key)
+    try {
+      const res = await fetch('/api/admin/payout-periods/mark-paid', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ period_start: period.period_start, sales_rep_id: rep.sales_rep_id }),
+      })
+      if (res.ok) loadPeriods()
+      else {
+        const data = await res.json().catch(() => ({}))
+        setError(data.error || 'Failed to mark as paid.')
+      }
+    } catch {
+      setError('Something went wrong.')
+    }
+    setApproving(null)
+  }
+
   useEffect(() => {
     if (tab === 'payout_periods') loadPeriods()
     else load()
@@ -481,8 +501,8 @@ export default function CommissionEvents() {
                         {r.name} ({r.count} payment{r.count === 1 ? '' : 's'})
                         <span style={{
                           marginLeft: '0.5rem', fontSize: '0.68rem', fontWeight: 700, textTransform: 'uppercase',
-                          color: r.status === 'approved' ? '#15803d' : '#92400E',
-                          background: r.status === 'approved' ? '#F0FDF4' : '#FFFBEB',
+                          color: r.status === 'paid' ? '#1e3a8a' : r.status === 'approved' ? '#15803d' : '#92400E',
+                          background: r.status === 'paid' ? '#EFF6FF' : r.status === 'approved' ? '#F0FDF4' : '#FFFBEB',
                           padding: '0.1rem 0.4rem', borderRadius: 999,
                         }}>
                           {r.status}
@@ -490,13 +510,22 @@ export default function CommissionEvents() {
                       </span>
                       <span style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
                         <span style={{ fontWeight: 700 }}>{formatMoney(r.total_cents)}</span>
-                        {r.status !== 'approved' && r.sales_rep_id && (
+                        {r.status === 'pending' && r.sales_rep_id && (
                           <button
                             className="rev-mini-btn"
                             onClick={() => approvePeriod(p, r)}
                             disabled={approving === `${p.period_start}::${r.sales_rep_id}`}
                           >
                             {approving === `${p.period_start}::${r.sales_rep_id}` ? 'Approving…' : 'Approve'}
+                          </button>
+                        )}
+                        {r.status === 'approved' && r.sales_rep_id && (
+                          <button
+                            className="rev-ai-btn"
+                            onClick={() => markPaid(p, r)}
+                            disabled={approving === `${p.period_start}::${r.sales_rep_id}`}
+                          >
+                            {approving === `${p.period_start}::${r.sales_rep_id}` ? 'Marking…' : 'Mark as Paid'}
                           </button>
                         )}
                       </span>
