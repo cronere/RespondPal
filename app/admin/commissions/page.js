@@ -75,9 +75,9 @@ export default function CommissionEvents() {
       <header className="admin-page-head">
         <h1>Commission Events</h1>
         <p className="admin-page-sub">
-          Every payment and chargeback the Stripe webhook has received. This is the raw feed — the
-          actual commission calculation and payout engine isn&apos;t built yet, so nothing here
-          represents a finalized amount owed.
+          Every payment and chargeback the Stripe webhook has received. Matched and reviewed
+          payments show their calculated commission automatically. Payout periods and statements
+          aren&apos;t built yet, so nothing here is finalized as actually payable.
         </p>
       </header>
 
@@ -130,6 +130,11 @@ export default function CommissionEvents() {
                       {e.event_type}
                     </span>
                     <span style={{ fontWeight: 700, color: '#1a1a1a' }}>{formatMoney(e.amount_cents)}</span>
+                    {e.commission_amount_cents != null && (
+                      <span style={{ fontSize: '0.8rem', color: '#15803d', fontWeight: 700 }}>
+                        → {formatMoney(e.commission_amount_cents)} commission (month {e.commission_month}, {(e.commission_rate * 100).toFixed(0)}%)
+                      </span>
+                    )}
                   </div>
                   <div style={{ fontSize: '0.85rem', color: '#374151' }}>
                     Rep: {e.sales_reps?.name || <span style={{ color: '#9ca3af' }}>unassigned</span>}
@@ -137,6 +142,11 @@ export default function CommissionEvents() {
                     Client: {e.clients?.business_name || <span style={{ color: '#9ca3af' }}>unassigned</span>}
                     {e.match_method && ` · matched via ${e.match_method}`}
                   </div>
+                  {e.payout_date && (
+                    <div style={{ fontSize: '0.78rem', color: '#6b7280', marginTop: '0.1rem' }}>
+                      Payout window: {e.payout_period_start} to {e.payout_period_end} · scheduled {e.payout_date}
+                    </div>
+                  )}
                   {e.review_note && (
                     <div style={{ fontSize: '0.8rem', color: '#92400E', marginTop: '0.3rem' }}>{e.review_note}</div>
                   )}
