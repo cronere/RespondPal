@@ -8,9 +8,10 @@ export const revalidate = 0
 // reviews: anything not posted or skipped (matches the "Needs response" tab)
 // feedback: anything new or in_progress (matches the "Open" tab)
 // audits: leads not yet delivered (new, awaiting_input, analyzing, or ready)
+// disputes: commission events a rep has flagged, not yet resolved
 export async function GET() {
   try {
-    const [reviewsRes, feedbackRes, auditsRes] = await Promise.all([
+    const [reviewsRes, feedbackRes, auditsRes, disputesRes] = await Promise.all([
       supabaseAdmin
         .from('reviews')
         .select('id', { count: 'exact', head: true })
@@ -23,15 +24,20 @@ export async function GET() {
         .from('audits')
         .select('id', { count: 'exact', head: true })
         .not('status', 'in', '("delivered","converted","archived")'),
+      supabaseAdmin
+        .from('commission_events')
+        .select('id', { count: 'exact', head: true })
+        .eq('disputed', true),
     ])
 
     return NextResponse.json({
       reviews: reviewsRes.count || 0,
       feedback: feedbackRes.count || 0,
       audits: auditsRes.count || 0,
+      disputes: disputesRes.count || 0,
     })
   } catch (err) {
     // Never break the layout over a count fetch — just return zeros.
-    return NextResponse.json({ reviews: 0, feedback: 0, audits: 0 })
+    return NextResponse.json({ reviews: 0, feedback: 0, audits: 0, disputes: 0 })
   }
 }
