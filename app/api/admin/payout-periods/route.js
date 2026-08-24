@@ -23,8 +23,10 @@ export async function GET() {
     }
 
     const { data: periodRows } = await supabaseAdmin.from('payout_periods').select('*')
-    const statusByPeriod = {}
-    for (const p of periodRows || []) statusByPeriod[p.period_start] = p
+    const statusByPeriodRep = {}
+    for (const p of periodRows || []) {
+      statusByPeriodRep[`${p.period_start}::${p.sales_rep_id}`] = p
+    }
 
     // Group by payout_period_start
     const periods = {}
@@ -35,8 +37,6 @@ export async function GET() {
           period_start: e.payout_period_start,
           period_end: e.payout_period_end,
           payout_date: e.payout_date,
-          status: statusByPeriod[key]?.status || 'pending',
-          approved_at: statusByPeriod[key]?.approved_at || null,
           total_cents: 0,
           reps: {},
         }
@@ -45,7 +45,15 @@ export async function GET() {
       const repId = e.sales_rep_id || 'unassigned'
       const repName = e.sales_reps?.name || 'Unassigned'
       if (!periods[key].reps[repId]) {
-        periods[key].reps[repId] = { sales_rep_id: e.sales_rep_id, name: repName, total_cents: 0, count: 0 }
+        const repStatus = statusByPeriodRep[`${key}::${e.sales_rep_id}`]
+        periods[key].reps[repId] = {
+          sales_rep_id: e.sales_rep_id,
+          name: repName,
+          total_cents: 0,
+          count: 0,
+          status: repStatus?.status || 'pending',
+          approved_at: repStatus?.approved_at || null,
+        }
       }
       periods[key].reps[repId].total_cents += e.commission_amount_cents || 0
       periods[key].reps[repId].count += 1
