@@ -13,6 +13,7 @@ function formatDate(iso) {
 export default function MyCommissions() {
   const [periods, setPeriods] = useState([])
   const [lifetimeTotal, setLifetimeTotal] = useState(0)
+  const [ytdTotal, setYtdTotal] = useState(0)
   const [totalResidual, setTotalResidual] = useState(0)
   const [clientValues, setClientValues] = useState([])
   const [loading, setLoading] = useState(true)
@@ -28,6 +29,7 @@ export default function MyCommissions() {
         if (d.periods) {
           setPeriods(d.periods)
           setLifetimeTotal(d.lifetime_total_cents || 0)
+          setYtdTotal(d.ytd_total_cents || 0)
           setTotalResidual(d.total_monthly_residual_cents || 0)
           setClientValues(d.client_values || [])
         } else {
@@ -40,8 +42,12 @@ export default function MyCommissions() {
 
   useEffect(() => { load() }, [])
 
-  const totalPending = periods.filter((p) => p.status !== 'approved').reduce((sum, p) => sum + p.total_cents, 0)
+  // Three real states, not two — a period that's been paid is neither
+  // "pending" nor "approved" anymore, and lumping it into either bucket
+  // would misrepresent it.
+  const totalPending = periods.filter((p) => p.status === 'pending').reduce((sum, p) => sum + p.total_cents, 0)
   const totalApproved = periods.filter((p) => p.status === 'approved').reduce((sum, p) => sum + p.total_cents, 0)
+  const totalPaid = periods.filter((p) => p.status === 'paid').reduce((sum, p) => sum + p.total_cents, 0)
 
   const openDispute = (eventId) => {
     setDisputing(eventId)
@@ -76,29 +82,37 @@ export default function MyCommissions() {
       <header className="admin-page-head">
         <h1>My Commissions</h1>
         <p className="admin-page-sub">
-          What&apos;s accruing toward you, in real time. A period marked <b>pending</b> is still being
-          calculated and hasn&apos;t been finalized yet — Jacob reviews and approves each payout
-          period before it&apos;s official. <b>Approved</b> means it&apos;s confirmed and on schedule
-          to be paid on the date shown. If something looks wrong on a specific line, use Dispute
-          right on that item — per your agreement, disputes need to be raised within 30 days.
+          What&apos;s accruing toward you, in real time. <b>Pending</b> means it&apos;s still being
+          calculated and hasn&apos;t been finalized yet. <b>Approved</b> means Jacob has confirmed
+          it&apos;s correct and it&apos;s scheduled to be paid. <b>Paid</b> means the transfer has
+          actually gone out. If something looks wrong on a specific line, use Dispute right on that
+          item — per your agreement, disputes need to be raised within 30 days.
         </p>
       </header>
 
       <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
-        <div style={{ background: 'white', border: '1px solid #e5e7eb', borderRadius: 10, padding: '1rem 1.25rem', minWidth: 160 }}>
+        <div style={{ background: 'white', border: '1px solid #e5e7eb', borderRadius: 10, padding: '1rem 1.25rem', minWidth: 150 }}>
           <div style={{ fontSize: '0.78rem', color: '#92400E', fontWeight: 700, textTransform: 'uppercase' }}>Pending</div>
           <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#1a1a1a' }}>{formatMoney(totalPending)}</div>
         </div>
-        <div style={{ background: 'white', border: '1px solid #e5e7eb', borderRadius: 10, padding: '1rem 1.25rem', minWidth: 160 }}>
+        <div style={{ background: 'white', border: '1px solid #e5e7eb', borderRadius: 10, padding: '1rem 1.25rem', minWidth: 150 }}>
           <div style={{ fontSize: '0.78rem', color: '#15803d', fontWeight: 700, textTransform: 'uppercase' }}>Approved</div>
           <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#1a1a1a' }}>{formatMoney(totalApproved)}</div>
         </div>
-        <div style={{ background: 'white', border: '1px solid #e5e7eb', borderRadius: 10, padding: '1rem 1.25rem', minWidth: 160 }}>
-          <div style={{ fontSize: '0.78rem', color: '#1a1a1a', fontWeight: 700, textTransform: 'uppercase' }}>Lifetime Earned</div>
+        <div style={{ background: 'white', border: '1px solid #e5e7eb', borderRadius: 10, padding: '1rem 1.25rem', minWidth: 150 }}>
+          <div style={{ fontSize: '0.78rem', color: '#1e3a8a', fontWeight: 700, textTransform: 'uppercase' }}>Paid</div>
+          <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#1a1a1a' }}>{formatMoney(totalPaid)}</div>
+        </div>
+        <div style={{ background: 'white', border: '1px solid #e5e7eb', borderRadius: 10, padding: '1rem 1.25rem', minWidth: 150 }}>
+          <div style={{ fontSize: '0.78rem', color: '#1a1a1a', fontWeight: 700, textTransform: 'uppercase' }}>This Year</div>
+          <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#1a1a1a' }}>{formatMoney(ytdTotal)}</div>
+        </div>
+        <div style={{ background: 'white', border: '1px solid #e5e7eb', borderRadius: 10, padding: '1rem 1.25rem', minWidth: 150 }}>
+          <div style={{ fontSize: '0.78rem', color: '#6b7280', fontWeight: 700, textTransform: 'uppercase' }}>Lifetime Earned</div>
           <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#1a1a1a' }}>{formatMoney(lifetimeTotal)}</div>
         </div>
-        <div style={{ background: 'white', border: '1px solid #e5e7eb', borderRadius: 10, padding: '1rem 1.25rem', minWidth: 160 }}>
-          <div style={{ fontSize: '0.78rem', color: '#C2410C', fontWeight: 700, textTransform: 'uppercase' }}>Current Monthly Residual</div>
+        <div style={{ background: 'white', border: '1px solid #e5e7eb', borderRadius: 10, padding: '1rem 1.25rem', minWidth: 150 }}>
+          <div style={{ fontSize: '0.78rem', color: '#C2410C', fontWeight: 700, textTransform: 'uppercase' }}>Monthly Residual</div>
           <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#1a1a1a' }}>{formatMoney(totalResidual)}</div>
         </div>
       </div>
@@ -120,15 +134,19 @@ export default function MyCommissions() {
                       {p.period_start} to {p.period_end}
                       <span style={{
                         marginLeft: '0.6rem', fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase',
-                        color: p.status === 'approved' ? '#15803d' : '#92400E',
-                        background: p.status === 'approved' ? '#F0FDF4' : '#FFFBEB',
+                        color: p.status === 'paid' ? '#1e3a8a' : p.status === 'approved' ? '#15803d' : '#92400E',
+                        background: p.status === 'paid' ? '#EFF6FF' : p.status === 'approved' ? '#F0FDF4' : '#FFFBEB',
                         padding: '0.15rem 0.5rem', borderRadius: 999,
                       }}>
                         {p.status}
                       </span>
                     </div>
                     <div style={{ fontSize: '0.82rem', color: '#6b7280' }}>
-                      {p.status === 'approved' ? `Paid out ${p.payout_date}` : `Scheduled payout: ${p.payout_date}`}
+                      {p.status === 'paid'
+                        ? `Paid ${p.paid_at ? formatDate(p.paid_at) : p.payout_date}`
+                        : p.status === 'approved'
+                          ? `Approved — scheduled payout ${p.payout_date}`
+                          : `Scheduled payout: ${p.payout_date}`}
                     </div>
                   </div>
                   <div style={{ fontWeight: 800, fontSize: '1.2rem', color: '#1a1a1a' }}>{formatMoney(p.total_cents)}</div>
