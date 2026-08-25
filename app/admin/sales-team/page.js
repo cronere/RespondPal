@@ -38,6 +38,8 @@ export default function SalesTeam() {
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
   const [newRep, setNewRep] = useState({ name: '', email: '', password: generateTempPassword() })
+  const [syncing, setSyncing] = useState(false)
+  const [syncResult, setSyncResult] = useState(null)
   const [justCreated, setJustCreated] = useState(null)
   const [selectedRep, setSelectedRep] = useState(null)
   const [repLeads, setRepLeads] = useState([])
@@ -125,7 +127,39 @@ export default function SalesTeam() {
           <code style={{ background: '#f3f4f6', padding: '0.1rem 0.4rem', borderRadius: 4 }}>respondpal.ai/sales/login</code>{' '}
           with the email and password you set here.
         </p>
-        <button className="rev-ai-btn" onClick={openAdd} style={{ marginTop: '1rem' }}>+ Add Sales Rep</button>
+        <div style={{ display: 'flex', gap: '0.6rem', marginTop: '1rem', flexWrap: 'wrap', alignItems: 'center' }}>
+          <button className="rev-ai-btn" onClick={openAdd}>+ Add Sales Rep</button>
+          <button
+            className="rev-mini-btn"
+            disabled={syncing}
+            onClick={async () => {
+              setSyncing(true)
+              setSyncResult(null)
+              try {
+                const res = await fetch('/api/admin/sales-reps/sync-consent', { method: 'POST' })
+                const data = await res.json()
+                setSyncResult(res.ok ? data : { error: data.error || 'Failed.' })
+              } catch {
+                setSyncResult({ error: 'Something went wrong.' })
+              }
+              setSyncing(false)
+            }}
+          >
+            {syncing ? 'Syncing…' : '🔒 Enforce Terms on Existing Links'}
+          </button>
+        </div>
+        {syncResult && (
+          <div style={{
+            marginTop: '0.75rem', padding: '0.7rem 1rem', borderRadius: 8, fontSize: '0.85rem', maxWidth: 520,
+            background: syncResult.error ? '#fdecea' : '#F0FDF4',
+            border: `1px solid ${syncResult.error ? '#f5c6c0' : '#86EFAC'}`,
+            color: syncResult.error ? '#b23b30' : '#166534',
+          }}>
+            {syncResult.error
+              ? syncResult.error
+              : `Done — ${syncResult.updated} link${syncResult.updated === 1 ? '' : 's'} updated, ${syncResult.skipped} already had it, ${syncResult.notFound} couldn't be matched.`}
+          </div>
+        )}
       </header>
 
       {loading ? (
