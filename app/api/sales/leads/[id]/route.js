@@ -16,6 +16,12 @@ const VALID_STAGES = ['lead', 'contacting', 'response_sent', 'won', 'lost']
 // ownership boundary as PATCH: viewable if the requesting rep owns it, or
 // if it's currently unclaimed. A lead owned by a different rep returns
 // 403 rather than leaking its details.
+//
+// Also resolves any linked client, audit, or response demo into a small
+// summary object — previously these link IDs existed on the lead row but
+// were never actually surfaced anywhere, so a rep had no way to get from
+// a lead back to the report they sent, or to know a lead had actually
+// become a paying client.
 export async function GET(req, { params }) {
   const repId = await getSalesRepId(req)
   if (!repId) return NextResponse.json({ error: 'Not signed in.' }, { status: 401 })
@@ -33,7 +39,37 @@ export async function GET(req, { params }) {
     if (data.sales_rep_id && data.sales_rep_id !== repId) {
       return NextResponse.json({ error: 'This lead belongs to another rep.' }, { status: 403 })
     }
-    return NextResponse.json({ lead: data })
+
+    let linkedClient = null
+    let linkedAudit = null
+    let linkedResponseDemo = null
+
+    if (data.linked_client_id) {
+      const { data: c } = await supabase
+        .from('clients')
+        .select('id, status, live_date')
+        .eq('id', data.linked_client_id)
+        .maybeSingle()
+      linkedClient = c
+    }
+    if (data.linked_audit_id) {
+      const { data: a } = await supabase
+        .from('audits')
+        .select('id, status, rep_delivered_at')
+        .eq('id', data.linked_audit_id)
+        .maybeSingle()
+      linkedAudit = a
+    }
+    if (data.linked_response_demo_id) {
+      const { data: r } = await supabase
+        .from('response_demos')
+        .select('id')
+        .eq('id', data.linked_response_demo_id)
+        .maybeSingle()
+      linkedResponseDemo = r
+    }
+
+    return NextResponse.json({ lead: data, linkedClient, linkedAudit, linkedResponseDemo })
   } catch (err) {
     return NextResponse.json({ error: 'Failed to load lead.' }, { status: 500 })
   }
