@@ -106,6 +106,27 @@ export default function CommissionEvents() {
     setApproving(null)
   }
 
+  const unlockPeriod = async (period, rep) => {
+    if (!confirm(`Unlock ${rep.name}'s ${period.period_start} to ${period.period_end} period? This reverts it to pending — you'll need to re-approve after making corrections.`)) return
+    const key = `${period.period_start}::${rep.sales_rep_id}`
+    setApproving(key)
+    try {
+      const res = await fetch('/api/admin/payout-periods/unlock', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ period_start: period.period_start, sales_rep_id: rep.sales_rep_id }),
+      })
+      if (res.ok) loadPeriods()
+      else {
+        const data = await res.json().catch(() => ({}))
+        setError(data.error || 'Failed to unlock period.')
+      }
+    } catch {
+      setError('Something went wrong.')
+    }
+    setApproving(null)
+  }
+
   useEffect(() => {
     if (tab === 'payout_periods') loadPeriods()
     else load()
@@ -550,13 +571,26 @@ export default function CommissionEvents() {
                           </button>
                         )}
                         {r.status === 'approved' && r.sales_rep_id && (
-                          <button
-                            className="rev-ai-btn"
-                            onClick={() => markPaid(p, r)}
-                            disabled={approving === `${p.period_start}::${r.sales_rep_id}`}
-                          >
-                            {approving === `${p.period_start}::${r.sales_rep_id}` ? 'Marking…' : 'Mark as Paid'}
-                          </button>
+                          <>
+                            <span title="Locked — corrections are blocked until unlocked" style={{ fontSize: '0.9rem' }}>🔒</span>
+                            <button
+                              className="rev-mini-btn"
+                              onClick={() => unlockPeriod(p, r)}
+                              disabled={approving === `${p.period_start}::${r.sales_rep_id}`}
+                            >
+                              {approving === `${p.period_start}::${r.sales_rep_id}` ? '…' : 'Unlock'}
+                            </button>
+                            <button
+                              className="rev-ai-btn"
+                              onClick={() => markPaid(p, r)}
+                              disabled={approving === `${p.period_start}::${r.sales_rep_id}`}
+                            >
+                              {approving === `${p.period_start}::${r.sales_rep_id}` ? 'Marking…' : 'Mark as Paid'}
+                            </button>
+                          </>
+                        )}
+                        {r.status === 'paid' && (
+                          <span title="Paid — locked permanently" style={{ fontSize: '0.9rem' }}>🔒</span>
                         )}
                       </span>
                     </div>
