@@ -3,6 +3,13 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 
+const US_STATES = [
+  'AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA', 'HI', 'ID', 'IL',
+  'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD', 'MA', 'MI', 'MN', 'MS', 'MO', 'MT',
+  'NE', 'NV', 'NH', 'NJ', 'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI',
+  'SC', 'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY',
+]
+
 const STAGES = [
   { key: 'lead', label: 'Lead' },
   { key: 'contacting', label: 'Contacting' },
@@ -28,12 +35,13 @@ export default function SalesLeads() {
   const [error, setError] = useState('')
   const [newLead, setNewLead] = useState({
     business_name: '', contact_name: '', contact_email: '', contact_phone: '',
-    industry: '', google_url: '', yelp_url: '', notes: '',
+    industry: '', state: '', google_url: '', yelp_url: '', notes: '',
   })
   const [newTask, setNewTask] = useState({ lead_id: '', title: '', due_date: '' })
   const [addingTask, setAddingTask] = useState(false)
   const [tasksDue, setTasksDue] = useState(0)
   const [searchQuery, setSearchQuery] = useState('')
+  const [stateFilter, setStateFilter] = useState('')
 
   const loadCounts = async () => {
     try {
@@ -102,13 +110,40 @@ export default function SalesLeads() {
 
   const filteredLeads = (() => {
     const q = searchQuery.trim().toLowerCase()
-    if (!q) return leads
-    return leads.filter((l) =>
+    let result = leads
+    if (stateFilter) result = result.filter((l) => l.state === stateFilter)
+    if (!q) return result
+    return result.filter((l) =>
       (l.business_name || '').toLowerCase().includes(q) ||
       (l.contact_name || '').toLowerCase().includes(q) ||
       (l.industry || '').toLowerCase().includes(q) ||
       (l.contact_phone || '').toLowerCase().includes(q) ||
       (l.contact_email || '').toLowerCase().includes(q)
+    )
+  })()
+
+  const filteredOpenLeads = (() => {
+    const q = searchQuery.trim().toLowerCase()
+    let result = openLeads
+    if (stateFilter) result = result.filter((l) => l.state === stateFilter)
+    if (!q) return result
+    return result.filter((l) =>
+      (l.business_name || '').toLowerCase().includes(q) ||
+      (l.contact_name || '').toLowerCase().includes(q) ||
+      (l.industry || '').toLowerCase().includes(q) ||
+      (l.contact_phone || '').toLowerCase().includes(q)
+    )
+  })()
+
+  const filteredClients = (() => {
+    const q = searchQuery.trim().toLowerCase()
+    if (!q) return clients
+    return clients.filter((c) =>
+      (c.business_name || '').toLowerCase().includes(q) ||
+      (c.industry || '').toLowerCase().includes(q) ||
+      (c.owner_name || '').toLowerCase().includes(q) ||
+      (c.phone || '').toLowerCase().includes(q) ||
+      (c.rep_name || '').toLowerCase().includes(q)
     )
   })()
 
@@ -199,7 +234,7 @@ export default function SalesLeads() {
       const data = await res.json()
       if (res.ok) {
         setShowAdd(false)
-        setNewLead({ business_name: '', contact_name: '', contact_email: '', contact_phone: '', industry: '', google_url: '', yelp_url: '', notes: '' })
+        setNewLead({ business_name: '', contact_name: '', contact_email: '', contact_phone: '', industry: '', state: '', google_url: '', yelp_url: '', notes: '' })
         load()
       } else if (res.status === 409 && data.needsConfirmation) {
         setSaving(false)
@@ -279,16 +314,32 @@ export default function SalesLeads() {
 
       {error && <div className="admin-error">{error}</div>}
 
-      {tab === 'mine' && leads.length > 0 && (
-        <input
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Search by business, contact, industry, phone, or email…"
-          style={{
-            width: '100%', maxWidth: 420, padding: '0.6rem 0.9rem', borderRadius: 8,
-            border: '1px solid #d1d5db', fontSize: '0.88rem', marginBottom: '1rem',
-          }}
-        />
+      {['mine', 'open', 'clients'].includes(tab) && (leads.length > 0 || openLeads.length > 0 || clients.length > 0) && (
+        <div style={{ display: 'flex', gap: '0.6rem', marginBottom: '1rem', flexWrap: 'wrap' }}>
+          <input
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder={
+              tab === 'mine' ? 'Search by business, contact, industry, phone, or email…'
+                : tab === 'open' ? 'Search by business, contact, industry, or phone…'
+                : 'Search by business, contact, industry, phone, or rep…'
+            }
+            style={{
+              flex: 1, minWidth: 220, maxWidth: 420, padding: '0.6rem 0.9rem', borderRadius: 8,
+              border: '1px solid #d1d5db', fontSize: '0.88rem',
+            }}
+          />
+          {(tab === 'mine' || tab === 'open') && (
+            <select
+              value={stateFilter}
+              onChange={(e) => setStateFilter(e.target.value)}
+              style={{ padding: '0.6rem 0.7rem', borderRadius: 8, border: '1px solid #d1d5db', fontSize: '0.88rem' }}
+            >
+              <option value="">All states</option>
+              {US_STATES.map((s) => <option key={s} value={s}>{s}</option>)}
+            </select>
+          )}
+        </div>
       )}
 
       {tab === 'mine' && (
@@ -344,9 +395,11 @@ export default function SalesLeads() {
             <p className="admin-page-sub">Loading…</p>
           ) : openLeads.length === 0 ? (
             <p className="admin-page-sub">No open leads right now.</p>
+          ) : filteredOpenLeads.length === 0 ? (
+            <p className="admin-page-sub">No open leads match &quot;{searchQuery}&quot;.</p>
           ) : (
             <div className="demo-list">
-              {openLeads.map((l) => (
+              {filteredOpenLeads.map((l) => (
                 <div className="response-demo-card" key={l.id} style={{ flexDirection: 'column', alignItems: 'stretch', gap: '0.5rem' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                     <div>
@@ -385,9 +438,11 @@ export default function SalesLeads() {
             <p className="admin-page-sub">Loading…</p>
           ) : clients.length === 0 ? (
             <p className="admin-page-sub">No active clients yet.</p>
+          ) : filteredClients.length === 0 ? (
+            <p className="admin-page-sub">No clients match &quot;{searchQuery}&quot;.</p>
           ) : (
             <div className="demo-list">
-              {clients.map((c) => (
+              {filteredClients.map((c) => (
                 <div className="response-demo-card" key={c.id} style={{ flexDirection: 'column', alignItems: 'stretch', gap: '0.4rem', cursor: 'default' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                     <div>
@@ -547,6 +602,17 @@ export default function SalesLeads() {
                   <label className="field">
                     <span className="field-label">Industry</span>
                     <input value={newLead.industry} onChange={(e) => setNewLead({ ...newLead, industry: e.target.value })} placeholder="e.g. Restaurant" />
+                  </label>
+                  <label className="field">
+                    <span className="field-label">State</span>
+                    <select
+                      value={newLead.state}
+                      onChange={(e) => setNewLead({ ...newLead, state: e.target.value })}
+                      style={{ padding: '0.55rem 0.7rem', borderRadius: 6, border: '1px solid #d1d5db', fontSize: '0.9rem', width: '100%' }}
+                    >
+                      <option value="">— not set —</option>
+                      {US_STATES.map((s) => <option key={s} value={s}>{s}</option>)}
+                    </select>
                   </label>
                 </div>
                 <div className="drawer-grid">
