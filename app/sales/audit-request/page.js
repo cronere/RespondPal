@@ -102,7 +102,7 @@ export default function AuditRequest() {
         </p>
       </header>
 
-      <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.25rem', borderBottom: '1px solid #e5e7eb' }}>
+      <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.25rem', borderBottom: '1px solid #e5e7eb', overflowX: 'auto' }}>
         {[
           { key: 'submit', label: 'Submit a Request' },
           { key: 'track', label: 'My Audit Requests' },
