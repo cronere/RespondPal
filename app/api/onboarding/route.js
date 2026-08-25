@@ -40,6 +40,24 @@ export async function POST(req) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
 
+    // ── 0. Check for a possible duplicate before inserting ────────
+    // Never blocks a real prospect from completing onboarding — a false
+    // positive here shouldn't cost a legitimate signup. Instead, this
+    // just flags it clearly in the internal notification so Jacob can
+    // catch and resolve it manually, same reasoning as leaving reps'
+    // duplicate-lead check as a warning rather than a hard block.
+    let possibleDuplicate = null
+    try {
+      const { data: existing } = await supabase
+        .from('clients')
+        .select('id, status, rep_name')
+        .ilike('business_name', business_name.trim())
+        .maybeSingle()
+      possibleDuplicate = existing || null
+    } catch (dupErr) {
+      console.error('Duplicate client check error:', dupErr)
+    }
+
     // ── 1. Save to Supabase ──────────────────────────────────────
     const { data: client, error: dbError } = await supabase
       .from('clients')
@@ -125,13 +143,20 @@ export async function POST(req) {
       to: process.env.GMAIL_USER,
       subject: dbFailed
         ? `⚠ DB INSERT FAILED — ${business_name} (NOT saved)`
-        : `✅ Onboarding complete — ${business_name}`,
+        : possibleDuplicate
+          ? `⚠ Possible duplicate — ${business_name}`
+          : `✅ Onboarding complete — ${business_name}`,
       html: `
         <div style="font-family: Arial, Helvetica, sans-serif; max-width: 600px; margin: 0 auto; background: #ffffff; color: #4a4a4a; border: 1px solid #dde2e8; border-radius: 12px; overflow: hidden;">
           ${dbFailed ? `
           <div style="background: #b23b30; padding: 1.25rem 2rem;">
             <p style="color: #ffffff; font-weight: 700; font-size: 0.95rem; margin: 0 0 0.5rem;">⚠ DATABASE INSERT FAILED — this client is NOT saved in Supabase</p>
             <p style="color: #ffe5e2; font-size: 0.8rem; margin: 0; line-height: 1.5;">Save this client's details manually. Error: ${dbErrorMessage}</p>
+          </div>` : ''}
+          ${possibleDuplicate ? `
+          <div style="background: #FFFBEB; border-bottom: 2px solid #FDE68A; padding: 1.25rem 2rem;">
+            <p style="color: #92400E; font-weight: 700; font-size: 0.95rem; margin: 0 0 0.5rem;">⚠ Possible duplicate client</p>
+            <p style="color: #92400E; font-size: 0.8rem; margin: 0; line-height: 1.5;">A client named "${business_name}" already exists (status: ${possibleDuplicate.status}${possibleDuplicate.rep_name ? `, rep: ${possibleDuplicate.rep_name}` : ''}). This submission was still saved as a new client record — check whether this is a genuine second signup or needs to be merged/handled manually.</p>
           </div>` : ''}
           <div style="background: #1e2a44; padding: 1.5rem 2rem;">
             <span style="background: ${dbFailed ? '#b23b30' : '#2a7a4a'}; color: #ffffff; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.3rem 0.75rem; border-radius: 100px;">${dbFailed ? 'Saved to email only' : 'Onboarding Complete'}</span>
