@@ -28,7 +28,7 @@ export async function GET(req) {
   try {
     const { data: events, error } = await supabase
       .from('commission_events')
-      .select('id, event_type, payout_period_start, payout_period_end, payout_date, commission_amount_cents, commission_month, commission_rate, amount_cents, created_at, disputed, dispute_note, client_id, clients(business_name)')
+      .select('id, event_type, payout_period_start, payout_period_end, payout_date, commission_amount_cents, commission_month, commission_rate, amount_cents, created_at, disputed, dispute_note, adjusted, adjustment_note, client_id, clients(business_name)')
       .in('event_type', ['payment', 'adjustment'])
       .eq('sales_rep_id', repId)
       .in('status', ['matched', 'reviewed'])
@@ -103,7 +103,9 @@ export async function GET(req) {
         // what the tier math would otherwise produce — they're not paying
         // anymore, full stop.
         const isActive = c.status === 'active' || c.status === 'onboarding' || c.status === 'paused'
-        const currentRate = isActive ? getCommissionRate(c.commission_months_completed || 1) : 0
+        const currentMonth = c.commission_months_completed || 1
+        const currentRate = isActive ? getCommissionRate(currentMonth) : 0
+        const nextRate = isActive ? getCommissionRate(currentMonth + 1) : 0
         const monthlyRateCents = Math.round((c.monthly_rate || 0) * 100)
         return {
           client_id: c.id,
@@ -111,11 +113,13 @@ export async function GET(req) {
           status: c.status,
           lifetime_cents: clientTotals[c.id] || 0,
           monthly_residual_cents: isActive ? Math.round(monthlyRateCents * currentRate) : 0,
+          next_month_residual_cents: isActive ? Math.round(monthlyRateCents * nextRate) : 0,
         }
       }).sort((a, b) => b.lifetime_cents - a.lifetime_cents)
     }
 
     const totalMonthlyResidualCents = clientValues.reduce((sum, c) => sum + c.monthly_residual_cents, 0)
+    const totalNextMonthResidualCents = clientValues.reduce((sum, c) => sum + c.next_month_residual_cents, 0)
 
     const result = Object.values(periods).sort((a, b) => (a.period_start < b.period_start ? 1 : -1))
     return NextResponse.json({
@@ -123,6 +127,7 @@ export async function GET(req) {
       lifetime_total_cents: lifetimeTotalCents,
       ytd_total_cents: ytdTotalCents,
       total_monthly_residual_cents: totalMonthlyResidualCents,
+      total_next_month_residual_cents: totalNextMonthResidualCents,
       client_values: clientValues,
     })
   } catch (err) {
