@@ -47,6 +47,32 @@ export async function PATCH(req, { params }) {
       if (!body.adjustment_note || !body.adjustment_note.trim()) {
         return NextResponse.json({ error: 'A note explaining the correction is required.' }, { status: 400 })
       }
+
+      // Locking check: an approved or paid period is frozen. Fetch the
+      // event's own period/rep first so we know exactly which
+      // payout_periods row to check against.
+      const { data: existingEvent } = await supabaseAdmin
+        .from('commission_events')
+        .select('payout_period_start, sales_rep_id')
+        .eq('id', params.id)
+        .single()
+
+      if (existingEvent?.payout_period_start && existingEvent?.sales_rep_id) {
+        const { data: period } = await supabaseAdmin
+          .from('payout_periods')
+          .select('status')
+          .eq('period_start', existingEvent.payout_period_start)
+          .eq('sales_rep_id', existingEvent.sales_rep_id)
+          .single()
+
+        if (period?.status === 'paid') {
+          return NextResponse.json({ error: 'This period has already been paid and is locked permanently. Add a manual adjustment against a different period instead, with a note explaining why.' }, { status: 400 })
+        }
+        if (period?.status === 'approved') {
+          return NextResponse.json({ error: 'This period is approved and locked. Unlock it from the Payout Periods tab first, make the correction, then re-approve.' }, { status: 400 })
+        }
+      }
+
       const { data, error } = await supabaseAdmin
         .from('commission_events')
         .update({
