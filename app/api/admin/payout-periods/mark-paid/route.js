@@ -121,7 +121,7 @@ export async function POST(req) {
               <p>Hi ${rep.name?.split(' ')[0] || ''},</p>
               <p>Your payout for <b>${period_start} to ${existing.period_end}</b> has been sent —
               <b>$${(totalCents / 100).toFixed(2)}</b> total.</p>
-              <p>Your full statement is available in Sales HQ under <b>My Commissions</b>.</p>
+              <p>Your full statement is available anytime: <a href="https://www.respondpal.ai/sales/commissions" style="color:#C2410C;font-weight:600;">My Commissions →</a></p>
               <p style="color:#6b7280;font-size:13px">If anything looks off, you can dispute a specific
               line item directly from your commissions page — per your agreement, within 30 days.</p>
               <p>— Jacob</p>
