@@ -17,6 +17,7 @@ function OnboardingForm() {
   const [step, setStep] = useState(1)
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
+  const [agreedToTerms, setAgreedToTerms] = useState(false)
   const [form, setForm] = useState({
     // Step 1 - Business basics
     owner_name: '',
@@ -60,13 +61,13 @@ function OnboardingForm() {
   // The ONLY path that actually submits — called explicitly by the
   // "Complete setup" button onClick, and only ever from step 3.
   const doSubmit = async () => {
-    if (step !== 3 || submitting) return
+    if (step !== 3 || submitting || !agreedToTerms) return
     setSubmitting(true)
     try {
       const res = await fetch('/api/onboarding', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+        body: JSON.stringify({ ...form, agreed_to_terms: agreedToTerms }),
       })
       if (res.ok) setSubmitted(true)
     } catch (err) {
@@ -382,6 +383,26 @@ function OnboardingForm() {
           </div>
         )}
 
+        {step === 3 && (
+          <div className="ob-group" style={{ marginTop: '1.5rem', paddingTop: '1.25rem', borderTop: '1px solid #e5e7eb' }}>
+            <label style={{ display: 'flex', alignItems: 'flex-start', gap: '0.6rem', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 400 }}>
+              <input
+                type="checkbox"
+                checked={agreedToTerms}
+                onChange={(e) => setAgreedToTerms(e.target.checked)}
+                style={{ marginTop: '0.15rem', width: 16, height: 16, flexShrink: 0 }}
+              />
+              <span>
+                I agree to RespondPal&apos;s{' '}
+                <a href="/terms" target="_blank" rel="noreferrer" style={{ color: '#C2410C', textDecoration: 'underline' }}>
+                  Terms of Service
+                </a>
+                , including the billing, cancellation, and refund terms described there.
+              </span>
+            </label>
+          </div>
+        )}
+
         {/* Navigation */}
         <div className="ob-nav">
           {step > 1 && (
@@ -403,7 +424,7 @@ function OnboardingForm() {
               type="button"
               className="ob-btn-submit"
               onClick={doSubmit}
-              disabled={submitting}
+              disabled={submitting || !agreedToTerms}
             >
               {submitting ? 'Submitting...' : 'Complete setup →'}
             </button>
