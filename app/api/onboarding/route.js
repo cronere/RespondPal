@@ -74,6 +74,51 @@ export async function POST(req) {
     const dbFailed = Boolean(dbError)
     const dbErrorMessage = dbError ? (dbError.message || JSON.stringify(dbError)) : ''
 
+    // ── 1b. Connect this client back to the lead that became it ──
+    // Nothing previously linked a lead to the client it converts into —
+    // a rep's pipeline could show a lead sitting in "Contacting" forever
+    // even after the client actually signed up. Matches by rep + business
+    // name (same case-insensitive pattern used for lead duplicate
+    // detection elsewhere); if no confident match is found, this is
+    // silently skipped rather than guessing — e.g. the client came in
+    // without a rep, or the business name typed here doesn't match what
+    // was in the lead record closely enough.
+    if (!dbFailed && client && sales_rep) {
+      try {
+        const { data: rep } = await supabase
+          .from('sales_reps')
+          .select('id')
+          .ilike('name', sales_rep.trim())
+          .maybeSingle()
+
+        if (rep) {
+          const { data: matchingLead } = await supabase
+            .from('leads')
+            .select('id')
+            .eq('sales_rep_id', rep.id)
+            .is('linked_client_id', null)
+            .ilike('business_name', business_name.trim())
+            .limit(1)
+            .maybeSingle()
+
+          if (matchingLead) {
+            await supabase
+              .from('leads')
+              .update({
+                linked_client_id: client.id,
+                stage: 'won',
+                last_contacted_at: new Date().toISOString(),
+              })
+              .eq('id', matchingLead.id)
+          }
+        }
+      } catch (linkErr) {
+        // Never let this block the actual onboarding submission — worst
+        // case the lead just doesn't get auto-linked and stays as-is.
+        console.error('Lead-to-client auto-link error:', linkErr)
+      }
+    }
+
     // ── 2. Internal notification to Jacob ────────────────────────
     await transporter.sendMail({
       from: `"RespondPal" <${process.env.GMAIL_USER}>`,
