@@ -3,6 +3,13 @@
 import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 
+const US_STATES = [
+  'AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA', 'HI', 'ID', 'IL',
+  'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD', 'MA', 'MI', 'MN', 'MS', 'MO', 'MT',
+  'NE', 'NV', 'NH', 'NJ', 'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI',
+  'SC', 'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY',
+]
+
 const STAGES = [
   { key: 'lead', label: 'Lead' },
   { key: 'contacting', label: 'Contacting' },
@@ -90,6 +97,7 @@ export default function LeadDetail() {
         body: JSON.stringify({
           business_name: lead.business_name,
           industry: lead.industry,
+          state: lead.state,
           contact_name: lead.contact_name,
           contact_email: lead.contact_email,
           contact_phone: lead.contact_phone,
@@ -337,6 +345,20 @@ export default function LeadDetail() {
           <label className="field">
             <span className="field-label">Point of contact</span>
             <input value={lead.contact_name || ''} onChange={(e) => set('contact_name', e.target.value)} />
+          </label>
+        </div>
+
+        <div className="drawer-grid">
+          <label className="field">
+            <span className="field-label">State</span>
+            <select
+              value={lead.state || ''}
+              onChange={(e) => set('state', e.target.value)}
+              style={{ padding: '0.55rem 0.7rem', borderRadius: 6, border: '1px solid #d1d5db', fontSize: '0.9rem', width: '100%' }}
+            >
+              <option value="">— not set —</option>
+              {US_STATES.map((s) => <option key={s} value={s}>{s}</option>)}
+            </select>
           </label>
         </div>
 
