@@ -1,15 +1,20 @@
 import { NextResponse } from 'next/server'
 import { supabaseAdmin } from '../../../../lib/supabaseAdmin'
+import { releaseStaleLeadsForRep } from '../../../../lib/leadOwnership'
 
 // PATCH /api/admin/sales-reps/[id] — toggle active status. This IS the
 // archive mechanism: setting active=false blocks login (enforced in
-// /api/sales/auth) but touches nothing else — the rep's leads stay
-// assigned to them exactly as they were. If nobody works those leads
-// while the rep is archived, they naturally flow into the open pool via
-// the existing 90-day release logic (leadOwnership.js) with no special
-// case needed here. Reactivating just flips the flag back — any leads
-// still assigned to them (haven't hit 90 days) are waiting exactly where
-// they left off.
+// /api/sales/auth).
+//
+// Archiving also immediately releases any of the rep's leads that are
+// already past the 90-day activity window — rather than waiting for the
+// normal lazy sweep to eventually touch them, which could otherwise leave
+// those leads locked and untouchable by anyone for a long time after the
+// rep is gone. Leads still within the 90-day window are left alone — a
+// lead the rep was genuinely, recently working shouldn't be ripped away
+// the instant they're archived, only the ones already effectively
+// abandoned. Reactivating just flips the flag back and touches nothing
+// else; anything not already released is waiting where it was left.
 //
 // Deliberately no DELETE endpoint: a rep's id is referenced by real
 // historical data (leads, audits, clients via original_sales_rep_id /
@@ -35,6 +40,11 @@ export async function PATCH(req, { params }) {
       console.error('Sales rep status update error:', error)
       return NextResponse.json({ error: error?.message || 'Rep not found.' }, { status: 500 })
     }
+
+    if (active === false) {
+      await releaseStaleLeadsForRep(supabaseAdmin, params.id)
+    }
+
     return NextResponse.json({ rep: data })
   } catch (err) {
     return NextResponse.json({ error: 'Failed to update rep.' }, { status: 500 })
