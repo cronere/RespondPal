@@ -3632,6 +3632,18 @@ footer a:hover {
   }
   .admin-page { padding: 1.5rem; }
   .admin-cards { grid-template-columns: 1fr; }
+  /* The full multi-line "Need help?" block reads fine stacked in the
+     desktop sidebar, but the mobile sidebar footer runs horizontally —
+     four lines of contact info squeezed into that row would look
+     cramped next to View Site and Sign Out. Swap it for a single
+     tap-to-call link instead; the fuller version simply isn't shown. */
+  .sidebar-help-block { display: none; }
+  .sidebar-help-compact { display: inline-flex !important; }
+}
+
+.sidebar-help-compact {
+  display: none;
+  white-space: nowrap;
 }
 
 /* ════════════════════════════════════════════════════════════════════
