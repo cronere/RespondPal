@@ -76,7 +76,7 @@ function OnboardingForm() {
   }
 
   const canProceed = () => {
-    if (step === 1) return form.owner_name && form.business_name && form.email && form.phone && form.industry
+    if (step === 1) return form.owner_name && form.business_name && form.email && form.phone && form.industry && form.state
     if (step === 2) return form.google_profile_email
     return true
   }
@@ -234,8 +234,8 @@ function OnboardingForm() {
               </div>
               <div className="ob-row">
                 <div className="ob-group">
-                  <label>State</label>
-                  <select name="state" value={form.state} onChange={handleChange}>
+                  <label>State <span className="req">*</span></label>
+                  <select name="state" required value={form.state} onChange={handleChange}>
                     <option value="">Select your state</option>
                     {US_STATES.map((s) => <option key={s} value={s}>{s}</option>)}
                   </select>
