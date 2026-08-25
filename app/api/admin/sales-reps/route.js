@@ -98,6 +98,14 @@ export async function POST(req) {
           const link = await stripe.paymentLinks.create({
             line_items: [{ price: priceId, quantity: 1 }],
             metadata: { sales_rep_id: data.id, sales_rep_name: data.name },
+            // Requires the client to check a box agreeing to the Terms of
+            // Service before completing checkout — the actual fix for
+            // clients previously being able to pay with zero exposure to
+            // any terms at all. Stripe links this to whatever Terms of
+            // Service URL is set under Settings > Business > Public
+            // details in the Stripe Dashboard — that has to be set there
+            // directly, it can't be configured through this API call.
+            consent_collection: { terms_of_service: 'required' },
           })
           links[tier] = link.url
         }
