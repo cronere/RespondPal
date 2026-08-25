@@ -27,6 +27,7 @@ export default function AdminReviews() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [tab, setTab] = useState('needs_work')
+  const [search, setSearch] = useState('')
   const [adding, setAdding] = useState(false)
   const [selected, setSelected] = useState(null)
 
@@ -58,7 +59,17 @@ export default function AdminReviews() {
     return !['posted', 'skipped'].includes(r.response_status)
   }
 
-  const filtered = reviews.filter(matchesTab)
+  const clientNameById = Object.fromEntries((clients || []).map((c) => [c.id, c.business_name]))
+
+  const filtered = reviews.filter(matchesTab).filter((r) => {
+    const q = search.trim().toLowerCase()
+    if (!q) return true
+    const clientName = (clientNameById[r.client_id] || '').toLowerCase()
+    return (
+      clientName.includes(q) ||
+      (r.reviewer_name || '').toLowerCase().includes(q)
+    )
+  })
 
   const counts = {
     needs_work: reviews.filter((r) => !['posted', 'skipped'].includes(r.response_status)).length,
@@ -89,6 +100,14 @@ export default function AdminReviews() {
           <button className="rev-add-btn" onClick={() => setAdding(true)}>+ Add review</button>
         </div>
       </header>
+
+      <input
+        className="clients-search"
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        placeholder="Search by client or reviewer name…"
+        style={{ marginBottom: '1rem' }}
+      />
 
       <div className="clients-filters rev-tabs">
         {STATUS_TABS.map((t) => (
