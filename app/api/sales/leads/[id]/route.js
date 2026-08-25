@@ -83,6 +83,7 @@ export async function PATCH(req, { params }) {
     }
     if (body.business_name !== undefined) updates.business_name = body.business_name
     if (body.industry !== undefined) updates.industry = body.industry
+    if (body.state !== undefined) updates.state = body.state
     if (body.google_url !== undefined) updates.google_url = body.google_url
     if (body.yelp_url !== undefined) updates.yelp_url = body.yelp_url
     if (body.notes !== undefined) updates.notes = body.notes
