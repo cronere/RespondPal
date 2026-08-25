@@ -44,6 +44,7 @@ export async function POST(req) {
         email: body.email || null,
         phone: body.phone || null,
         industry: body.industry || null,
+        state: body.state || null,
         status: body.status || 'onboarding',
         plan: body.plan || 'monthly',
         locations: body.locations || 1,
