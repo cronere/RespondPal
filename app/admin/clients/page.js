@@ -2,6 +2,13 @@
 
 import { useState, useEffect } from 'react'
 
+const US_STATES = [
+  'AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA', 'HI', 'ID', 'IL',
+  'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD', 'MA', 'MI', 'MN', 'MS', 'MO', 'MT',
+  'NE', 'NV', 'NH', 'NJ', 'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI',
+  'SC', 'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY',
+]
+
 const STATUS_OPTIONS = ['onboarding', 'active', 'paused', 'cancelled']
 const PLAN_LABELS = {
   monthly: 'Monthly',
@@ -188,7 +195,7 @@ export default function AdminClients() {
 
 function AddClientModal({ onClose, onCreated }) {
   const [form, setForm] = useState({
-    business_name: '', owner_name: '', email: '', phone: '', industry: '',
+    business_name: '', owner_name: '', email: '', phone: '', industry: '', state: '',
     plan: 'monthly', locations: 1, monthly_rate: 0, status: 'onboarding',
   })
   const [saving, setSaving] = useState(false)
@@ -256,6 +263,12 @@ function AddClientModal({ onClose, onCreated }) {
               </Field>
               <Field label="Industry" hint="e.g. Dental, Med Spa — determines HIPAA handling.">
                 <input value={form.industry} onChange={(e) => set('industry', e.target.value)} placeholder="Dental" />
+              </Field>
+              <Field label="State">
+                <select value={form.state} onChange={(e) => set('state', e.target.value)}>
+                  <option value="">— not set —</option>
+                  {US_STATES.map((s) => <option key={s} value={s}>{s}</option>)}
+                </select>
               </Field>
               <Field label="Status">
                 <select value={form.status} onChange={(e) => set('status', e.target.value)}>
@@ -391,6 +404,12 @@ function ClientDrawer({ client, onClose, onSaved }) {
               </Field>
               <Field label="Industry">
                 <input value={form.industry || ''} onChange={(e) => set('industry', e.target.value)} />
+              </Field>
+              <Field label="State">
+                <select value={form.state || ''} onChange={(e) => set('state', e.target.value)}>
+                  <option value="">— not set —</option>
+                  {US_STATES.map((s) => <option key={s} value={s}>{s}</option>)}
+                </select>
               </Field>
               <Field label="Sales rep">
                 <input value={form.rep_name || ''} onChange={(e) => set('rep_name', e.target.value)} />
