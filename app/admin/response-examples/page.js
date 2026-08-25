@@ -8,6 +8,7 @@ export default function ResponseExamplesPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [adding, setAdding] = useState(false)
+  const [search, setSearch] = useState('')
 
   const load = () => {
     setLoading(true)
@@ -34,6 +35,12 @@ export default function ResponseExamplesPage() {
     setDemos((prev) => prev.filter((d) => d.id !== id))
   }
 
+  const filteredDemos = demos.filter((d) => {
+    const q = search.trim().toLowerCase()
+    if (!q) return true
+    return (d.business_name || '').toLowerCase().includes(q)
+  })
+
   return (
     <div className="admin-page admin-page-wide">
       <header className="admin-page-head admin-page-head-row">
@@ -51,15 +58,27 @@ export default function ResponseExamplesPage() {
 
       {error && <div className="admin-error">{error}</div>}
 
+      {demos.length > 0 && (
+        <input
+          className="clients-search"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search by business name…"
+          style={{ marginBottom: '1rem' }}
+        />
+      )}
+
       {loading ? (
         <p className="admin-loading">Loading…</p>
       ) : demos.length === 0 ? (
         <div className="admin-empty">
           No response examples yet. Click &quot;+ New Example Set&quot; to build one for a prospect.
         </div>
+      ) : filteredDemos.length === 0 ? (
+        <div className="admin-empty">No response examples match &quot;{search}&quot;.</div>
       ) : (
         <div className="demo-list">
-          {demos.map((d) => (
+          {filteredDemos.map((d) => (
             <div className="response-demo-card" key={d.id}>
               <div className="demo-card-main">
                 <div className="demo-card-name">{d.business_name}</div>
