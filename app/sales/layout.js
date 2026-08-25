@@ -92,12 +92,15 @@ export default function SalesLayout({ children }) {
         </nav>
 
         <div className="admin-sidebar-footer">
-          <div style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.4)', marginBottom: '0.6rem', lineHeight: 1.6 }}>
+          <div className="sidebar-help-block" style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.4)', marginBottom: '0.6rem', lineHeight: 1.6 }}>
             <div style={{ fontWeight: 700, color: 'rgba(255,255,255,0.6)', marginBottom: '0.2rem' }}>Need help?</div>
             <div>Jacob Merkley</div>
             <a href="mailto:jacob@respondpal.ai" style={{ color: 'rgba(255,255,255,0.55)' }}>jacob@respondpal.ai</a>
             <div><a href="tel:4805006642" style={{ color: 'rgba(255,255,255,0.55)' }}>480-500-6642</a></div>
           </div>
+          <a href="tel:4805006642" className="sidebar-help-compact admin-sidebar-link" aria-label="Call Jacob for help">
+            📞 Help
+          </a>
           <a href="/" className="admin-sidebar-link" target="_blank" rel="noreferrer">
             View site ↗
           </a>
