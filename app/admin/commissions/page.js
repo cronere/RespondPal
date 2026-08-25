@@ -25,6 +25,7 @@ export default function CommissionEvents() {
   const [resolving, setResolving] = useState(null)
   const [resolveForm, setResolveForm] = useState({ sales_rep_id: '', client_id: '' })
   const [editing, setEditing] = useState(null)
+  const [resolvingChargeback, setResolvingChargeback] = useState(null)
   const [editForm, setEditForm] = useState({ commission_amount_cents: '', adjustment_note: '' })
   const [showAdjustment, setShowAdjustment] = useState(false)
   const [adjustmentForm, setAdjustmentForm] = useState({ sales_rep_id: '', client_id: '', amount_dollars: '', effective_date: '', note: '' })
@@ -212,6 +213,23 @@ export default function CommissionEvents() {
     } catch {
       setError('Something went wrong.')
     }
+  }
+
+  const resolveChargeback = async (eventId) => {
+    if (!confirm('Apply the correct clawback treatment for this chargeback? If the original payment was already paid out, this creates a deduction against a future payout instead of touching the paid record.')) return
+    setResolvingChargeback(eventId)
+    try {
+      const res = await fetch(`/api/admin/commission-events/${eventId}/resolve-chargeback`, { method: 'POST' })
+      const data = await res.json()
+      if (res.ok) {
+        load()
+      } else {
+        setError(data.error || 'Failed to resolve chargeback.')
+      }
+    } catch {
+      setError('Something went wrong.')
+    }
+    setResolvingChargeback(null)
   }
 
   const submitAdjustment = async () => {
@@ -466,6 +484,11 @@ export default function CommissionEvents() {
                   )}
                   {e.event_type !== 'chargeback' && editing !== e.id && (
                     <button className="rev-mini-btn" onClick={() => openEdit(e)}>Correct Amount</button>
+                  )}
+                  {e.event_type === 'chargeback' && e.status === 'needs_review' && (
+                    <button className="rev-ai-btn" onClick={() => resolveChargeback(e.id)} disabled={resolvingChargeback === e.id}>
+                      {resolvingChargeback === e.id ? 'Resolving…' : 'Resolve Chargeback'}
+                    </button>
                   )}
                   {e.disputed && (
                     <button className="rev-mini-btn" onClick={() => resolveDispute(e.id)}>Mark Dispute Resolved</button>
