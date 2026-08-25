@@ -226,17 +226,24 @@ export default function MyCommissions() {
                 Your Clients
               </h2>
               <p style={{ fontSize: '0.82rem', color: '#6b7280', marginBottom: '0.9rem' }}>
-                What each client you&apos;ve brought in has generated so far, and what they&apos;re
-                currently worth to you per month going forward. Residual naturally decreases as a
-                client ages into later commission tiers — that&apos;s the structure working as
-                intended, not a mistake.
+                What each client you&apos;ve brought in has generated so far, what they&apos;re
+                currently worth to you per month going forward, and roughly how they&apos;re doing.
+                Residual naturally decreases as a client ages into later commission tiers —
+                that&apos;s the structure working as intended, not a mistake.
               </p>
               <div className="demo-list">
                 {clientValues.map((c) => (
                   <div key={c.client_id} className="response-demo-card" style={{ cursor: 'default' }}>
                     <div>
                       <div className="demo-card-name">{c.business_name}</div>
-                      <div className="demo-card-meta" style={{ textTransform: 'capitalize' }}>{c.status}</div>
+                      <div className="demo-card-meta">
+                        <span style={{
+                          color: c.health?.tone === 'green' ? '#15803d' : c.health?.tone === 'yellow' ? '#92400E' : '#b23b30',
+                          fontWeight: 600,
+                        }}>
+                          {c.health?.label || c.status}
+                        </span>
+                      </div>
                     </div>
                     <div style={{ textAlign: 'right' }}>
                       <div style={{ fontSize: '0.78rem', color: '#6b7280' }}>Lifetime: {formatMoney(c.lifetime_cents)}</div>
