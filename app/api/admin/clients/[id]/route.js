@@ -12,6 +12,7 @@ const EDITABLE_FIELDS = [
   'monthly_rate',
   'status',
   'industry',
+  'state',
   'locations',
   'google_profile_email',
   'yelp_url',
