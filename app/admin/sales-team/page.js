@@ -135,27 +135,47 @@ export default function SalesTeam() {
       ) : (
         <>
         <p style={{ fontSize: '0.8rem', color: '#6b7280', marginBottom: '0.75rem' }}>Click a rep to see their leads.</p>
-        <div className="demo-list">
-          {reps.map((r) => (
-            <div className="response-demo-card" key={r.id} onClick={() => viewRepLeads(r)} style={{ cursor: 'pointer' }}>
-              <div>
-                <div className="demo-card-name">{r.name}</div>
-                <div className="demo-card-meta">{r.email} · added {new Date(r.created_at).toLocaleDateString()}</div>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                <div className={`demo-status ${r.active ? 'demo-status-generated' : 'demo-status-draft'}`}>
-                  {r.active ? 'Active' : 'Archived'}
+
+        {reps.filter((r) => r.active).length === 0 ? (
+          <p className="admin-page-sub">No active reps right now.</p>
+        ) : (
+          <div className="demo-list">
+            {reps.filter((r) => r.active).map((r) => (
+              <div className="response-demo-card" key={r.id} onClick={() => viewRepLeads(r)} style={{ cursor: 'pointer' }}>
+                <div>
+                  <div className="demo-card-name">{r.name}</div>
+                  <div className="demo-card-meta">{r.email} · added {new Date(r.created_at).toLocaleDateString()}</div>
                 </div>
-                <button
-                  className="rev-mini-btn"
-                  onClick={(e) => toggleActive(r, e)}
-                >
-                  {r.active ? 'Archive' : 'Reactivate'}
-                </button>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                  <div className="demo-status demo-status-generated">Active</div>
+                  <button className="rev-mini-btn" onClick={(e) => toggleActive(r, e)}>Archive</button>
+                </div>
               </div>
+            ))}
+          </div>
+        )}
+
+        {reps.filter((r) => !r.active).length > 0 && (
+          <details style={{ marginTop: '1.5rem' }}>
+            <summary style={{ fontSize: '0.85rem', fontWeight: 700, color: '#6b7280', cursor: 'pointer' }}>
+              Archived ({reps.filter((r) => !r.active).length})
+            </summary>
+            <div className="demo-list" style={{ marginTop: '0.75rem' }}>
+              {reps.filter((r) => !r.active).map((r) => (
+                <div className="response-demo-card" key={r.id} onClick={() => viewRepLeads(r)} style={{ cursor: 'pointer' }}>
+                  <div>
+                    <div className="demo-card-name">{r.name}</div>
+                    <div className="demo-card-meta">{r.email} · added {new Date(r.created_at).toLocaleDateString()}</div>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                    <div className="demo-status demo-status-draft">Archived</div>
+                    <button className="rev-mini-btn" onClick={(e) => toggleActive(r, e)}>Reactivate</button>
+                  </div>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
+          </details>
+        )}
         </>
       )}
 
