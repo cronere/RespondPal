@@ -36,7 +36,7 @@ export async function POST(req) {
       sales_rep,
     } = body
 
-    if (!owner_name || !business_name || !email || !google_profile_email) {
+    if (!owner_name || !business_name || !email || !google_profile_email || !state) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
 
