@@ -34,10 +34,14 @@ export async function POST(req) {
       business_tagline,
       additional_notes,
       sales_rep,
+      agreed_to_terms,
     } = body
 
     if (!owner_name || !business_name || !email || !google_profile_email || !state) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
+    }
+    if (!agreed_to_terms) {
+      return NextResponse.json({ error: 'You must agree to the Terms of Service to continue.' }, { status: 400 })
     }
 
     // ── 0. Check for a possible duplicate before inserting ────────
@@ -78,6 +82,7 @@ export async function POST(req) {
         notes: additional_notes,
         rep_name: sales_rep,
         status: 'onboarding',
+        agreed_to_terms_at: new Date().toISOString(),
       })
       .select()
       .single()
