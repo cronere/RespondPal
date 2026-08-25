@@ -30,6 +30,25 @@ export async function POST(req) {
     const dateForPeriod = effective_date ? new Date(effective_date) : new Date()
     const payoutPeriod = getPayoutPeriod(dateForPeriod.toISOString())
 
+    // Locking check: reject an adjustment landing in an already-approved
+    // or already-paid period for this rep — same rule as Correct Amount.
+    // The error message tells Jacob exactly what to do differently rather
+    // than just failing silently on a date he might not have thought
+    // twice about.
+    const { data: existingPeriod } = await supabaseAdmin
+      .from('payout_periods')
+      .select('status')
+      .eq('period_start', payoutPeriod.payout_period_start)
+      .eq('sales_rep_id', sales_rep_id)
+      .single()
+
+    if (existingPeriod?.status === 'paid') {
+      return NextResponse.json({ error: `The period this date falls into (${payoutPeriod.payout_period_start} to ${payoutPeriod.payout_period_end}) has already been paid and is locked permanently. Choose a date in a different, unlocked period instead.` }, { status: 400 })
+    }
+    if (existingPeriod?.status === 'approved') {
+      return NextResponse.json({ error: `The period this date falls into (${payoutPeriod.payout_period_start} to ${payoutPeriod.payout_period_end}) is approved and locked. Unlock it from the Payout Periods tab first, or choose a date in a different period.` }, { status: 400 })
+    }
+
     // Adjustments have no underlying Stripe payment to apply a rate to —
     // the amount entered IS the commission, at 100%, with no tenure month
     // (that concept doesn't apply to a manual line item).
