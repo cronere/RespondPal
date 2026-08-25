@@ -137,8 +137,10 @@ export default function SalesLeads() {
 
   const filteredClients = (() => {
     const q = searchQuery.trim().toLowerCase()
-    if (!q) return clients
-    return clients.filter((c) =>
+    let result = clients
+    if (stateFilter) result = result.filter((c) => c.state === stateFilter)
+    if (!q) return result
+    return result.filter((c) =>
       (c.business_name || '').toLowerCase().includes(q) ||
       (c.industry || '').toLowerCase().includes(q) ||
       (c.owner_name || '').toLowerCase().includes(q) ||
@@ -329,7 +331,7 @@ export default function SalesLeads() {
               border: '1px solid #d1d5db', fontSize: '0.88rem',
             }}
           />
-          {(tab === 'mine' || tab === 'open') && (
+          {['mine', 'open', 'clients'].includes(tab) && (
             <select
               value={stateFilter}
               onChange={(e) => setStateFilter(e.target.value)}
