@@ -40,6 +40,7 @@ export default function SalesTeam() {
   const [newRep, setNewRep] = useState({ name: '', email: '', password: generateTempPassword() })
   const [syncing, setSyncing] = useState(false)
   const [syncResult, setSyncResult] = useState(null)
+  const [regenerating, setRegenerating] = useState(false)
   const [justCreated, setJustCreated] = useState(null)
   const [selectedRep, setSelectedRep] = useState(null)
   const [repLeads, setRepLeads] = useState([])
@@ -295,8 +296,33 @@ export default function SalesTeam() {
             </div>
             <div className="drawer-body">
               <div style={{ marginBottom: '1.5rem', paddingBottom: '1.25rem', borderBottom: '1px solid #e5e7eb' }}>
-                <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#6b7280', textTransform: 'uppercase', marginBottom: '0.6rem' }}>
-                  Stripe Payment Links
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.6rem' }}>
+                  <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#6b7280', textTransform: 'uppercase' }}>
+                    Stripe Payment Links
+                  </div>
+                  <button
+                    className="rev-mini-btn"
+                    disabled={regenerating}
+                    onClick={async () => {
+                      if (!confirm(`Regenerate ${selectedRep.name}'s payment links? Their current links will stop being valid — only do this if they haven't been actively shared, or if you know the current ones are wrong (e.g. created in test mode).`)) return
+                      setRegenerating(true)
+                      try {
+                        const res = await fetch(`/api/admin/sales-reps/${selectedRep.id}/regenerate-links`, { method: 'POST' })
+                        const data = await res.json()
+                        if (res.ok) {
+                          setSelectedRep((prev) => ({ ...prev, stripe_payment_links: data.links }))
+                          load()
+                        } else {
+                          alert(data.error || 'Failed to regenerate links.')
+                        }
+                      } catch {
+                        alert('Something went wrong.')
+                      }
+                      setRegenerating(false)
+                    }}
+                  >
+                    {regenerating ? 'Regenerating…' : '↻ Regenerate'}
+                  </button>
                 </div>
                 {!selectedRep.stripe_payment_links || Object.keys(selectedRep.stripe_payment_links).length === 0 ? (
                   <p style={{ fontSize: '0.82rem', color: '#9ca3af' }}>
