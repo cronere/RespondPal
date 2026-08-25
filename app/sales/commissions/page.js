@@ -16,6 +16,7 @@ export default function MyCommissions() {
   const [lifetimeTotal, setLifetimeTotal] = useState(0)
   const [ytdTotal, setYtdTotal] = useState(0)
   const [totalResidual, setTotalResidual] = useState(0)
+  const [totalNextMonthResidual, setTotalNextMonthResidual] = useState(0)
   const [clientValues, setClientValues] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -32,6 +33,7 @@ export default function MyCommissions() {
           setLifetimeTotal(d.lifetime_total_cents || 0)
           setYtdTotal(d.ytd_total_cents || 0)
           setTotalResidual(d.total_monthly_residual_cents || 0)
+          setTotalNextMonthResidual(d.total_next_month_residual_cents || 0)
           setClientValues(d.client_values || [])
         } else {
           setError(d.error || 'Failed to load.')
@@ -115,6 +117,11 @@ export default function MyCommissions() {
         <div style={{ background: 'white', border: '1px solid #e5e7eb', borderRadius: 10, padding: '1rem 1.25rem', minWidth: 150 }}>
           <div style={{ fontSize: '0.78rem', color: '#C2410C', fontWeight: 700, textTransform: 'uppercase' }}>Monthly Residual</div>
           <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#1a1a1a' }}>{formatMoney(totalResidual)}</div>
+          {totalNextMonthResidual !== totalResidual && (
+            <div style={{ fontSize: '0.72rem', color: '#92400E', marginTop: '0.15rem' }}>
+              → {formatMoney(totalNextMonthResidual)} next month
+            </div>
+          )}
         </div>
       </div>
 
@@ -188,6 +195,11 @@ export default function MyCommissions() {
                             🚩 Disputed — pending Jacob&apos;s review: {e.dispute_note}
                           </div>
                         )}
+                        {e.adjusted && e.adjustment_note && (
+                          <div style={{ fontSize: '0.78rem', color: '#92400E', marginTop: '0.3rem' }}>
+                            ℹ️ This amount was adjusted: {e.adjustment_note}
+                          </div>
+                        )}
                         {disputing === e.id && (
                           <div style={{ marginTop: '0.5rem', display: 'flex', gap: '0.5rem', alignItems: 'flex-end' }}>
                             <input
@@ -231,6 +243,11 @@ export default function MyCommissions() {
                       <div style={{ fontWeight: 700, color: c.monthly_residual_cents > 0 ? '#15803d' : '#9ca3af' }}>
                         {formatMoney(c.monthly_residual_cents)}/mo
                       </div>
+                      {c.next_month_residual_cents !== c.monthly_residual_cents && (
+                        <div style={{ fontSize: '0.72rem', color: '#92400E' }}>
+                          → {formatMoney(c.next_month_residual_cents)} next month
+                        </div>
+                      )}
                     </div>
                   </div>
                 ))}
