@@ -25,6 +25,7 @@ export async function POST(req) {
       phone,
       industry,
       locations,
+      state,
       google_profile_email,
       yelp_url,
       response_signer,
@@ -48,6 +49,7 @@ export async function POST(req) {
         email,
         phone,
         industry,
+        state,
         locations: parseInt(locations) || 1,
         google_profile_email,
         yelp_url,
@@ -98,6 +100,7 @@ export async function POST(req) {
               <tr><td style="padding: 0.6rem 0; border-bottom: 1px solid #eef1f5; color: #6b7280; font-size:0.85rem;">Phone</td><td style="padding: 0.6rem 0; border-bottom: 1px solid #eef1f5; color: #1a1a1a;">${phone || 'Not provided'}</td></tr>
               <tr><td style="padding: 0.6rem 0; border-bottom: 1px solid #eef1f5; color: #6b7280; font-size:0.85rem;">Industry</td><td style="padding: 0.6rem 0; border-bottom: 1px solid #eef1f5; color: #1a1a1a;">${industry}</td></tr>
               <tr><td style="padding: 0.6rem 0; border-bottom: 1px solid #eef1f5; color: #6b7280; font-size:0.85rem;">Locations</td><td style="padding: 0.6rem 0; border-bottom: 1px solid #eef1f5; color: #1a1a1a;">${locations}</td></tr>
+              <tr><td style="padding: 0.6rem 0; border-bottom: 1px solid #eef1f5; color: #6b7280; font-size:0.85rem;">State</td><td style="padding: 0.6rem 0; border-bottom: 1px solid #eef1f5; color: #1a1a1a;">${state || 'Not provided'}</td></tr>
               <tr><td style="padding: 0.6rem 0; border-bottom: 1px solid #eef1f5; color: #6b7280; font-size:0.85rem;">GBP Email</td><td style="padding: 0.6rem 0; border-bottom: 1px solid #eef1f5; color: #1a1a1a;">${google_profile_email}</td></tr>
               <tr><td style="padding: 0.6rem 0; border-bottom: 1px solid #eef1f5; color: #6b7280; font-size:0.85rem;">Yelp URL</td><td style="padding: 0.6rem 0; border-bottom: 1px solid #eef1f5; color: #1a1a1a;">${yelp_url || 'Not provided'}</td></tr>
               <tr><td style="padding: 0.6rem 0; border-bottom: 1px solid #eef1f5; color: #6b7280; font-size:0.85rem;">Signs responses as</td><td style="padding: 0.6rem 0; border-bottom: 1px solid #eef1f5; color: #1a1a1a;">${response_signer || 'Not specified'}</td></tr>
