@@ -44,6 +44,9 @@ export default function LeadDetail() {
   const { id } = useParams()
   const router = useRouter()
   const [lead, setLead] = useState(null)
+  const [linkedClient, setLinkedClient] = useState(null)
+  const [linkedAudit, setLinkedAudit] = useState(null)
+  const [linkedResponseDemo, setLinkedResponseDemo] = useState(null)
   const [activities, setActivities] = useState([])
   const [tasks, setTasks] = useState([])
   const [loading, setLoading] = useState(true)
@@ -69,6 +72,9 @@ export default function LeadDetail() {
       const leadData = await leadRes.json()
       if (leadRes.ok) {
         setLead(leadData.lead)
+        setLinkedClient(leadData.linkedClient || null)
+        setLinkedAudit(leadData.linkedAudit || null)
+        setLinkedResponseDemo(leadData.linkedResponseDemo || null)
       } else {
         setError(leadData.error || 'Failed to load this lead.')
       }
@@ -244,6 +250,50 @@ export default function LeadDetail() {
           {' · '}Added {formatDate(lead.created_at)}
         </p>
       </header>
+
+      {(linkedClient || linkedAudit || linkedResponseDemo) && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginBottom: '1.25rem' }}>
+          {linkedClient && (
+            <div style={{
+              background: '#F0FDF4', border: '1px solid #86EFAC', borderRadius: 8,
+              padding: '0.7rem 1rem', fontSize: '0.85rem', color: '#166534',
+            }}>
+              🎉 This lead is now a client — <b style={{ textTransform: 'capitalize' }}>{linkedClient.status}</b>
+              {linkedClient.status === 'active' && linkedClient.live_date && (
+                <span> · live since {new Date(linkedClient.live_date).toLocaleDateString()}</span>
+              )}
+            </div>
+          )}
+          {linkedAudit && (
+            <div style={{
+              background: '#FFF7ED', border: '1px solid #FDBA74', borderRadius: 8,
+              padding: '0.7rem 1rem', fontSize: '0.85rem', color: '#9A3412',
+              display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+            }}>
+              <span>📋 Reputation Risk Audit requested for this lead</span>
+              {(linkedAudit.status === 'delivered' || linkedAudit.status === 'converted') ? (
+                <a href={`/sales/audit-deliveries/${linkedAudit.id}/report`} target="_blank" rel="noreferrer" style={{ color: '#C2410C', fontWeight: 700 }}>
+                  View Report →
+                </a>
+              ) : (
+                <span style={{ color: '#9ca3af' }}>Not ready yet</span>
+              )}
+            </div>
+          )}
+          {linkedResponseDemo && (
+            <div style={{
+              background: '#FFF7ED', border: '1px solid #FDBA74', borderRadius: 8,
+              padding: '0.7rem 1rem', fontSize: '0.85rem', color: '#9A3412',
+              display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+            }}>
+              <span>📝 Response Examples PDF created for this lead</span>
+              <a href={`/sales/response-examples/${linkedResponseDemo.id}`} target="_blank" rel="noreferrer" style={{ color: '#C2410C', fontWeight: 700 }}>
+                View →
+              </a>
+            </div>
+          )}
+        </div>
+      )}
 
       {error && <div className="admin-error">{error}</div>}
       {saved && (
