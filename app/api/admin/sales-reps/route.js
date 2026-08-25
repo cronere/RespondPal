@@ -21,6 +21,16 @@ function escapeHtml(str) {
 // rather than two that could quietly drift apart. Tolerates missing
 // Stripe config entirely — returns an empty object rather than throwing,
 // same tolerance as everywhere else this pattern is used.
+//
+// Also enables automatic tax and, on the subscription tiers only, offers
+// the $197 Cleanup as an optional add-on at checkout — matching the
+// original hand-built link's behavior, which the API-generated links
+// never replicated. Deliberately only the $197 cleanup-only, not the
+// $297 combined Audit + Cleanup: a rep-sourced client has almost always
+// already gotten their audit for free as part of the sales process, so
+// the combined option would just be a redundant, confusing choice for
+// them. The cleanup tier's own link doesn't get this upsell added to
+// itself — offering "add cleanup" on the cleanup link would be circular.
 export async function generateRepPaymentLinks(stripe, repId, repName) {
   const links = {}
   for (const [tier, priceId] of Object.entries(TIER_PRICE_IDS)) {
@@ -28,11 +38,16 @@ export async function generateRepPaymentLinks(stripe, repId, repName) {
       console.warn(`Skipping Stripe link for tier "${tier}" — price ID not set.`)
       continue
     }
-    const link = await stripe.paymentLinks.create({
+    const linkParams = {
       line_items: [{ price: priceId, quantity: 1 }],
       metadata: { sales_rep_id: repId, sales_rep_name: repName },
       consent_collection: { terms_of_service: 'required' },
-    })
+      automatic_tax: { enabled: true },
+    }
+    if (tier !== 'cleanup' && TIER_PRICE_IDS.cleanup) {
+      linkParams.optional_items = [{ price: TIER_PRICE_IDS.cleanup, quantity: 1 }]
+    }
+    const link = await stripe.paymentLinks.create(linkParams)
     links[tier] = link.url
   }
   return links
