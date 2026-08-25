@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { supabaseAdmin } from '../../../../lib/supabaseAdmin'
 import { calculateAndRecordCommission } from '../../../../lib/commissions'
+import { alertJacob } from '../../../../lib/alerts'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
@@ -112,6 +113,10 @@ export async function PATCH(req, { params }) {
       const result = await calculateAndRecordCommission(supabaseAdmin, data.id)
       if (result.error) {
         console.error('Commission calculation failed after manual resolve:', result.error)
+        await alertJacob(
+          'Commission calculation failed after manual resolve',
+          `You just resolved commission event ${data.id}, but calculating its commission still failed.\n\nError: ${result.error}\n\nThe event is marked reviewed but has no commission amount — check it on the Commission Events page.`
+        )
       } else {
         // Re-fetch so the response reflects the calculated values
         // immediately, rather than the admin UI needing a separate reload
