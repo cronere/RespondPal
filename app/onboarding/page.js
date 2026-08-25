@@ -4,6 +4,13 @@ import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Image from 'next/image'
 
+const US_STATES = [
+  'AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA', 'HI', 'ID', 'IL',
+  'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD', 'MA', 'MI', 'MN', 'MS', 'MO', 'MT',
+  'NE', 'NV', 'NH', 'NJ', 'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI',
+  'SC', 'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY',
+]
+
 function OnboardingForm() {
   const searchParams = useSearchParams()
   const repFromLink = searchParams.get('rep')
@@ -18,6 +25,7 @@ function OnboardingForm() {
     phone: '',
     industry: '',
     locations: '1',
+    state: '',
     // Step 2 - Platform info
     google_profile_email: '',
     yelp_url: '',
@@ -221,6 +229,15 @@ function OnboardingForm() {
                     <option value="2">2 locations</option>
                     <option value="3">3 locations</option>
                     <option value="4">4+ locations</option>
+                  </select>
+                </div>
+              </div>
+              <div className="ob-row">
+                <div className="ob-group">
+                  <label>State</label>
+                  <select name="state" value={form.state} onChange={handleChange}>
+                    <option value="">Select your state</option>
+                    {US_STATES.map((s) => <option key={s} value={s}>{s}</option>)}
                   </select>
                 </div>
               </div>
