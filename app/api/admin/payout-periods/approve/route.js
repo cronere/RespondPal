@@ -73,7 +73,7 @@ export async function POST(req) {
               <p>Hi ${rep.name?.split(' ')[0] || ''},</p>
               <p>Your payout for <b>${period_start} to ${period_end}</b> has been reviewed and approved —
               <b>$${(totalCents / 100).toFixed(2)}</b> total, scheduled to be paid <b>${payout_date}</b>.</p>
-              <p>You can see the full breakdown anytime in Sales HQ under <b>My Commissions</b>.</p>
+              <p>See the full breakdown anytime: <a href="https://www.respondpal.ai/sales/commissions" style="color:#C2410C;font-weight:600;">My Commissions →</a></p>
               <p>— Jacob</p>
             </div>
           `,
