@@ -17,6 +17,7 @@ export default function AdminAudits() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [tab, setTab] = useState('needs_work')
+  const [search, setSearch] = useState('')
   const [adding, setAdding] = useState(false)
   const [selected, setSelected] = useState(null)
 
@@ -44,7 +45,16 @@ export default function AdminAudits() {
     return ['new', 'awaiting_input', 'analyzing'].includes(a.status)
   }
 
-  const filtered = audits.filter(matchesTab)
+  const filtered = audits.filter(matchesTab).filter((a) => {
+    const q = search.trim().toLowerCase()
+    if (!q) return true
+    return (
+      (a.business_name || '').toLowerCase().includes(q) ||
+      (a.contact_name || '').toLowerCase().includes(q) ||
+      (a.contact_email || '').toLowerCase().includes(q) ||
+      (a.industry || '').toLowerCase().includes(q)
+    )
+  })
 
   const counts = {
     needs_work: audits.filter((a) => ['new', 'awaiting_input', 'analyzing'].includes(a.status)).length,
@@ -76,6 +86,14 @@ export default function AdminAudits() {
           <button className="rev-add-btn" onClick={() => setAdding(true)}>+ Add lead</button>
         </div>
       </header>
+
+      <input
+        className="clients-search"
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        placeholder="Search by business, contact, email, or industry…"
+        style={{ marginBottom: '1rem' }}
+      />
 
       <div className="clients-filters rev-tabs">
         {STATUS_TABS.map((t) => (
