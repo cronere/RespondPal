@@ -14,6 +14,30 @@ function escapeHtml(str) {
   return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
 }
 
+// Generates a fresh set of Stripe payment links for a rep — one per
+// pricing tier, each with sales_rep_id embedded in metadata and terms-of-
+// service consent required at checkout. Used both at rep creation and by
+// the regenerate endpoint, so there's exactly one code path for this
+// rather than two that could quietly drift apart. Tolerates missing
+// Stripe config entirely — returns an empty object rather than throwing,
+// same tolerance as everywhere else this pattern is used.
+export async function generateRepPaymentLinks(stripe, repId, repName) {
+  const links = {}
+  for (const [tier, priceId] of Object.entries(TIER_PRICE_IDS)) {
+    if (!priceId) {
+      console.warn(`Skipping Stripe link for tier "${tier}" — price ID not set.`)
+      continue
+    }
+    const link = await stripe.paymentLinks.create({
+      line_items: [{ price: priceId, quantity: 1 }],
+      metadata: { sales_rep_id: repId, sales_rep_name: repName },
+      consent_collection: { terms_of_service: 'required' },
+    })
+    links[tier] = link.url
+  }
+  return links
+}
+
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
@@ -89,26 +113,7 @@ export async function POST(req) {
       if (!stripe) {
         console.warn('Skipping Stripe link generation — STRIPE_SECRET_KEY not set.')
       } else {
-        const links = {}
-        for (const [tier, priceId] of Object.entries(TIER_PRICE_IDS)) {
-          if (!priceId) {
-            console.warn(`Skipping Stripe link for tier "${tier}" — price ID not set.`)
-            continue
-          }
-          const link = await stripe.paymentLinks.create({
-            line_items: [{ price: priceId, quantity: 1 }],
-            metadata: { sales_rep_id: data.id, sales_rep_name: data.name },
-            // Requires the client to check a box agreeing to the Terms of
-            // Service before completing checkout — the actual fix for
-            // clients previously being able to pay with zero exposure to
-            // any terms at all. Stripe links this to whatever Terms of
-            // Service URL is set under Settings > Business > Public
-            // details in the Stripe Dashboard — that has to be set there
-            // directly, it can't be configured through this API call.
-            consent_collection: { terms_of_service: 'required' },
-          })
-          links[tier] = link.url
-        }
+        const links = await generateRepPaymentLinks(stripe, data.id, data.name)
         if (Object.keys(links).length > 0) {
           await supabaseAdmin
             .from('sales_reps')
