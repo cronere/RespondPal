@@ -33,6 +33,7 @@ export default function SalesLeads() {
   const [newTask, setNewTask] = useState({ lead_id: '', title: '', due_date: '' })
   const [addingTask, setAddingTask] = useState(false)
   const [tasksDue, setTasksDue] = useState(0)
+  const [searchQuery, setSearchQuery] = useState('')
 
   const loadCounts = async () => {
     try {
@@ -98,6 +99,18 @@ export default function SalesLeads() {
     if (tab === 'clients' && clients.length === 0) loadClients()
     if (tab === 'tasks' && tasks.length === 0) loadTasks()
   }, [tab])
+
+  const filteredLeads = (() => {
+    const q = searchQuery.trim().toLowerCase()
+    if (!q) return leads
+    return leads.filter((l) =>
+      (l.business_name || '').toLowerCase().includes(q) ||
+      (l.contact_name || '').toLowerCase().includes(q) ||
+      (l.industry || '').toLowerCase().includes(q) ||
+      (l.contact_phone || '').toLowerCase().includes(q) ||
+      (l.contact_email || '').toLowerCase().includes(q)
+    )
+  })()
 
   const addTask = async () => {
     if (!newTask.lead_id || !newTask.title.trim() || addingTask) return
@@ -232,7 +245,7 @@ export default function SalesLeads() {
         )}
       </header>
 
-      <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.25rem', borderBottom: '1px solid #e5e7eb' }}>
+      <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.25rem', borderBottom: '1px solid #e5e7eb', overflowX: 'auto' }}>
         {[
           { key: 'mine', label: 'My Leads' },
           { key: 'open', label: 'Open Leads' },
@@ -266,14 +279,28 @@ export default function SalesLeads() {
 
       {error && <div className="admin-error">{error}</div>}
 
+      {tab === 'mine' && leads.length > 0 && (
+        <input
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="Search by business, contact, industry, phone, or email…"
+          style={{
+            width: '100%', maxWidth: 420, padding: '0.6rem 0.9rem', borderRadius: 8,
+            border: '1px solid #d1d5db', fontSize: '0.88rem', marginBottom: '1rem',
+          }}
+        />
+      )}
+
       {tab === 'mine' && (
         loading ? (
           <p className="admin-page-sub">Loading…</p>
         ) : leads.length === 0 ? (
           <p className="admin-page-sub">No leads yet. Add your first one above.</p>
+        ) : filteredLeads.length === 0 ? (
+          <p className="admin-page-sub">No leads match &quot;{searchQuery}&quot;.</p>
         ) : (
           <div className="demo-list">
-            {leads.map((l) => (
+            {filteredLeads.map((l) => (
               <div className="response-demo-card" key={l.id} style={{ flexDirection: 'column', alignItems: 'stretch', gap: '0.5rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                   <div>
