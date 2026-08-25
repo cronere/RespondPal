@@ -120,6 +120,7 @@ export async function POST(req) {
         contact_email: (body.contact_email || '').trim() || null,
         contact_phone: (body.contact_phone || '').trim() || null,
         industry: (body.industry || '').trim() || null,
+        state: (body.state || '').trim() || null,
         google_url: googleUrl,
         yelp_url: yelpUrl,
         notes: (body.notes || '').trim() || null,
