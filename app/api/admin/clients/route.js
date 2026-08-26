@@ -53,6 +53,7 @@ export async function POST(req) {
         google_access: false,
         yelp_access: false,
         google_profile_email: body.google_profile_email || null,
+        google_url: body.google_url || null,
         yelp_url: body.yelp_url || null,
         response_tone: body.response_tone || 'professional_friendly',
         response_signer: body.response_signer || null,
