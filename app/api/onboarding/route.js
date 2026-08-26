@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import nodemailer from 'nodemailer'
 import { createClient } from '@supabase/supabase-js'
+import { alertJacob } from '../../lib/alerts'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -27,6 +28,7 @@ export async function POST(req) {
       locations,
       state,
       google_profile_email,
+      google_url,
       yelp_url,
       response_signer,
       response_tone,
@@ -74,6 +76,7 @@ export async function POST(req) {
         state,
         locations: parseInt(locations) || 1,
         google_profile_email,
+        google_url,
         yelp_url,
         response_signer,
         response_tone,
@@ -177,6 +180,7 @@ export async function POST(req) {
               <tr><td style="padding: 0.6rem 0; border-bottom: 1px solid #eef1f5; color: #6b7280; font-size:0.85rem;">Locations</td><td style="padding: 0.6rem 0; border-bottom: 1px solid #eef1f5; color: #1a1a1a;">${locations}</td></tr>
               <tr><td style="padding: 0.6rem 0; border-bottom: 1px solid #eef1f5; color: #6b7280; font-size:0.85rem;">State</td><td style="padding: 0.6rem 0; border-bottom: 1px solid #eef1f5; color: #1a1a1a;">${state || 'Not provided'}</td></tr>
               <tr><td style="padding: 0.6rem 0; border-bottom: 1px solid #eef1f5; color: #6b7280; font-size:0.85rem;">GBP Email</td><td style="padding: 0.6rem 0; border-bottom: 1px solid #eef1f5; color: #1a1a1a;">${google_profile_email}</td></tr>
+              <tr><td style="padding: 0.6rem 0; border-bottom: 1px solid #eef1f5; color: #6b7280; font-size:0.85rem;">Google URL</td><td style="padding: 0.6rem 0; border-bottom: 1px solid #eef1f5; color: #1a1a1a;">${google_url || 'Not provided'}</td></tr>
               <tr><td style="padding: 0.6rem 0; border-bottom: 1px solid #eef1f5; color: #6b7280; font-size:0.85rem;">Yelp URL</td><td style="padding: 0.6rem 0; border-bottom: 1px solid #eef1f5; color: #1a1a1a;">${yelp_url || 'Not provided'}</td></tr>
               <tr><td style="padding: 0.6rem 0; border-bottom: 1px solid #eef1f5; color: #6b7280; font-size:0.85rem;">Signs responses as</td><td style="padding: 0.6rem 0; border-bottom: 1px solid #eef1f5; color: #1a1a1a;">${response_signer || 'Not specified'}</td></tr>
               <tr><td style="padding: 0.6rem 0; border-bottom: 1px solid #eef1f5; color: #6b7280; font-size:0.85rem;">Tone</td><td style="padding: 0.6rem 0; border-bottom: 1px solid #eef1f5; color: #1a1a1a;">${response_tone}</td></tr>
@@ -194,63 +198,82 @@ export async function POST(req) {
     })
 
     // ── 3. Confirmation email to client ──────────────────────────
-    await transporter.sendMail({
-      from: `"RespondPal" <${process.env.GMAIL_USER}>`,
-      to: email,
-      subject: `${owner_name.split(' ')[0]}, your RespondPal setup is confirmed`,
-      html: `
-        <div style="font-family: Arial, Helvetica, sans-serif; max-width: 600px; margin: 0 auto; background: #ffffff; color: #4a4a4a; border: 1px solid #dde2e8; border-radius: 12px; overflow: hidden;">
+    // Deliberately isolated from the rest of this handler. Everything
+    // that actually matters — the database record, lead-linking — has
+    // already happened by this point. If the client typed a malformed or
+    // unreachable email address, sending fails here, but that should
+    // never make an otherwise-successful submission look like it failed
+    // to the person filling out the form — that's exactly what caused a
+    // real duplicate client record during testing: the DB insert
+    // succeeded, this step threw, the whole request came back as an
+    // error, and resubmitting created a second row. Any real failure
+    // here still reaches Jacob — through the alert system instead of
+    // silently failing the request.
+    try {
+      await transporter.sendMail({
+        from: `"RespondPal" <${process.env.GMAIL_USER}>`,
+        to: email,
+        subject: `${owner_name.split(' ')[0]}, your RespondPal setup is confirmed`,
+        html: `
+          <div style="font-family: Arial, Helvetica, sans-serif; max-width: 600px; margin: 0 auto; background: #ffffff; color: #4a4a4a; border: 1px solid #dde2e8; border-radius: 12px; overflow: hidden;">
 
-          <div style="background: #1e2a44; padding: 1.75rem 2rem;">
-            <div style="font-size: 1.4rem; font-weight: 800; color: #ffffff; letter-spacing: 0.01em;">Respond<span style="color: #E8772E;">Pal</span></div>
-          </div>
-
-          <div style="padding: 2rem;">
-            <h2 style="color: #1e2a44; font-size: 1.4rem; margin: 0 0 1rem;">You&apos;re all set, ${owner_name.split(' ')[0]}.</h2>
-            <p style="color: #4a4a4a; line-height: 1.7; margin: 0 0 1.5rem; font-size: 0.95rem;">
-              Thanks for completing your setup — we have everything we need to start responding to your reviews. The only thing left is making sure we have access to your Google and Yelp profiles. If you haven&apos;t granted access yet (or did it with your rep on the phone), here&apos;s the reference:
-            </p>
-
-            <div style="background: #f6f7f9; border: 1px solid #dde2e8; border-left: 3px solid #4285F4; border-radius: 10px; padding: 1.5rem; margin-bottom: 1.25rem;">
-              <p style="color: #1e2a44; font-weight: 700; margin: 0 0 0.85rem; font-size: 0.95rem;">Google Business Profile</p>
-              <ol style="color: #4a4a4a; font-size: 0.875rem; line-height: 1.9; margin: 0; padding-left: 1.25rem;">
-                <li>Go to <a href="https://business.google.com" style="color: #C2410C;">business.google.com</a> and sign in</li>
-                <li>Click your business &rarr; Settings &rarr; Managers</li>
-                <li>Click Add and enter <strong style="color: #1e2a44;">team@respondpal.ai</strong></li>
-                <li>Set role to Manager and click Invite</li>
-              </ol>
+            <div style="background: #1e2a44; padding: 1.75rem 2rem;">
+              <div style="font-size: 1.4rem; font-weight: 800; color: #ffffff; letter-spacing: 0.01em;">Respond<span style="color: #E8772E;">Pal</span></div>
             </div>
 
-            <div style="background: #f6f7f9; border: 1px solid #dde2e8; border-left: 3px solid #d32323; border-radius: 10px; padding: 1.5rem; margin-bottom: 1.5rem;">
-              <p style="color: #1e2a44; font-weight: 700; margin: 0 0 0.85rem; font-size: 0.95rem;">Yelp Business</p>
-              <ol style="color: #4a4a4a; font-size: 0.875rem; line-height: 1.9; margin: 0; padding-left: 1.25rem;">
-                <li>Go to <a href="https://biz.yelp.com" style="color: #C2410C;">biz.yelp.com</a> and sign in</li>
-                <li>Click Account Settings &rarr; Team Members</li>
-                <li>Click Add Team Member and enter <strong style="color: #1e2a44;">team@respondpal.ai</strong></li>
-                <li>Set role to Manager and click Send Invitation</li>
-              </ol>
-            </div>
-
-            <p style="color: #4a4a4a; line-height: 1.7; margin: 0 0 1.5rem; font-size: 0.95rem;">
-              Once we have access, we&apos;ll get everything configured and send you a note when we&apos;re live — typically within 24 hours. After that, every new review gets a professional response within 24 hours, and you never have to think about it again.
-            </p>
-
-            <div style="background: #f6f7f9; border: 1px solid #dde2e8; border-radius: 10px; padding: 1.25rem; margin-bottom: 1.5rem;">
-              <p style="color: #6b7280; font-size: 0.8rem; line-height: 1.65; margin: 0;">
-                <strong style="color: #1e2a44;">A quick note on billing:</strong> RespondPal is billed monthly, in advance. You can cancel anytime — there&apos;s no contract. If you cancel, we keep your reviews handled through the end of the month you&apos;ve already paid for, and you simply won&apos;t be charged again. See our <a href="https://respondpal.ai/terms" style="color: #C2410C;">Terms of Service</a> for details.
+            <div style="padding: 2rem;">
+              <h2 style="color: #1e2a44; font-size: 1.4rem; margin: 0 0 1rem;">You&apos;re all set, ${owner_name.split(' ')[0]}.</h2>
+              <p style="color: #4a4a4a; line-height: 1.7; margin: 0 0 1.5rem; font-size: 0.95rem;">
+                Thanks for completing your setup — we have everything we need to start responding to your reviews. The only thing left is making sure we have access to your Google and Yelp profiles. If you haven&apos;t granted access yet (or did it with your rep on the phone), here&apos;s the reference:
               </p>
-            </div>
 
-            <div style="border-top: 1px solid #dde2e8; padding-top: 1.25rem;">
-              <p style="color: #6b7280; font-size: 0.85rem; margin: 0; line-height: 1.6;">
-                The RespondPal Team<br />
-                <a href="mailto:team@respondpal.ai" style="color: #C2410C;">team@respondpal.ai</a> &middot; <a href="https://respondpal.ai" style="color: #C2410C;">respondpal.ai</a>
+              <div style="background: #f6f7f9; border: 1px solid #dde2e8; border-left: 3px solid #4285F4; border-radius: 10px; padding: 1.5rem; margin-bottom: 1.25rem;">
+                <p style="color: #1e2a44; font-weight: 700; margin: 0 0 0.85rem; font-size: 0.95rem;">Google Business Profile</p>
+                <ol style="color: #4a4a4a; font-size: 0.875rem; line-height: 1.9; margin: 0; padding-left: 1.25rem;">
+                  <li>Go to <a href="https://business.google.com" style="color: #C2410C;">business.google.com</a> and sign in</li>
+                  <li>Click your business &rarr; Settings &rarr; Managers</li>
+                  <li>Click Add and enter <strong style="color: #1e2a44;">team@respondpal.ai</strong></li>
+                  <li>Set role to Manager and click Invite</li>
+                </ol>
+              </div>
+
+              <div style="background: #f6f7f9; border: 1px solid #dde2e8; border-left: 3px solid #d32323; border-radius: 10px; padding: 1.5rem; margin-bottom: 1.5rem;">
+                <p style="color: #1e2a44; font-weight: 700; margin: 0 0 0.85rem; font-size: 0.95rem;">Yelp Business</p>
+                <ol style="color: #4a4a4a; font-size: 0.875rem; line-height: 1.9; margin: 0; padding-left: 1.25rem;">
+                  <li>Go to <a href="https://biz.yelp.com" style="color: #C2410C;">biz.yelp.com</a> and sign in</li>
+                  <li>Click Account Settings &rarr; Team Members</li>
+                  <li>Click Add Team Member and enter <strong style="color: #1e2a44;">team@respondpal.ai</strong></li>
+                  <li>Set role to Manager and click Send Invitation</li>
+                </ol>
+              </div>
+
+              <p style="color: #4a4a4a; line-height: 1.7; margin: 0 0 1.5rem; font-size: 0.95rem;">
+                Once we have access, we&apos;ll get everything configured and send you a note when we&apos;re live — typically within 24 hours. After that, every new review gets a professional response within 24 hours, and you never have to think about it again.
               </p>
+
+              <div style="background: #f6f7f9; border: 1px solid #dde2e8; border-radius: 10px; padding: 1.25rem; margin-bottom: 1.5rem;">
+                <p style="color: #6b7280; font-size: 0.8rem; line-height: 1.65; margin: 0;">
+                  <strong style="color: #1e2a44;">A quick note on billing:</strong> RespondPal is billed monthly, in advance. You can cancel anytime — there&apos;s no contract. If you cancel, we keep your reviews handled through the end of the month you&apos;ve already paid for, and you simply won&apos;t be charged again. See our <a href="https://respondpal.ai/terms" style="color: #C2410C;">Terms of Service</a> for details.
+              </p>
+              </div>
+
+              <div style="border-top: 1px solid #dde2e8; padding-top: 1.25rem;">
+                <p style="color: #6b7280; font-size: 0.85rem; margin: 0; line-height: 1.6;">
+                  The RespondPal Team<br />
+                  <a href="mailto:team@respondpal.ai" style="color: #C2410C;">team@respondpal.ai</a> &middot; <a href="https://respondpal.ai" style="color: #C2410C;">respondpal.ai</a>
+                </p>
+              </div>
             </div>
           </div>
-        </div>
-      `,
-    })
+        `,
+      })
+    } catch (clientEmailErr) {
+      console.error('Client confirmation email failed:', clientEmailErr)
+      await alertJacob(
+        `Client confirmation email failed — ${business_name}`,
+        `The client record for "${business_name}" was saved successfully, and the internal notification above already reached you. But the confirmation email meant to go directly to the client failed to send.\n\nEmail on file: ${email}\n\nError: ${clientEmailErr.message || clientEmailErr}\n\nThis usually means the email address they entered is malformed or doesn't exist. Worth following up with them directly to confirm the right address and resend manually.`
+      )
+    }
 
     return NextResponse.json({ success: true }, { status: 200 })
 
