@@ -25,7 +25,7 @@ export async function GET(req) {
   try {
     const { data, error } = await supabase
       .from('clients')
-      .select('id, business_name, industry, state, status, phone, owner_name, rep_name, google_profile_email, yelp_url')
+      .select('id, business_name, industry, state, status, phone, owner_name, rep_name, google_profile_email, google_url, yelp_url')
       .in('status', ['active', 'onboarding', 'paused'])
       .order('business_name', { ascending: true })
 
