@@ -90,11 +90,11 @@ export default function SalesOnboarding() {
           automatically either way.
         </p>
         {rep ? (
-          <div style={{ display: 'flex', gap: '0.5rem' }}>
+          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
             <input
               value={onboardingLink}
               readOnly
-              style={{ flex: 1, padding: '0.6rem 0.8rem', borderRadius: 6, border: '1px solid #d1d5db', fontSize: '0.85rem', color: '#1a1a1a', background: 'white' }}
+              style={{ flex: '1 1 200px', minWidth: 0, padding: '0.6rem 0.8rem', borderRadius: 6, border: '1px solid #d1d5db', fontSize: '0.85rem', color: '#1a1a1a', background: 'white' }}
             />
             <button className="rev-mini-btn" onClick={() => copy(onboardingLink, 'link')}>
               {copied === 'link' ? 'Copied!' : 'Copy'}
