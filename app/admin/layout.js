@@ -22,8 +22,13 @@ export default function AdminLayout({ children }) {
   const pathname = usePathname()
   const router = useRouter()
   const [counts, setCounts] = useState({ reviews: 0, feedback: 0, audits: 0, disputes: 0 })
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   const isLogin = pathname === '/admin/login'
+
+  useEffect(() => {
+    setMobileMenuOpen(false)
+  }, [pathname])
 
   // Poll badge counts on mount, on route change, and every 60s.
   useEffect(() => {
@@ -64,9 +69,17 @@ export default function AdminLayout({ children }) {
         <div className="admin-brand">
           Respond<span>Pal</span>
           <div className="admin-brand-sub">Operations HQ</div>
+          <button
+            className="admin-hamburger"
+            onClick={() => setMobileMenuOpen((open) => !open)}
+            aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={mobileMenuOpen}
+          >
+            {mobileMenuOpen ? '✕' : '☰'}
+          </button>
         </div>
 
-        <nav className="admin-nav">
+        <nav className={`admin-nav${mobileMenuOpen ? ' admin-nav-mobile-open' : ''}`}>
           {NAV.map((item) => {
             const badge = item.badgeKey ? counts[item.badgeKey] : 0
             return (
