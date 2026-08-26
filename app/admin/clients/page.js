@@ -423,6 +423,9 @@ function ClientDrawer({ client, onClose, onSaved }) {
               <input value={form.google_profile_email || ''}
                 onChange={(e) => set('google_profile_email', e.target.value)} />
             </Field>
+            <Field label="Google URL">
+              <input value={form.google_url || ''} onChange={(e) => set('google_url', e.target.value)} />
+            </Field>
             <Field label="Yelp URL">
               <input value={form.yelp_url || ''} onChange={(e) => set('yelp_url', e.target.value)} />
             </Field>
