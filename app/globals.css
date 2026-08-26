@@ -1745,7 +1745,7 @@ footer a:hover {
   margin-top: -0.1rem;
 }
 
-.ob-group input,
+.ob-group input:not([type="checkbox"]),
 .ob-group select,
 .ob-group textarea {
   background: var(--black);
@@ -1766,7 +1766,7 @@ footer a:hover {
   color: var(--muted2);
 }
 
-.ob-group input:focus,
+.ob-group input:not([type="checkbox"]):focus,
 .ob-group select:focus,
 .ob-group textarea:focus {
   outline: none;
@@ -3600,6 +3600,14 @@ footer a:hover {
   margin: 0 auto;
 }
 
+.admin-hamburger {
+  display: none;
+}
+
+.leads-tabs-mobile {
+  display: none;
+}
+
 /* ── MOBILE ── */
 @media (max-width: 768px) {
   .admin-shell { flex-direction: column; }
@@ -3607,43 +3615,67 @@ footer a:hover {
     width: 100%;
     height: auto;
     position: relative;
-    flex-direction: row;
-    align-items: center;
+    flex-direction: column;
     padding: 1rem 1.25rem;
-    flex-wrap: wrap;
-    gap: 0.75rem;
+  }
+  .admin-brand {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
   }
   .admin-brand-sub { display: none; }
-  .admin-nav {
-    flex-direction: row;
-    margin-top: 0;
-    gap: 0.25rem;
-    overflow-x: auto;
-    flex: 1 1 100%;
-    order: 3;
+  .admin-hamburger {
+    display: block;
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 1.5rem;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
   }
-  .admin-nav-link { white-space: nowrap; padding: 0.5rem 0.75rem; font-size: 0.85rem; }
+  /* Hidden by default on mobile — a hamburger toggle replaces the old
+     horizontal-scrolling nav bar entirely, rather than just making that
+     scrolling row more forgiving. Becomes a full vertical dropdown only
+     while open, via the admin-nav-mobile-open class. */
+  .admin-nav {
+    display: none;
+    flex-direction: column;
+    width: 100%;
+    margin-top: 1rem;
+    gap: 0.25rem;
+  }
+  .admin-nav-mobile-open {
+    display: flex;
+  }
+  .admin-nav-link { white-space: nowrap; padding: 0.7rem 0.85rem; font-size: 0.9rem; }
   .admin-sidebar-footer {
     flex-direction: row;
     border-top: none;
     padding-top: 0;
-    margin-left: auto;
     align-items: center;
+    margin-top: 0.5rem;
   }
   .admin-page { padding: 1.5rem; }
   .admin-cards { grid-template-columns: 1fr; }
-  /* The full multi-line "Need help?" block reads fine stacked in the
-     desktop sidebar, but the mobile sidebar footer runs horizontally —
-     four lines of contact info squeezed into that row would look
-     cramped next to View Site and Sign Out. Swap it for a single
-     tap-to-call link instead; the fuller version simply isn't shown. */
-  .sidebar-help-block { display: none; }
-  .sidebar-help-compact { display: inline-flex !important; }
-}
-
-.sidebar-help-compact {
-  display: none;
-  white-space: nowrap;
+  .leads-tabs-desktop { display: none; }
+  .leads-tabs-mobile { display: block; }
+  /* Drawers (used for the Add Task modal, Response Examples' "New
+     Response Example" flow, and others) were a 480px side panel capped
+     at 92vw — technically not overflowing, but cramped and awkward on a
+     narrow phone screen. Full-screen is the standard mobile pattern for
+     this kind of modal. */
+  .drawer {
+    width: 100%;
+    max-width: 100%;
+    top: 0;
+    right: 0;
+    left: 0;
+  }
+  .drawer-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* ════════════════════════════════════════════════════════════════════
@@ -5253,6 +5285,8 @@ footer a:hover {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
   background: white;
   border: 1px solid #e5e7eb;
   border-radius: 8px;
