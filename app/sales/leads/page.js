@@ -458,6 +458,7 @@ export default function SalesLeads() {
                   <div style={{ fontSize: '0.82rem', color: '#374151' }}>
                     {c.owner_name && <span>Contact: {c.owner_name} · </span>}
                     {c.phone && <span>{c.phone} · </span>}
+                    {c.google_url && <span><a href={c.google_url} target="_blank" rel="noreferrer" style={{ color: '#C2410C' }}>Google ↗</a> · </span>}
                     {c.yelp_url && <span><a href={c.yelp_url} target="_blank" rel="noreferrer" style={{ color: '#C2410C' }}>Yelp ↗</a> · </span>}
                     <span>Owned by: {c.rep_name || 'Unassigned'}</span>
                   </div>
