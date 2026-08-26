@@ -51,33 +51,6 @@ export default function SalesOnboarding() {
         </p>
       </header>
 
-      <div className="drawer-section" style={{ maxWidth: 620, background: '#fafafa', border: '1px solid #e5e7eb', borderRadius: 8, padding: '1.25rem', marginBottom: '1.5rem' }}>
-        <div style={{ fontWeight: 700, fontSize: '0.9rem', marginBottom: '0.4rem', color: '#1a1a1a' }}>
-          Your personal onboarding link
-        </div>
-        <p style={{ fontSize: '0.82rem', color: '#6b7280', marginBottom: '0.75rem' }}>
-          Send this to a customer to fill out themselves, or open it yourself and walk them through it
-          on the call. Your name is pre-filled and locked in automatically either way.
-        </p>
-        {rep ? (
-          <div style={{ display: 'flex', gap: '0.5rem' }}>
-            <input
-              value={onboardingLink}
-              readOnly
-              style={{ flex: 1, padding: '0.6rem 0.8rem', borderRadius: 6, border: '1px solid #d1d5db', fontSize: '0.85rem', color: '#1a1a1a', background: 'white' }}
-            />
-            <button className="rev-mini-btn" onClick={() => copy(onboardingLink, 'link')}>
-              {copied === 'link' ? 'Copied!' : 'Copy'}
-            </button>
-            <a href={onboardingLink} target="_blank" rel="noreferrer" className="rev-ai-btn" style={{ whiteSpace: 'nowrap' }}>
-              Open →
-            </a>
-          </div>
-        ) : (
-          <p style={{ fontSize: '0.85rem', color: '#9ca3af' }}>Loading…</p>
-        )}
-      </div>
-
       <div className="drawer-section" style={{ maxWidth: 620 }}>
         <div className="drawer-section-label">Stripe payment links</div>
         <p style={{ fontSize: '0.82rem', color: '#6b7280', marginBottom: '0.9rem' }}>
@@ -105,6 +78,34 @@ export default function SalesOnboarding() {
             </div>
           ))}
         </div>
+      </div>
+
+      <div className="drawer-section" style={{ maxWidth: 620, background: '#fafafa', border: '1px solid #e5e7eb', borderRadius: 8, padding: '1.25rem', marginTop: '1.5rem' }}>
+        <div style={{ fontWeight: 700, fontSize: '0.9rem', marginBottom: '0.4rem', color: '#1a1a1a' }}>
+          Your personal onboarding link
+        </div>
+        <p style={{ fontSize: '0.82rem', color: '#6b7280', marginBottom: '0.75rem' }}>
+          Once they've paid, send this next so they can fill out their business details themselves, or
+          open it yourself and walk them through it on the call. Your name is pre-filled and locked in
+          automatically either way.
+        </p>
+        {rep ? (
+          <div style={{ display: 'flex', gap: '0.5rem' }}>
+            <input
+              value={onboardingLink}
+              readOnly
+              style={{ flex: 1, padding: '0.6rem 0.8rem', borderRadius: 6, border: '1px solid #d1d5db', fontSize: '0.85rem', color: '#1a1a1a', background: 'white' }}
+            />
+            <button className="rev-mini-btn" onClick={() => copy(onboardingLink, 'link')}>
+              {copied === 'link' ? 'Copied!' : 'Copy'}
+            </button>
+            <a href={onboardingLink} target="_blank" rel="noreferrer" className="rev-ai-btn" style={{ whiteSpace: 'nowrap' }}>
+              Open →
+            </a>
+          </div>
+        ) : (
+          <p style={{ fontSize: '0.85rem', color: '#9ca3af' }}>Loading…</p>
+        )}
       </div>
     </div>
   )
