@@ -137,6 +137,15 @@ export default function SalesDashboard() {
           <Link href="/sales/onboarding" className="rev-mini-btn">Onboard a Client</Link>
         </div>
       </div>
+
+      <div className="drawer-section" style={{ marginTop: '1.5rem' }}>
+        <h2 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '0.75rem', color: '#1a1a1a' }}>Need help?</h2>
+        <div style={{ fontSize: '0.85rem', color: '#374151', lineHeight: 1.8 }}>
+          <div>Jacob Merkley</div>
+          <div><a href="mailto:jacob@respondpal.ai" style={{ color: '#C2410C' }}>jacob@respondpal.ai</a></div>
+          <div><a href="tel:4805006642" style={{ color: '#C2410C' }}>480-500-6642</a></div>
+        </div>
+      </div>
     </div>
   )
 }
