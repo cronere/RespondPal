@@ -133,7 +133,7 @@ export default function SalesResponseExamples() {
             </div>
             <div className="drawer-body">
               <div className="drawer-section">
-                <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
+                <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem', flexWrap: 'wrap' }}>
                   <button
                     type="button"
                     className={mode === 'existing' ? 'rev-ai-btn' : 'rev-mini-btn'}
