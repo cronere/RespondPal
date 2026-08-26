@@ -15,6 +15,7 @@ const EDITABLE_FIELDS = [
   'state',
   'locations',
   'google_profile_email',
+  'google_url',
   'yelp_url',
   'response_signer',
   'response_tone',
