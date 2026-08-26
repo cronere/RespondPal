@@ -290,12 +290,9 @@ export default function SalesToolkit() {
       {tab === 'commission' && (
         <div style={{ maxWidth: 720 }}>
           <div style={{ ...cardStyle, background: '#111827', color: 'white' }}>
-            <div style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '0.4rem' }}>
+            <div style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: 0 }}>
               You keep 100% of the first month&apos;s revenue on every client you close.
             </div>
-            <p style={{ fontSize: '0.88rem', color: '#D1D5DB', marginBottom: 0 }}>
-              That signals confidence in retention and separates this from every other 1099 gig you&apos;re evaluating.
-            </p>
           </div>
 
           <h2 style={h2Style}>Your commission structure</h2>
