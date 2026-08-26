@@ -33,17 +33,21 @@ export async function POST(req) {
     if (error || !rep) {
       return NextResponse.json({ error: 'Incorrect email or password.' }, { status: 401 })
     }
-    if (!rep.active) {
-      return NextResponse.json({ error: 'This account has been archived. Contact Jacob.' }, { status: 403 })
-    }
 
     const valid = await verifyPassword(password, rep.password_salt, rep.password_hash)
     if (!valid) {
       return NextResponse.json({ error: 'Incorrect email or password.' }, { status: 401 })
     }
 
+    // Archived reps CAN log in — password verified above like anyone else
+    // — but everything past this point (the layout, every other page)
+    // restricts them to viewing their own past statements only. This is
+    // deliberate: an archived rep still has a real, legitimate reason to
+    // reference a statement later, and losing that access entirely felt
+    // like the wrong tradeoff for what archiving is actually meant to do
+    // (remove someone from active rotation, not erase their history).
     const token = await makeSalesToken(rep.id, secret)
-    const res = NextResponse.json({ success: true, name: rep.name })
+    const res = NextResponse.json({ success: true, name: rep.name, active: rep.active })
     res.cookies.set('rp_sales', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
