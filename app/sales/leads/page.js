@@ -3,6 +3,13 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 
+const LEAD_TABS = [
+  { key: 'mine', label: 'My Leads' },
+  { key: 'open', label: 'Open Leads' },
+  { key: 'clients', label: 'Existing Clients' },
+  { key: 'tasks', label: 'Tasks' },
+]
+
 const US_STATES = [
   'AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA', 'HI', 'ID', 'IL',
   'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD', 'MA', 'MI', 'MN', 'MS', 'MO', 'MT',
@@ -42,6 +49,7 @@ export default function SalesLeads() {
   const [tasksDue, setTasksDue] = useState(0)
   const [searchQuery, setSearchQuery] = useState('')
   const [stateFilter, setStateFilter] = useState('')
+  const [mobileTabsOpen, setMobileTabsOpen] = useState(false)
 
   const loadCounts = async () => {
     try {
@@ -282,13 +290,8 @@ export default function SalesLeads() {
         )}
       </header>
 
-      <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.25rem', borderBottom: '1px solid #e5e7eb', overflowX: 'auto' }}>
-        {[
-          { key: 'mine', label: 'My Leads' },
-          { key: 'open', label: 'Open Leads' },
-          { key: 'clients', label: 'Existing Clients' },
-          { key: 'tasks', label: 'Tasks' },
-        ].map((t) => (
+      <div className="leads-tabs-desktop" style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.25rem', borderBottom: '1px solid #e5e7eb', overflowX: 'auto' }}>
+        {LEAD_TABS.map((t) => (
           <button
             key={t.key}
             onClick={() => setTab(t.key)}
@@ -312,6 +315,63 @@ export default function SalesLeads() {
             )}
           </button>
         ))}
+      </div>
+
+      {/* Mobile-only: a tap-to-expand dropdown replaces the horizontal
+          tab bar entirely on narrow screens, rather than relying on
+          horizontal scroll — same reasoning as the main nav's hamburger,
+          a dropdown makes it obvious there are more options instead of
+          requiring the person to discover they can swipe sideways. */}
+      <div className="leads-tabs-mobile" style={{ marginBottom: '1.25rem' }}>
+        <button
+          onClick={() => setMobileTabsOpen((open) => !open)}
+          style={{
+            width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+            padding: '0.75rem 1rem', borderRadius: 8, border: '1px solid #e5e7eb', background: 'white',
+            fontWeight: 700, fontSize: '0.9rem', color: '#1a1a1a', cursor: 'pointer',
+          }}
+        >
+          <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            ☰ {LEAD_TABS.find((t) => t.key === tab)?.label}
+            {tasksDue > 0 && (
+              <span style={{
+                background: '#DC2626', color: 'white', fontSize: '0.72rem', fontWeight: 700,
+                borderRadius: 999, padding: '0.1rem 0.45rem', minWidth: 18, textAlign: 'center',
+              }}>
+                {tasksDue}
+              </span>
+            )}
+          </span>
+          <span>{mobileTabsOpen ? '▲' : '▼'}</span>
+        </button>
+        {mobileTabsOpen && (
+          <div style={{ marginTop: '0.4rem', border: '1px solid #e5e7eb', borderRadius: 8, overflow: 'hidden', background: 'white' }}>
+            {LEAD_TABS.map((t) => (
+              <button
+                key={t.key}
+                onClick={() => { setTab(t.key); setMobileTabsOpen(false) }}
+                style={{
+                  width: '100%', textAlign: 'left', padding: '0.75rem 1rem', border: 'none',
+                  borderBottom: '1px solid #f3f4f6', cursor: 'pointer', fontSize: '0.9rem',
+                  fontWeight: tab === t.key ? 700 : 500,
+                  color: tab === t.key ? '#C2410C' : '#1a1a1a',
+                  background: tab === t.key ? '#FFF7ED' : 'white',
+                  display: 'flex', alignItems: 'center', gap: '0.4rem',
+                }}
+              >
+                {t.label}
+                {t.key === 'tasks' && tasksDue > 0 && (
+                  <span style={{
+                    background: '#DC2626', color: 'white', fontSize: '0.72rem', fontWeight: 700,
+                    borderRadius: 999, padding: '0.1rem 0.45rem', minWidth: 18, textAlign: 'center',
+                  }}>
+                    {tasksDue}
+                  </span>
+                )}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       {error && <div className="admin-error">{error}</div>}
@@ -355,8 +415,8 @@ export default function SalesLeads() {
           <div className="demo-list">
             {filteredLeads.map((l) => (
               <div className="response-demo-card" key={l.id} style={{ flexDirection: 'column', alignItems: 'stretch', gap: '0.5rem' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                  <div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.5rem' }}>
+                  <div style={{ minWidth: 0, flex: '1 1 auto' }}>
                     <Link href={`/sales/leads/${l.id}`} style={{ textDecoration: 'none' }}>
                       <div className="demo-card-name" style={{ color: '#C2410C' }}>{l.business_name}</div>
                     </Link>
@@ -369,7 +429,7 @@ export default function SalesLeads() {
                   <select
                     value={l.stage}
                     onChange={(e) => changeStage(l.id, e.target.value)}
-                    style={{ padding: '0.4rem 0.6rem', borderRadius: 6, border: '1px solid #e5e7eb', fontSize: '0.85rem', fontWeight: 600 }}
+                    style={{ padding: '0.4rem 0.6rem', borderRadius: 6, border: '1px solid #e5e7eb', fontSize: '0.85rem', fontWeight: 600, maxWidth: '100%' }}
                   >
                     {STAGES.map((s) => (
                       <option key={s.key} value={s.key}>{s.label}</option>
