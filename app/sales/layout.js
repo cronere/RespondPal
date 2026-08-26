@@ -29,7 +29,17 @@ export default function SalesLayout({ children }) {
     let active = true
     fetch('/api/sales/me')
       .then((res) => (res.ok ? res.json() : Promise.reject()))
-      .then((data) => { if (active) setRep(data.rep) })
+      .then((data) => {
+        if (!active) return
+        setRep(data.rep)
+        // An archived rep can view their own past statements, and
+        // nothing else — if they land anywhere else in Sales HQ (a
+        // stale bookmark, browser back button, whatever), send them
+        // back to the one place they're actually allowed.
+        if (data.rep && !data.rep.active && !pathname.startsWith('/sales/statements')) {
+          router.push('/sales/statements')
+        }
+      })
       .catch(() => { if (active) router.push('/sales/login') })
     return () => { active = false }
   }, [isLogin, pathname, router])
@@ -76,7 +86,7 @@ export default function SalesLayout({ children }) {
         </div>
 
         <nav className="admin-nav">
-          {NAV.map((item) => {
+          {(rep && !rep.active ? NAV.filter((item) => item.href === '/sales/statements') : NAV).map((item) => {
             const badge = item.badgeKey ? counts[item.badgeKey] : 0
             return (
               <Link
@@ -90,6 +100,16 @@ export default function SalesLayout({ children }) {
             )
           })}
         </nav>
+
+        {rep && !rep.active && (
+          <div style={{
+            margin: '0 0 1rem', padding: '0.7rem 0.9rem', borderRadius: 8, fontSize: '0.78rem',
+            background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.75)', lineHeight: 1.5,
+          }}>
+            This account has been archived. You can still view your past statements here, but the
+            rest of Sales HQ isn&apos;t available. Contact Jacob with any questions.
+          </div>
+        )}
 
         <div className="admin-sidebar-footer">
           <div className="sidebar-help-block" style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.4)', marginBottom: '0.6rem', lineHeight: 1.6 }}>
