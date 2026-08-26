@@ -21,8 +21,16 @@ export default function SalesLayout({ children }) {
   const router = useRouter()
   const [rep, setRep] = useState(null)
   const [counts, setCounts] = useState({ tasksDue: 0, auditsReady: 0 })
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   const isLogin = pathname === '/sales/login'
+
+  // Close the mobile menu automatically whenever the route changes — a
+  // link tap should close the menu on its own, not leave it hanging open
+  // over the new page.
+  useEffect(() => {
+    setMobileMenuOpen(false)
+  }, [pathname])
 
   useEffect(() => {
     if (isLogin) return
@@ -83,9 +91,17 @@ export default function SalesLayout({ children }) {
         <div className="admin-brand">
           Respond<span>Pal</span>
           <div className="admin-brand-sub">Sales HQ{rep ? ` · ${rep.name}` : ''}</div>
+          <button
+            className="admin-hamburger"
+            onClick={() => setMobileMenuOpen((open) => !open)}
+            aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={mobileMenuOpen}
+          >
+            {mobileMenuOpen ? '✕' : '☰'}
+          </button>
         </div>
 
-        <nav className="admin-nav">
+        <nav className={`admin-nav${mobileMenuOpen ? ' admin-nav-mobile-open' : ''}`}>
           {(rep && !rep.active ? NAV.filter((item) => item.href === '/sales/statements') : NAV).map((item) => {
             const badge = item.badgeKey ? counts[item.badgeKey] : 0
             return (
@@ -112,15 +128,6 @@ export default function SalesLayout({ children }) {
         )}
 
         <div className="admin-sidebar-footer">
-          <div className="sidebar-help-block" style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.4)', marginBottom: '0.6rem', lineHeight: 1.6 }}>
-            <div style={{ fontWeight: 700, color: 'rgba(255,255,255,0.6)', marginBottom: '0.2rem' }}>Need help?</div>
-            <div>Jacob Merkley</div>
-            <a href="mailto:jacob@respondpal.ai" style={{ color: 'rgba(255,255,255,0.55)' }}>jacob@respondpal.ai</a>
-            <div><a href="tel:4805006642" style={{ color: 'rgba(255,255,255,0.55)' }}>480-500-6642</a></div>
-          </div>
-          <a href="tel:4805006642" className="sidebar-help-compact admin-sidebar-link" aria-label="Call Jacob for help">
-            📞 Help
-          </a>
           <a href="/" className="admin-sidebar-link" target="_blank" rel="noreferrer">
             View site ↗
           </a>
