@@ -30,6 +30,7 @@ function OnboardingForm() {
     // Step 2 - Platform info
     google_profile_email: '',
     yelp_url: '',
+    google_url: '',
     // Step 3 - Brand voice
     response_signer: '',
     response_tone: 'professional_friendly',
@@ -260,6 +261,17 @@ function OnboardingForm() {
                   required
                   placeholder="mike@gmail.com"
                   value={form.google_profile_email}
+                  onChange={handleChange}
+                />
+              </div>
+              <div className="ob-group">
+                <label>Google Business Profile URL</label>
+                <p className="ob-hint">Find your business on Google Maps and paste the full URL here.</p>
+                <input
+                  name="google_url"
+                  type="url"
+                  placeholder="https://maps.app.goo.gl/your-business"
+                  value={form.google_url}
                   onChange={handleChange}
                 />
               </div>
