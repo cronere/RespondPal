@@ -341,7 +341,7 @@ export default function SalesToolkit() {
                 <tr><td style={tdStyle}>Month 3</td><td style={{ ...tdStyle, fontWeight: 700 }}>50%</td><td style={tdStyle}>Even split as the relationship establishes</td></tr>
                 <tr><td style={tdStyle}>Months 4–12</td><td style={{ ...tdStyle, fontWeight: 700 }}>25%</td><td style={tdStyle}>Passive residual — client stays, you keep earning</td></tr>
                 <tr><td style={tdStyle}>Months 13–24</td><td style={{ ...tdStyle, fontWeight: 700 }}>15%</td><td style={tdStyle}>Reduced residual as the account matures</td></tr>
-                <tr><td style={tdStyle}>Month 25+</td><td style={{ ...tdStyle, fontWeight: 700 }}>10%</td><td style={tdStyle}>Indefinite residual (requires 10+ new sales/year)</td></tr>
+                <tr><td style={tdStyle}>Month 25+</td><td style={{ ...tdStyle, fontWeight: 700 }}>10%</td><td style={tdStyle}>Indefinite residual (requires 6+ new sales/year)</td></tr>
               </tbody>
             </table>
           </div>
@@ -387,13 +387,14 @@ export default function SalesToolkit() {
             </table>
           </div>
           <p style={pStyle}>
-            Where these numbers come from: locations 1-3 already show roughly $250/location in real
-            marginal cost once you&apos;re past the first ($397 → $649 → $897) — onboarding, the account
-            relationship, and industry calibration are largely fixed costs regardless of location count.
-            Locations 4-6 continue that at roughly $220/location; 7-10 tapers further to roughly
-            $190/location, since scale savings compound rather than staying flat forever. Anchor sits
-            about 10% above Target, giving you real room to negotiate down without ever landing below
-            what the account is actually worth.
+            Where these numbers come from: going from 1→2 locations adds $252 to the price ($397 →
+            $649); 2→3 adds another $248 ($649 → $897) — call it roughly $250 of additional cost for
+            each extra location, even though the average across all 3 locations works out higher
+            ($897 ÷ 3 = $299/location), since the first location alone carries a bigger share of the
+            fixed setup cost. Locations 4-6 continue that marginal pattern at roughly $220/location;
+            7-10 tapers further to roughly $190/location, since scale savings compound rather than
+            staying flat forever. Anchor sits about 10% above Target, giving you real room to negotiate
+            down without ever landing below what the account is actually worth.
           </p>
           <p style={{ ...pStyle, marginBottom: 0 }}>
             <b>Past 10 locations, there&apos;s no table — that&apos;s Jacob territory.</b> Loop him in
@@ -419,7 +420,7 @@ export default function SalesToolkit() {
             </table>
           </div>
           <p style={pStyle}>
-            The 10-sales-per-year floor on the indefinite residual is there so the residual rewards reps
+            The 6-sales-per-year floor on the indefinite residual is there so the residual rewards reps
             who keep producing new business, not just coasting on an old book.
           </p>
         </div>
