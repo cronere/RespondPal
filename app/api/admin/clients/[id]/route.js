@@ -95,8 +95,27 @@ export async function PATCH(req, { params }) {
       }
     }
     // Reactivating from cancelled clears the cancelled_at stamp — that
-    // cancellation period is resolved once they're active again.
+    // cancellation period is resolved once they're active again. If the
+    // gap since cancellation was 24+ months, commission also resets to a
+    // fresh start (Section 4.5 of the rep agreement) — at that point a
+    // "reactivation" is economically a cold win, not a continuation, and
+    // treating it like one would leave no incentive for any rep to chase
+    // a lead that's been dark that long. Anything reactivated within the
+    // 24-month window keeps its continuity as before, unaffected.
     if (updates.status && updates.status !== 'cancelled') {
+      const { data: current } = await supabaseAdmin
+        .from('clients')
+        .select('cancelled_at')
+        .eq('id', id)
+        .single()
+
+      if (current?.cancelled_at) {
+        const monthsSinceCancellation =
+          (Date.now() - new Date(current.cancelled_at).getTime()) / (1000 * 60 * 60 * 24 * 30.44)
+        if (monthsSinceCancellation >= 24) {
+          updates.commission_months_completed = 0
+        }
+      }
       updates.cancelled_at = null
     }
 
