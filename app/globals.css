@@ -3604,6 +3604,10 @@ footer a:hover {
   display: none;
 }
 
+.leads-tabs-desktop {
+  display: flex;
+}
+
 .leads-tabs-mobile {
   display: none;
 }
