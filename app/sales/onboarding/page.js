@@ -54,7 +54,8 @@ export default function SalesOnboarding() {
       <div className="drawer-section" style={{ maxWidth: 620 }}>
         <div className="drawer-section-label">Stripe payment links</div>
         <p style={{ fontSize: '0.82rem', color: '#6b7280', marginBottom: '0.9rem' }}>
-          Text or read one of these while on the phone. 4+ locations — text Jacob directly, don't quote a price.
+          Text or read one of these while on the phone. 4+ locations — see the Commission tab in the
+          Sales Toolkit for pricing, or text Jacob for anything past 10.
           {hasPersonalLinks && ' These are your own links — payments through them are automatically credited to you.'}
         </p>
         <div className="demo-list">
