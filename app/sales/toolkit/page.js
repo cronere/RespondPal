@@ -41,7 +41,7 @@ export default function SalesToolkit() {
         </p>
       </header>
 
-      <div className="leads-tabs-desktop" style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem', borderBottom: '1px solid #e5e7eb', flexWrap: 'wrap' }}>
+      <div className="leads-tabs-desktop" style={{ gap: '0.5rem', marginBottom: '1.5rem', borderBottom: '1px solid #e5e7eb', flexWrap: 'wrap' }}>
         {TABS.map((t) => (
           <button
             key={t.key}
