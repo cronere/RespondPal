@@ -352,6 +352,55 @@ export default function SalesToolkit() {
             separate commission table needed.
           </p>
 
+          <h2 style={h2Style}>Pricing for 4+ locations</h2>
+          <div style={{ ...cardStyle, background: '#FFF7ED', border: '1px solid #FDBA74' }}>
+            <p style={{ ...pStyle, marginBottom: 0 }}>
+              <b>No cap, no different rules.</b> A 10-location chain still pays you 100% of month one —
+              on whatever the final negotiated price actually is. The bigger the deal, the bigger that
+              first payout. This is the deal worth actually chasing, not one where the upside gets
+              capped right when it gets interesting.
+            </p>
+          </div>
+
+          <p style={pStyle}>
+            Beyond 3 locations there&apos;s no fixed price — it&apos;s a range you negotiate within.
+            Use the table below: <b>Anchor</b> is where you open the conversation, <b>Target</b> is
+            where you&apos;re happy to land if they push back. Don&apos;t go below Target without
+            looping in Jacob first — for anything past 10 locations, always loop him in before quoting
+            anything.
+          </p>
+
+          <div style={{ ...cardStyle, overflowX: 'auto' }}>
+            <table style={tableStyle}>
+              <thead>
+                <tr><th style={thStyle}>Locations</th><th style={thStyle}>Anchor (open here)</th><th style={thStyle}>Target (land here)</th></tr>
+              </thead>
+              <tbody>
+                <tr><td style={tdStyle}>4</td><td style={tdStyle}>$1,250/mo</td><td style={{ ...tdStyle, fontWeight: 700 }}>$1,100/mo</td></tr>
+                <tr><td style={tdStyle}>5</td><td style={tdStyle}>$1,450/mo</td><td style={{ ...tdStyle, fontWeight: 700 }}>$1,300/mo</td></tr>
+                <tr><td style={tdStyle}>6</td><td style={tdStyle}>$1,700/mo</td><td style={{ ...tdStyle, fontWeight: 700 }}>$1,550/mo</td></tr>
+                <tr><td style={tdStyle}>7</td><td style={tdStyle}>$1,900/mo</td><td style={{ ...tdStyle, fontWeight: 700 }}>$1,750/mo</td></tr>
+                <tr><td style={tdStyle}>8</td><td style={tdStyle}>$2,100/mo</td><td style={{ ...tdStyle, fontWeight: 700 }}>$1,900/mo</td></tr>
+                <tr><td style={tdStyle}>9</td><td style={tdStyle}>$2,300/mo</td><td style={{ ...tdStyle, fontWeight: 700 }}>$2,100/mo</td></tr>
+                <tr><td style={tdStyle}>10</td><td style={tdStyle}>$2,500/mo</td><td style={{ ...tdStyle, fontWeight: 700 }}>$2,300/mo</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p style={pStyle}>
+            Where these numbers come from: locations 1-3 already show roughly $250/location in real
+            marginal cost once you&apos;re past the first ($397 → $649 → $897) — onboarding, the account
+            relationship, and industry calibration are largely fixed costs regardless of location count.
+            Locations 4-6 continue that at roughly $220/location; 7-10 tapers further to roughly
+            $190/location, since scale savings compound rather than staying flat forever. Anchor sits
+            about 10% above Target, giving you real room to negotiate down without ever landing below
+            what the account is actually worth.
+          </p>
+          <p style={{ ...pStyle, marginBottom: 0 }}>
+            <b>Past 10 locations, there&apos;s no table — that&apos;s Jacob territory.</b> Loop him in
+            before you quote anything. Deals at that scale are worth getting right individually, not
+            forcing into a formula.
+          </p>
+
           <h2 style={h2Style}>What a real book looks like over time</h2>
           <div style={{ ...cardStyle, overflowX: 'auto' }}>
             <p style={{ ...pStyle, fontSize: '0.82rem', color: '#6b7280', marginBottom: '0.75rem' }}>
