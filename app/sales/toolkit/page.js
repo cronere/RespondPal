@@ -469,10 +469,13 @@ export default function SalesToolkit() {
           <h2 style={h2Style}>Commission on a reactivated client</h2>
           <div style={cardStyle}>
             <p style={{ ...pStyle, marginBottom: 0 }}>
-              Commission resumes exactly where it left off — it never resets to month 1. If a client
+              Commission resumes where it left off — it doesn&apos;t reset to month 1. If a client
               canceled partway through month 2 and gets reactivated later, commission starts back up at
               month 3 and continues counting forward from there, regardless of whether the same rep or a
-              new rep closes the reactivation.
+              new rep closes the reactivation. <b>The one exception:</b> if 24 months or more have passed
+              since the client canceled, commission resets to month 1 on reactivation. At that point,
+              winning them back is treated like a new sale, not a continuation — so a lead that&apos;s
+              been dark that long is still very much worth chasing, at full first-month commission.
             </p>
           </div>
         </div>
