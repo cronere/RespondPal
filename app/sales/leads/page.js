@@ -536,9 +536,54 @@ export default function SalesLeads() {
             lead&apos;s own page — this is just a faster way to see what&apos;s due without opening
             each one.
           </p>
-          <button className="rev-ai-btn" onClick={() => setShowAddTask(true)} style={{ marginBottom: '1.25rem' }}>
-            + Add Task
+          <button className="rev-ai-btn" onClick={() => setShowAddTask((v) => !v)} style={{ marginBottom: '1.25rem' }}>
+            {showAddTask ? 'Cancel' : '+ Add Task'}
           </button>
+
+          {showAddTask && (
+            <div className="drawer-section" style={{ maxWidth: 460, background: '#fafafa', border: '1px solid #e5e7eb', borderRadius: 8, padding: '1.25rem', marginBottom: '1.5rem' }}>
+              <label className="field">
+                <span className="field-label">Which lead is this for? *</span>
+                <select
+                  value={newTask.lead_id}
+                  onChange={(e) => setNewTask({ ...newTask, lead_id: e.target.value })}
+                  style={{ padding: '0.55rem 0.7rem', borderRadius: 6, border: '1px solid #d1d5db', fontSize: '0.9rem', width: '100%' }}
+                >
+                  <option value="">Select a lead…</option>
+                  {leads.map((l) => (
+                    <option key={l.id} value={l.id}>{l.business_name}</option>
+                  ))}
+                </select>
+              </label>
+              <label className="field">
+                <span className="field-label">Task *</span>
+                <input
+                  value={newTask.title}
+                  onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
+                  placeholder="e.g. Follow up on pricing question"
+                />
+              </label>
+              <label className="field">
+                <span className="field-label">Due date (optional)</span>
+                <input
+                  type="date"
+                  value={newTask.due_date}
+                  onChange={(e) => setNewTask({ ...newTask, due_date: e.target.value })}
+                />
+              </label>
+
+              {error && <div className="admin-error">{error}</div>}
+
+              <button
+                className="rev-ai-btn"
+                onClick={addTask}
+                disabled={addingTask || !newTask.lead_id || !newTask.title.trim()}
+                style={{ marginTop: '0.5rem' }}
+              >
+                {addingTask ? 'Adding…' : 'Add Task'}
+              </button>
+            </div>
+          )}
 
           {loadingTasks ? (
             <p className="admin-page-sub">Loading…</p>
@@ -587,61 +632,6 @@ export default function SalesLeads() {
             </div>
           )}
         </>
-      )}
-
-      {showAddTask && (
-        <div className="drawer-overlay" onClick={() => setShowAddTask(false)}>
-          <div className="drawer" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 460 }}>
-            <div className="drawer-head">
-              <h2>Add Task</h2>
-              <button className="drawer-close" onClick={() => setShowAddTask(false)}>×</button>
-            </div>
-            <div className="drawer-body">
-              <div className="drawer-section">
-                <label className="field">
-                  <span className="field-label">Which lead is this for? *</span>
-                  <select
-                    value={newTask.lead_id}
-                    onChange={(e) => setNewTask({ ...newTask, lead_id: e.target.value })}
-                    style={{ padding: '0.55rem 0.7rem', borderRadius: 6, border: '1px solid #d1d5db', fontSize: '0.9rem', width: '100%' }}
-                  >
-                    <option value="">Select a lead…</option>
-                    {leads.map((l) => (
-                      <option key={l.id} value={l.id}>{l.business_name}</option>
-                    ))}
-                  </select>
-                </label>
-                <label className="field">
-                  <span className="field-label">Task *</span>
-                  <input
-                    value={newTask.title}
-                    onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
-                    placeholder="e.g. Follow up on pricing question"
-                  />
-                </label>
-                <label className="field">
-                  <span className="field-label">Due date (optional)</span>
-                  <input
-                    type="date"
-                    value={newTask.due_date}
-                    onChange={(e) => setNewTask({ ...newTask, due_date: e.target.value })}
-                  />
-                </label>
-
-                {error && <div className="admin-error">{error}</div>}
-
-                <button
-                  className="rev-ai-btn"
-                  onClick={addTask}
-                  disabled={addingTask || !newTask.lead_id || !newTask.title.trim()}
-                  style={{ marginTop: '0.5rem' }}
-                >
-                  {addingTask ? 'Adding…' : 'Add Task'}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
       )}
 
       {showAdd && (
