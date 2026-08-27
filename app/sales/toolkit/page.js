@@ -29,6 +29,7 @@ function Stat({ n, label }) {
 
 export default function SalesToolkit() {
   const [tab, setTab] = useState('why')
+  const [mobileTabsOpen, setMobileTabsOpen] = useState(false)
 
   return (
     <div className="admin-page">
@@ -40,7 +41,7 @@ export default function SalesToolkit() {
         </p>
       </header>
 
-      <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem', borderBottom: '1px solid #e5e7eb', flexWrap: 'wrap' }}>
+      <div className="leads-tabs-desktop" style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem', borderBottom: '1px solid #e5e7eb', flexWrap: 'wrap' }}>
         {TABS.map((t) => (
           <button
             key={t.key}
@@ -56,6 +57,39 @@ export default function SalesToolkit() {
             {t.label}
           </button>
         ))}
+      </div>
+
+      <div className="leads-tabs-mobile" style={{ marginBottom: '1.5rem' }}>
+        <button
+          onClick={() => setMobileTabsOpen((open) => !open)}
+          style={{
+            width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+            padding: '0.75rem 1rem', borderRadius: 8, border: '1px solid #e5e7eb', background: 'white',
+            fontWeight: 700, fontSize: '0.9rem', color: '#1a1a1a', cursor: 'pointer',
+          }}
+        >
+          <span>☰ {TABS.find((t) => t.key === tab)?.label}</span>
+          <span>{mobileTabsOpen ? '▲' : '▼'}</span>
+        </button>
+        {mobileTabsOpen && (
+          <div style={{ marginTop: '0.4rem', border: '1px solid #e5e7eb', borderRadius: 8, overflow: 'hidden', background: 'white' }}>
+            {TABS.map((t) => (
+              <button
+                key={t.key}
+                onClick={() => { setTab(t.key); setMobileTabsOpen(false) }}
+                style={{
+                  width: '100%', textAlign: 'left', padding: '0.75rem 1rem', border: 'none',
+                  borderBottom: '1px solid #f3f4f6', cursor: 'pointer', fontSize: '0.9rem',
+                  fontWeight: tab === t.key ? 700 : 500,
+                  color: tab === t.key ? '#C2410C' : '#1a1a1a',
+                  background: tab === t.key ? '#FFF7ED' : 'white',
+                }}
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* ── WHY THIS WORKS ── */}
