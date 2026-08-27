@@ -95,10 +95,130 @@ export default function SalesResponseExamples() {
           how we'd respond to their actual reviews. No compliance review needed here; healthcare
           leads go through Request an Audit instead.
         </p>
-        <button className="rev-ai-btn" onClick={openAdd} style={{ marginTop: '1rem' }}>+ New Response Example</button>
+        <button className="rev-ai-btn" onClick={() => (showAdd ? setShowAdd(false) : openAdd())} style={{ marginTop: '1rem' }}>
+          {showAdd ? 'Cancel' : '+ New Response Example'}
+        </button>
       </header>
 
       {error && <div className="admin-error">{error}</div>}
+
+      {/* Converted from a popup drawer to an inline section, matching the
+          contained pattern used on the onboarding page — the popup
+          version was overflowing the viewport on mobile. */}
+      {showAdd && (
+        <div className="drawer-section" style={{ maxWidth: 620, background: '#fafafa', border: '1px solid #e5e7eb', borderRadius: 8, padding: '1.25rem', marginBottom: '1.5rem' }}>
+          <div className="drawer-section">
+            <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem', flexWrap: 'wrap' }}>
+              <button
+                type="button"
+                className={mode === 'existing' ? 'rev-ai-btn' : 'rev-mini-btn'}
+                onClick={() => setMode('existing')}
+                disabled={leads.length === 0}
+              >
+                Pick an existing lead
+              </button>
+              <button
+                type="button"
+                className={mode === 'new' ? 'rev-ai-btn' : 'rev-mini-btn'}
+                onClick={() => setMode('new')}
+              >
+                + New business
+              </button>
+            </div>
+
+            {mode === 'existing' ? (
+              leads.length === 0 ? (
+                <p style={{ fontSize: '0.85rem', color: '#6b7280' }}>
+                  No leads yet — add one in My Leads first, or switch to &quot;New business&quot; and
+                  it&apos;ll be added to your leads automatically.
+                </p>
+              ) : (
+                <label className="field">
+                  <span className="field-label">Which lead is this for? *</span>
+                  <select
+                    value={selectedLeadId}
+                    onChange={(e) => setSelectedLeadId(e.target.value)}
+                    style={{ padding: '0.55rem 0.7rem', borderRadius: 6, border: '1px solid #d1d5db', fontSize: '0.9rem', width: '100%' }}
+                  >
+                    <option value="">Select a lead…</option>
+                    {leads.map((l) => (
+                      <option key={l.id} value={l.id}>{l.business_name}{l.industry ? ` (${l.industry})` : ''}</option>
+                    ))}
+                  </select>
+                </label>
+              )
+            ) : (
+              <>
+                <label className="field">
+                  <span className="field-label">Business name *</span>
+                  <input value={form.business_name} onChange={(e) => setField('business_name', e.target.value)} placeholder="e.g. Joe's Auto Shop" />
+                </label>
+                <div className="drawer-grid">
+                  <label className="field">
+                    <span className="field-label">Industry</span>
+                    <input value={form.industry} onChange={(e) => setField('industry', e.target.value)} placeholder="e.g. Auto Repair, Restaurant" />
+                  </label>
+                  <label className="field">
+                    <span className="field-label">Contact name</span>
+                    <input value={form.contact_name} onChange={(e) => setField('contact_name', e.target.value)} />
+                  </label>
+                </div>
+                <p style={{ fontSize: '0.78rem', color: '#6b7280', marginTop: '-0.3rem' }}>
+                  This will also be added to your leads automatically.
+                </p>
+              </>
+            )}
+          </div>
+
+          <div className="drawer-section">
+            <div className="drawer-section-label">Real reviews (up to 5)</div>
+            <p style={{ fontSize: '0.8rem', color: '#6b7280', marginBottom: '0.75rem' }}>
+              Paste 2-3 of their actual Google reviews — a mix of star ratings works best to show range.
+            </p>
+            {reviews.map((r, i) => (
+              <div key={i} style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: '0.75rem', marginBottom: '0.6rem' }}>
+                <div className="drawer-grid" style={{ marginBottom: '0.5rem' }}>
+                  <label className="field" style={{ marginBottom: 0 }}>
+                    <span className="field-label">Reviewer name</span>
+                    <input value={r.reviewer_name} onChange={(e) => setReview(i, 'reviewer_name', e.target.value)} />
+                  </label>
+                  <label className="field" style={{ marginBottom: 0 }}>
+                    <span className="field-label">Stars</span>
+                    <select
+                      value={r.star_rating}
+                      onChange={(e) => setReview(i, 'star_rating', parseInt(e.target.value))}
+                      style={{ padding: '0.55rem 0.7rem', borderRadius: 6, border: '1px solid #d1d5db', width: '100%' }}
+                    >
+                      {[5, 4, 3, 2, 1].map((n) => <option key={n} value={n}>{n} star{n === 1 ? '' : 's'}</option>)}
+                    </select>
+                  </label>
+                </div>
+                <textarea
+                  value={r.review_text}
+                  onChange={(e) => setReview(i, 'review_text', e.target.value)}
+                  placeholder="Paste the review text here…"
+                  style={{ minHeight: 60, width: '100%', padding: '0.6rem', borderRadius: 6, border: '1px solid #d1d5db', fontFamily: 'inherit', fontSize: '0.9rem', color: '#1a1a1a' }}
+                />
+                {reviews.length > 1 && (
+                  <button className="rev-mini-btn" onClick={() => removeReviewRow(i)} style={{ marginTop: '0.5rem' }}>Remove</button>
+                )}
+              </div>
+            ))}
+            {reviews.length < 5 && (
+              <button className="rev-mini-btn" onClick={addReviewRow}>+ Add another review</button>
+            )}
+          </div>
+
+          <button
+            className="rev-ai-btn"
+            onClick={create}
+            disabled={saving || (mode === 'existing' ? !selectedLeadId : !form.business_name.trim())}
+            style={{ marginTop: '0.5rem' }}
+          >
+            {saving ? 'Creating…' : 'Create'}
+          </button>
+        </div>
+      )}
 
       {loading ? (
         <p className="admin-page-sub">Loading…</p>
@@ -121,131 +241,6 @@ export default function SalesResponseExamples() {
               </div>
             </Link>
           ))}
-        </div>
-      )}
-
-      {showAdd && (
-        <div className="drawer-overlay" onClick={() => setShowAdd(false)}>
-          <div className="drawer" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 620 }}>
-            <div className="drawer-head">
-              <h2>New Response Example</h2>
-              <button className="drawer-close" onClick={() => setShowAdd(false)}>×</button>
-            </div>
-            <div className="drawer-body">
-              <div className="drawer-section">
-                <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem', flexWrap: 'wrap' }}>
-                  <button
-                    type="button"
-                    className={mode === 'existing' ? 'rev-ai-btn' : 'rev-mini-btn'}
-                    onClick={() => setMode('existing')}
-                    disabled={leads.length === 0}
-                  >
-                    Pick an existing lead
-                  </button>
-                  <button
-                    type="button"
-                    className={mode === 'new' ? 'rev-ai-btn' : 'rev-mini-btn'}
-                    onClick={() => setMode('new')}
-                  >
-                    + New business
-                  </button>
-                </div>
-
-                {mode === 'existing' ? (
-                  leads.length === 0 ? (
-                    <p style={{ fontSize: '0.85rem', color: '#6b7280' }}>
-                      No leads yet — add one in My Leads first, or switch to &quot;New business&quot; and
-                      it&apos;ll be added to your leads automatically.
-                    </p>
-                  ) : (
-                    <label className="field">
-                      <span className="field-label">Which lead is this for? *</span>
-                      <select
-                        value={selectedLeadId}
-                        onChange={(e) => setSelectedLeadId(e.target.value)}
-                        style={{ padding: '0.55rem 0.7rem', borderRadius: 6, border: '1px solid #d1d5db', fontSize: '0.9rem', width: '100%' }}
-                      >
-                        <option value="">Select a lead…</option>
-                        {leads.map((l) => (
-                          <option key={l.id} value={l.id}>{l.business_name}{l.industry ? ` (${l.industry})` : ''}</option>
-                        ))}
-                      </select>
-                    </label>
-                  )
-                ) : (
-                  <>
-                    <label className="field">
-                      <span className="field-label">Business name *</span>
-                      <input value={form.business_name} onChange={(e) => setField('business_name', e.target.value)} placeholder="e.g. Joe's Auto Shop" />
-                    </label>
-                    <div className="drawer-grid">
-                      <label className="field">
-                        <span className="field-label">Industry</span>
-                        <input value={form.industry} onChange={(e) => setField('industry', e.target.value)} placeholder="e.g. Auto Repair, Restaurant" />
-                      </label>
-                      <label className="field">
-                        <span className="field-label">Contact name</span>
-                        <input value={form.contact_name} onChange={(e) => setField('contact_name', e.target.value)} />
-                      </label>
-                    </div>
-                    <p style={{ fontSize: '0.78rem', color: '#6b7280', marginTop: '-0.3rem' }}>
-                      This will also be added to your leads automatically.
-                    </p>
-                  </>
-                )}
-              </div>
-
-              <div className="drawer-section">
-                <div className="drawer-section-label">Real reviews (up to 5)</div>
-                <p style={{ fontSize: '0.8rem', color: '#6b7280', marginBottom: '0.75rem' }}>
-                  Paste 2-3 of their actual Google reviews — a mix of star ratings works best to show range.
-                </p>
-                {reviews.map((r, i) => (
-                  <div key={i} style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: '0.75rem', marginBottom: '0.6rem' }}>
-                    <div className="drawer-grid" style={{ marginBottom: '0.5rem' }}>
-                      <label className="field" style={{ marginBottom: 0 }}>
-                        <span className="field-label">Reviewer name</span>
-                        <input value={r.reviewer_name} onChange={(e) => setReview(i, 'reviewer_name', e.target.value)} />
-                      </label>
-                      <label className="field" style={{ marginBottom: 0 }}>
-                        <span className="field-label">Stars</span>
-                        <select
-                          value={r.star_rating}
-                          onChange={(e) => setReview(i, 'star_rating', parseInt(e.target.value))}
-                          style={{ padding: '0.55rem 0.7rem', borderRadius: 6, border: '1px solid #d1d5db', width: '100%' }}
-                        >
-                          {[5, 4, 3, 2, 1].map((n) => <option key={n} value={n}>{n} star{n === 1 ? '' : 's'}</option>)}
-                        </select>
-                      </label>
-                    </div>
-                    <textarea
-                      value={r.review_text}
-                      onChange={(e) => setReview(i, 'review_text', e.target.value)}
-                      placeholder="Paste the review text here…"
-                      style={{ minHeight: 60, width: '100%', padding: '0.6rem', borderRadius: 6, border: '1px solid #d1d5db', fontFamily: 'inherit', fontSize: '0.9rem', color: '#1a1a1a' }}
-                    />
-                    {reviews.length > 1 && (
-                      <button className="rev-mini-btn" onClick={() => removeReviewRow(i)} style={{ marginTop: '0.5rem' }}>Remove</button>
-                    )}
-                  </div>
-                ))}
-                {reviews.length < 5 && (
-                  <button className="rev-mini-btn" onClick={addReviewRow}>+ Add another review</button>
-                )}
-              </div>
-
-              {error && <div className="admin-error">{error}</div>}
-
-              <button
-                className="rev-ai-btn"
-                onClick={create}
-                disabled={saving || (mode === 'existing' ? !selectedLeadId : !form.business_name.trim())}
-                style={{ marginTop: '0.5rem' }}
-              >
-                {saving ? 'Creating…' : 'Create'}
-              </button>
-            </div>
-          </div>
         </div>
       )}
     </div>
