@@ -402,6 +402,39 @@ export default function SalesToolkit() {
             forcing into a formula.
           </p>
 
+          <h2 style={h2Style}>Commission on the $197 Reputation Cleanup</h2>
+          <div style={{ ...cardStyle, background: '#FFF7ED', border: '1px solid #FDBA74' }}>
+            <p style={{ ...pStyle, marginBottom: 0 }}>
+              <b>This is not part of month one, even when it's sold in the same call.</b> It's a
+              separate product with its own 50/50 split: you keep <b>$98.50</b> of every Cleanup you
+              close, whether it's sold standalone or as the checkout add-on on a new subscription. The
+              other half stays with the company — Cleanup is real, one-time labor (not an ongoing
+              relationship the tiered schedule can spread cost across), so this isn't the same 100%
+              rule that applies to a subscription's first month.
+            </p>
+          </div>
+          <p style={pStyle}>
+            <b>What's actually included:</b> responding to a client's unanswered reviews from the last
+            180 days, plus rewriting any existing responses that raise privacy, tone, or compliance
+            issues. <b>It's priced and scoped per location</b> — a 3-location client needing Cleanup
+            pays (and you earn commission on) $197 for each location, not one flat fee for all three.
+          </p>
+          <p style={pStyle}>
+            <b>Cleanup covers up to 30 combined review actions per location.</b> Most backlogs fall
+            well under this. If a client's backlog is genuinely larger — the kind of thing that comes
+            up occasionally with a practice that's never responded to anything — loop in Jacob for a
+            custom quote on the excess rather than assuming the standard $197 covers it.
+          </p>
+          <p style={{ ...pStyle, marginBottom: 0 }}>
+            <b>Don't promise a fast turnaround on Cleanup specifically.</b> It's completed over 2-3
+            weeks, deliberately paced rather than done all at once — posting or editing dozens of
+            responses in a short window can look automated to Google and Yelp's own systems, even
+            though the work is completely legitimate. If a client asks why it's not instant, that's the
+            honest answer: the pace is protecting their profile, not a slower version of the 24-hour
+            guarantee, which is a separate promise that only applies to new reviews coming in going
+            forward.
+          </p>
+
           <h2 style={h2Style}>What a real book looks like over time</h2>
           <div style={{ ...cardStyle, overflowX: 'auto' }}>
             <p style={{ ...pStyle, fontSize: '0.82rem', color: '#6b7280', marginBottom: '0.75rem' }}>
