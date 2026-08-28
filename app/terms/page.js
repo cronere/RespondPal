@@ -85,9 +85,28 @@ export default function Terms() {
         <section className="legal-section">
           <h2>5. Profile Cleanup Add-On</h2>
           <p>
-            The optional Profile Cleanup add-on is a one-time service in which we
-            respond to your existing backlog of past reviews. It is billed once,
-            is non-recurring, and is non-refundable once the work has begun.
+            The optional Profile Cleanup add-on is a one-time service covering two
+            things: responding to your unanswered reviews from the last 180 days,
+            and rewriting any of your existing responses that raise privacy, tone,
+            or compliance concerns. It is billed once, is non-recurring, and is
+            non-refundable once the work has begun.
+          </p>
+          <p>
+            Cleanup is priced and scoped per location — a multi-location business
+            is billed, and covered, separately for each one. Each location&apos;s
+            Cleanup covers up to 30 combined review actions (new responses and
+            rewrites together); a location with a backlog beyond that will receive
+            a custom quote for the remainder rather than being billed the standard
+            rate automatically.
+          </p>
+          <p>
+            Cleanup is completed within 2-3 weeks of starting, deliberately paced
+            rather than done all at once. Posting or editing dozens of review
+            responses within a short window can appear automated to Google and
+            Yelp&apos;s own systems, even when the work is entirely legitimate — a
+            gradual pace keeps your account activity looking like what it actually
+            is, which protects your profile rather than slowing it down
+            unnecessarily.
           </p>
         </section>
 
