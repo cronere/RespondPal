@@ -506,11 +506,20 @@ export default function AuditReport() {
         <div className="cta-box">
           <div className="cta-head">Want us to handle this for you?</div>
           <div className="cta-body">
-            {critical.length > 0
-              ? `We'll rewrite all ${critical.length} flagged response${critical.length === 1 ? '' : 's'} — not just the ${inlineRewriteIds.size} shown above — respond to every unanswered negative, and clean up your entire profile.`
-              : combinedNeg > 0
-                ? 'We\'ll respond to every unanswered negative and keep your profile sharp going forward.'
-                : 'We\'ll take every future review off your plate — responded to within 24 hours, every time.'}
+            {(() => {
+              const totalActions = critical.length + combinedNeg
+              if (critical.length > 0) {
+                return totalActions <= 30
+                  ? `We'll rewrite all ${critical.length} flagged response${critical.length === 1 ? '' : 's'} — not just the ${inlineRewriteIds.size} shown above — and respond to all ${combinedNeg} unanswered negative${combinedNeg === 1 ? '' : 's'}.`
+                  : `We'll rewrite your flagged responses and respond to your unanswered negatives — up to 30 combined — covering the bulk of what's here. With ${totalActions} total, we'll follow up with a quote for the rest.`
+              }
+              if (combinedNeg > 0) {
+                return combinedNeg <= 30
+                  ? `We'll respond to all ${combinedNeg} unanswered negative${combinedNeg === 1 ? '' : 's'} and keep your profile sharp going forward.`
+                  : `We'll respond to your unanswered negatives — up to 30 — and follow up with a quote for the rest. Then we'll keep your profile sharp going forward.`
+              }
+              return 'We\'ll take every future review off your plate — responded to within 24 hours, every time.'
+            })()}
           </div>
           <div className="cta-price">Reputation Cleanup — $197 one-time</div>
           <div style={{ marginTop: 10, marginBottom: 4 }}>
@@ -519,9 +528,6 @@ export default function AuditReport() {
               padding: '10px 28px', borderRadius: 6, fontWeight: 700, fontSize: '11pt',
               textDecoration: 'none'
             }}>Get your cleanup →</a>
-          </div>
-          <div style={{ fontSize: '7.5pt', color: '#6b7280', marginBottom: 8 }}>
-            respondpal.ai/audit/cleanup-confirmed
           </div>
           <div className="cta-body" style={{ marginTop: 10 }}>
             And if you want it handled permanently — every new review, every platform, within 24 hours — our monthly service starts at $397/mo.
