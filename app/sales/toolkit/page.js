@@ -131,8 +131,8 @@ export default function SalesToolkit() {
               <p style={{ ...pStyle, marginBottom: 0 }}>
                 Ten rules every response follows regardless of industry — never argue with a reviewer,
                 never confirm private information publicly, never claim a false resolution, and more.
-                Developed from analyzing thousands of real review responses across 44 companies in 10
-                industries.
+                Developed from analyzing thousands of real review responses across many
+                industries (HVAC, roofing, plumbing, auto repair, dental, med spa, chiropractic, physical therapy, family law, veterinary, restaurants).
               </p>
             </div>
             <div style={{ marginBottom: '0.9rem' }}>
@@ -184,7 +184,7 @@ export default function SalesToolkit() {
           <h2 style={h2Style}>The HIPAA angle — your strongest opener</h2>
           <div style={{ ...cardStyle, background: '#FFFBEB', border: '1px solid #FDE68A' }}>
             <p style={{ ...pStyle, marginBottom: 0 }}>
-              HHS has fined dental practices $10,000–$50,000 for review responses that confirm patient
+              HHS has fined healthcare practices $10,000–$50,000 for review responses that confirm patient
               status — phrases as simple as &quot;sorry about your visit&quot; or &quot;we haven&apos;t
               seen you since 2021.&quot; Real cases: New Vision Dental (CA, $23,000), a North Carolina
               practice ($50,000), Manasa Health Center (NJ, $30,000). In qualifying 275 healthcare
