@@ -5,6 +5,7 @@ import { useState } from 'react'
 const TABS = [
   { key: 'why', label: 'Why This Works' },
   { key: 'sell', label: 'How You Sell' },
+  { key: 'objections', label: 'Objections' },
   { key: 'loom', label: 'Loom Script' },
   { key: 'commission', label: 'Commission' },
   { key: 'ownership', label: 'Ownership Rules' },
@@ -30,6 +31,14 @@ function Stat({ n, label }) {
 export default function SalesToolkit() {
   const [tab, setTab] = useState('why')
   const [mobileTabsOpen, setMobileTabsOpen] = useState(false)
+  const [copiedKey, setCopiedKey] = useState('')
+
+  const copyTemplate = (key, text) => {
+    navigator.clipboard.writeText(text).then(() => {
+      setCopiedKey(key)
+      setTimeout(() => setCopiedKey(''), 2000)
+    })
+  }
 
   return (
     <div className="admin-page">
@@ -225,6 +234,44 @@ export default function SalesToolkit() {
             </div>
           ))}
 
+          <h2 style={h2Style}>Copy-paste templates</h2>
+          <p style={pStyle}>
+            The same scripts from the step above, as actual text you can grab directly — no retyping
+            from the description.
+          </p>
+
+          {[
+            {
+              key: 'healthcare-email',
+              label: 'Healthcare cold email (compliance angle)',
+              text: "I've been researching how healthcare practices in [City] handle review responses. Most accidentally include details that create compliance exposure. I noticed a few on your profile that follow the same pattern — can I send over a quick report?",
+            },
+            {
+              key: 'general-email',
+              label: 'General business cold email (reputation angle)',
+              text: 'Your Google responses are either missing or feel generic. We fix that with AI built for your industry, reviewed by a human before it posts. $397/month, no contract.',
+            },
+            {
+              key: 'gatekeeper',
+              label: 'Gatekeeper script (cold call)',
+              text: "Is the owner or manager available? I'm calling about their Google reviews.",
+            },
+          ].map((tpl) => (
+            <div key={tpl.key} style={cardStyle}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '0.75rem', marginBottom: '0.5rem' }}>
+                <div style={{ fontWeight: 700, fontSize: '0.85rem', color: '#1a1a1a' }}>{tpl.label}</div>
+                <button
+                  onClick={() => copyTemplate(tpl.key, tpl.text)}
+                  className="rev-mini-btn"
+                  style={{ whiteSpace: 'nowrap', flexShrink: 0 }}
+                >
+                  {copiedKey === tpl.key ? 'Copied!' : 'Copy'}
+                </button>
+              </div>
+              <p style={{ ...pStyle, marginBottom: 0, fontStyle: 'italic' }}>&quot;{tpl.text}&quot;</p>
+            </div>
+          ))}
+
           <h2 style={h2Style}>What you don&apos;t do</h2>
           <div style={cardStyle}>
             {['Write review responses', 'Review or approve AI drafts', 'Handle client complaints or support', 'Manage ongoing client relationships', 'Deal with billing, cancellations, or account issues', 'Build your own pitch — it\'s all here already'].map((item, i) => (
@@ -254,6 +301,148 @@ export default function SalesToolkit() {
               <div key={i} style={{ fontSize: '0.88rem', color: '#374151', marginBottom: '0.4rem' }}>✓ {fact}</div>
             ))}
           </div>
+
+          <h2 style={h2Style}>Referrals</h2>
+          <div style={cardStyle}>
+            <p style={pStyle}>
+              A referral coming directly to you — the client tells the prospect to call you
+              specifically — is just a new lead. Add it, work it, close it, full commission, exactly
+              like any other sale.
+            </p>
+            <p style={{ ...pStyle, marginBottom: 0 }}>
+              A referral that comes in blind — to team@respondpal.ai, or mentioned to Jacob or
+              fulfillment without a specific rep attached — always routes back to the referring
+              client&apos;s rep first, since that&apos;s directly visible on the client record. You
+              get the normal opportunity to work and close it yourself, full commission, same as
+              above. <b>Only if you&apos;re unavailable or don&apos;t work it, and Jacob or
+              fulfillment closes it directly instead, you still get a referral bonus of 50% of month
+              one</b> — recognition that the relationship you built is what generated the lead, even
+              on a deal you didn&apos;t personally close.
+            </p>
+          </div>
+
+          <h2 style={h2Style}>Your two email addresses</h2>
+          <div style={cardStyle}>
+            <p style={pStyle}>
+              You&apos;ll have access to two separate email identities, and which one you use matters
+              — mixing them up risks the whole team&apos;s deliverability, not just your own.
+            </p>
+            <p style={pStyle}>
+              <b>yourname@getrespondpal.com — for cold outreach only.</b> This is a dedicated sending
+              domain, kept deliberately separate from our main business domain specifically so that
+              if it ever gets flagged, nothing else is affected. It runs through a shared Instantly
+              workspace Jacob manages centrally — you get your own mailbox and sending identity
+              within it, but the whole domain&apos;s health is a shared resource across everyone
+              using it, so daily volume is capped per mailbox to keep the domain healthy for
+              everyone, not just you. New mailboxes go through a warm-up period before touching real
+              prospects — Jacob will let you know when yours is ready for full volume.
+            </p>
+            <p style={{ ...pStyle, marginBottom: 0 }}>
+              <b>yourname@respondpal.ai — never for bulk or cold sending.</b> This is your real,
+              branded identity for everything else: replying once a prospect is already engaged,
+              sending a contract or follow-up material, LinkedIn and networking, anything where
+              looking official actually helps. Sending cold volume from this address risks the same
+              domain our transactional email — onboarding confirmations, commission statements —
+              depends on, which is exactly why the two stay separate.
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* ── OBJECTIONS ── */}
+      {tab === 'objections' && (
+        <div style={{ maxWidth: 720 }}>
+          <div style={cardStyle}>
+            <p style={{ ...pStyle, marginBottom: 0 }}>
+              These aren&apos;t scripts to recite word-for-word — they&apos;re the actual reasoning
+              behind each objection, so you can respond in your own words and adapt to what the
+              prospect is really saying. Reciting a memorized line usually sounds like a memorized
+              line. Understanding *why* the objection doesn&apos;t hold up lets you respond naturally,
+              even when they phrase it differently than you expected.
+            </p>
+          </div>
+
+          <h2 style={h2Style}>&quot;We already respond ourselves&quot;</h2>
+          <div style={cardStyle}>
+            <p style={{ ...pStyle, marginBottom: 0 }}>
+              This isn&apos;t really about whether they respond — it&apos;s about whether the
+              responses are actually good, consistent, and every single time. Most owners who say
+              this haven&apos;t looked critically at their own response history recently: some
+              reviews get answered, many don&apos;t, and the tone varies depending on how busy or
+              frustrated they were that day. Ask if they&apos;ve checked their own response rate
+              lately — most people are surprised how many reviews slipped through unanswered. The
+              value isn&apos;t &quot;doing it&quot; versus &quot;not doing it,&quot; it&apos;s doing
+              it well, consistently, without it being one more thing they have to remember.
+            </p>
+          </div>
+
+          <h2 style={h2Style}>&quot;I already put responses into ChatGPT&quot;</h2>
+          <div style={cardStyle}>
+            <p style={{ ...pStyle, marginBottom: 0 }}>
+              This person is already sold on AI helping — that part of the pitch is done for you.
+              What raw ChatGPT doesn&apos;t have is any of the three layers that actually make a
+              response safe and effective: it doesn&apos;t know industry-specific failure patterns,
+              it has zero awareness of what constitutes a HIPAA violation in a healthcare response
+              (arguably more dangerous than not responding at all, since they&apos;re now actively
+              generating language with no compliance guardrails), and it doesn&apos;t know their
+              brand voice. They&apos;re also still doing all the manual work — copying the review in,
+              writing a prompt, copying the output out, remembering to do this for every single
+              review. Ask honestly: do they do this every time, within 24 hours, for every review on
+              both platforms? Most people admit it&apos;s inconsistent. That&apos;s the actual gap —
+              not whether AI can write a response, but whether it&apos;s actually happening, safely,
+              every time, without them thinking about it.
+            </p>
+          </div>
+
+          <h2 style={h2Style}>&quot;I need to check with my partner&quot;</h2>
+          <div style={cardStyle}>
+            <p style={{ ...pStyle, marginBottom: 0 }}>
+              Often genuine, not always a brush-off — don&apos;t push back hard on it. Respect it,
+              but get something concrete rather than leaving it open-ended: ask when they think
+              they&apos;ll have a chance to talk, and set your follow-up around that specific time
+              rather than a vague &quot;I&apos;ll check back.&quot; This is exactly where the
+              one-page leave-behind earns its keep — give them something they can actually forward,
+              rather than making them explain the pitch secondhand from memory.
+            </p>
+          </div>
+
+          <h2 style={h2Style}>&quot;How do I know this isn&apos;t a scam&quot;</h2>
+          <div style={cardStyle}>
+            <p style={{ ...pStyle, marginBottom: 0 }}>
+              Skepticism toward cold outreach is a reasonable default, not something to argue
+              someone out of. Trying to talk them out of it usually backfires — point at something
+              concrete instead. The report itself already contains their own real reviews, not
+              generic examples. There&apos;s no upfront commitment — no contract, cancel anytime.
+              And they can independently verify anything — look up the company, check the website,
+              ask you direct questions. Give them something they can check themselves rather than
+              asking them to just trust you.
+            </p>
+          </div>
+
+          <h2 style={h2Style}>&quot;Can I see more examples first&quot;</h2>
+          <div style={cardStyle}>
+            <p style={{ ...pStyle, marginBottom: 0 }}>
+              Usually a good sign — they&apos;re engaged, not rejecting. But the report they already
+              have shows their own real reviews with real drafted responses, which is more relevant
+              than any generic example from another business could be. If they push for more, ask
+              specifically what they&apos;d want to see that isn&apos;t already in front of them —
+              often this surfaces a real, specific concern worth addressing directly, rather than a
+              vague stall that more examples wouldn&apos;t actually resolve.
+            </p>
+          </div>
+
+          <h2 style={h2Style}>&quot;We don&apos;t have budget right now&quot;</h2>
+          <div style={cardStyle}>
+            <p style={{ ...pStyle, marginBottom: 0 }}>
+              At this price point with no contract, this is usually about priority, not literal
+              budget — they don&apos;t yet see it as important enough to fund. Reconnect to the
+              actual stakes (AI increasingly deciding who gets recommended, HIPAA risk for
+              healthcare) rather than arguing about price itself. If someone genuinely can&apos;t
+              afford $397/month, that&apos;s a real constraint worth respecting — but the more
+              common case is they haven&apos;t yet been convinced it&apos;s worth it, which is a
+              different problem than budget.
+            </p>
+          </div>
         </div>
       )}
 
@@ -266,6 +455,19 @@ export default function SalesToolkit() {
               through it does more work than the PDF alone — it&apos;s the difference between an email
               they might skim and a report they actually watch someone explain. Keep it under 3 minutes.
               Screen-share the report, don&apos;t just talk about it.
+            </p>
+          </div>
+
+          <div style={{ ...cardStyle, background: '#FFF7ED', border: '1px solid #FDBA74' }}>
+            <div style={{ fontWeight: 700, color: '#1a1a1a', marginBottom: '0.5rem' }}>Example recording</div>
+            <p style={{ ...pStyle, marginBottom: '0.5rem' }}>
+              <a href="https://www.loom.com/share/900902a7880e49ffbf9f91cbd61b7941" target="_blank" rel="noreferrer" style={{ color: '#C2410C', fontWeight: 700 }}>
+                Watch on Loom →
+              </a>
+            </p>
+            <p style={{ ...pStyle, marginBottom: 0, fontSize: '0.8rem', color: '#6b7280', fontStyle: 'italic' }}>
+              * This is just a quick example of what this might look like — not a script to copy
+              exactly, more a sense of the pacing and tone that works.
             </p>
           </div>
 
