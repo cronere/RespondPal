@@ -234,6 +234,29 @@ export default function SalesToolkit() {
             </div>
           ))}
 
+          <h2 style={h2Style}>A full outreach cadence, not just a single touch</h2>
+          <div style={cardStyle}>
+            <p style={pStyle}>
+              Most deals don&apos;t close on the first touch. This is a realistic multi-day sequence
+              — spread it out, don&apos;t compress it into one day just to move faster.
+            </p>
+            {[
+              { day: 'Day 1', t: 'Cold outreach', d: 'Cold call or cold email using the templates above. This is the first touch, not the close — the goal is just to get the report in front of them.' },
+              { day: 'Day 3', t: 'The video audit email', d: 'Send the Audit or Response Examples PDF with a short Loom walking through it. This is your strongest asset — most of the real selling happens here, not on a call.' },
+              { day: 'Day 5', t: 'LinkedIn follow-up', d: 'Connect with the owner or practice manager. A short note referencing the email you sent — "wanted to make sure it didn\'t get lost in a busy inbox" — works better than repeating the pitch.' },
+              { day: 'Day 7', t: 'The close call', d: 'Call to close, referencing the report by name — you\'re following up on something they requested, not cold calling again. The report already did the selling; you\'re there for questions and payment.' },
+              { day: 'Day 12', t: 'The breakup email', d: 'If there\'s been no response at all, one final, low-pressure note: "Wanted to check if this is still worth a look, or if now just isn\'t the right time — happy to circle back later if so." Genuinely close the loop rather than fading out — a clear final touch gets replies more often than silence does.' },
+            ].map((step, i) => (
+              <div key={i} style={{ display: 'flex', gap: '1rem', marginBottom: i < 4 ? '1rem' : 0 }}>
+                <div style={{ fontSize: '0.85rem', fontWeight: 800, color: '#C2410C', minWidth: 55 }}>{step.day}</div>
+                <div>
+                  <div style={{ fontWeight: 700, fontSize: '0.88rem', color: '#1a1a1a', marginBottom: '0.2rem' }}>{step.t}</div>
+                  <p style={{ ...pStyle, marginBottom: 0, fontSize: '0.85rem' }}>{step.d}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
           <h2 style={h2Style}>Copy-paste templates</h2>
           <p style={pStyle}>
             The same scripts from the step above, as actual text you can grab directly — no retyping
@@ -286,6 +309,71 @@ export default function SalesToolkit() {
             <a href="/leave-behinds/RespondPal_General_One_Pager.pdf" target="_blank" rel="noreferrer" className="rev-mini-btn">
               General business one-pager (PDF) ↓
             </a>
+          </div>
+
+          <p style={pStyle}>
+            <b>The Fine Tracker</b> is a separate, deeper document — four real, named OCR settlements
+            with amounts and what actually happened in each. Use it when a healthcare prospect is
+            skeptical the HIPAA risk is real, not as your default opener — the healthcare one-pager
+            already covers the core pitch, this is the follow-up proof when someone specifically
+            needs to see more before they believe it.
+          </p>
+          <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', marginBottom: '1rem' }}>
+            <a href="/leave-behinds/RespondPal_Fine_Tracker.pdf" target="_blank" rel="noreferrer" className="rev-mini-btn">
+              Fine Tracker (PDF) ↓
+            </a>
+          </div>
+
+          <h2 style={h2Style}>If a prospect insists on responding manually</h2>
+          <div style={cardStyle}>
+            <p style={{ ...pStyle, marginBottom: 0 }}>
+              Some healthcare prospects will want to keep responding themselves even after seeing
+              the risk. These three templates are safe patterns they can copy directly — hand them
+              over as a genuine, useful gift, then close with: &quot;You can copy and paste these
+              every time, or let RespondPal handle it automatically so your staff never has to get
+              this right on their own.&quot;
+            </p>
+          </div>
+
+          <div style={cardStyle}>
+            <div style={{ fontWeight: 700, fontSize: '0.85rem', color: '#1a1a1a', marginBottom: '0.4rem' }}>Tier 1 — Responding to a positive review</div>
+            <p style={{ ...pStyle, marginBottom: '0.5rem', fontStyle: 'italic' }}>
+              &quot;Thank you for the kind words! We&apos;re glad to hear it. If you ever have
+              questions about your care, our office is always happy to help — feel free to call us
+              directly at [Phone].&quot;
+            </p>
+            <p style={{ ...pStyle, marginBottom: 0, fontSize: '0.78rem', color: '#6b7280' }}>
+              Never confirms the reviewer is a patient — it thanks them for the review itself, which
+              works regardless of who they actually are.
+            </p>
+          </div>
+
+          <div style={cardStyle}>
+            <div style={{ fontWeight: 700, fontSize: '0.85rem', color: '#1a1a1a', marginBottom: '0.4rem' }}>Tier 2 — Responding to a negative review with a clinical complaint</div>
+            <p style={{ ...pStyle, marginBottom: '0.5rem', fontStyle: 'italic' }}>
+              &quot;We take all feedback seriously, as patient care is our highest priority. Due to
+              privacy regulations, we can&apos;t discuss specific care details in a public forum.
+              Please contact our Practice Manager at [Phone] so we can look into this directly.&quot;
+            </p>
+            <p style={{ ...pStyle, marginBottom: 0, fontSize: '0.78rem', color: '#6b7280' }}>
+              Speaks only in general policy terms and moves the conversation offline — never confirms
+              or denies a treatment relationship.
+            </p>
+          </div>
+
+          <div style={cardStyle}>
+            <div style={{ fontWeight: 700, fontSize: '0.85rem', color: '#1a1a1a', marginBottom: '0.4rem' }}>Tier 3 — Responding to a review that might not even be a real patient</div>
+            <p style={{ ...pStyle, marginBottom: '0.5rem', fontStyle: 'italic' }}>
+              &quot;We take every review seriously and want to make things right wherever possible. If
+              you&apos;d like to discuss this further, please reach out to us directly at [Phone] so
+              we can look into it.&quot;
+            </p>
+            <p style={{ ...pStyle, marginBottom: 0, fontSize: '0.78rem', color: '#6b7280' }}>
+              <b>Important:</b> never say anything like &quot;we have no record of you&quot; or
+              &quot;you&apos;re not a patient of ours&quot; — denying someone&apos;s patient status
+              is itself a HIPAA disclosure, just like confirming it would be. Stay neutral regardless
+              of whether the reviewer is a real patient or not.
+            </p>
           </div>
 
           <h2 style={h2Style}>What you don&apos;t do</h2>
