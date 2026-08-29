@@ -438,20 +438,40 @@ export default function SalesToolkit() {
           <h2 style={h2Style}>What a real book looks like over time</h2>
           <div style={{ ...cardStyle, overflowX: 'auto' }}>
             <p style={{ ...pStyle, fontSize: '0.82rem', color: '#6b7280', marginBottom: '0.75rem' }}>
-              Example: a rep who closes 3 clients/month at $397/mo, building a book of 50 clients over time.
+              Example: a rep who closes 3 clients/month at $397/mo, until their book reaches 50 clients
+              around month 17 — then holds there. Every number below is modeled client-by-client through
+              the actual tier schedule in Exhibit A, not estimated.
             </p>
             <table style={tableStyle}>
               <thead>
-                <tr><th style={thStyle}>Period</th><th style={thStyle}>What you earn</th></tr>
+                <tr>
+                  <th style={thStyle}>Month</th>
+                  <th style={thStyle}>New closed</th>
+                  <th style={thStyle}>Total book</th>
+                  <th style={thStyle}>From new closes</th>
+                  <th style={thStyle}>Residual</th>
+                  <th style={thStyle}>Total that month</th>
+                </tr>
               </thead>
               <tbody>
-                <tr><td style={tdStyle}>Month 1 (3 clients)</td><td style={tdStyle}>$1,191</td></tr>
-                <tr><td style={tdStyle}>Month 6 (18 clients)</td><td style={tdStyle}>~$2,700</td></tr>
-                <tr><td style={tdStyle}>Month 12 (36 clients)</td><td style={tdStyle}>~$4,000+</td></tr>
-                <tr style={{ background: '#F0FDF4' }}><td style={{ ...tdStyle, fontWeight: 700 }}>5-year total, 50-client book</td><td style={{ ...tdStyle, fontWeight: 700, color: '#15803d' }}>~$196,500</td></tr>
+                <tr><td style={tdStyle}>1</td><td style={tdStyle}>3</td><td style={tdStyle}>3</td><td style={tdStyle}>$1,191</td><td style={tdStyle}>$0</td><td style={{ ...tdStyle, fontWeight: 700 }}>$1,191</td></tr>
+                <tr><td style={tdStyle}>6</td><td style={tdStyle}>3</td><td style={tdStyle}>18</td><td style={tdStyle}>$1,191</td><td style={tdStyle}>$2,382</td><td style={{ ...tdStyle, fontWeight: 700 }}>$3,573</td></tr>
+                <tr><td style={tdStyle}>12</td><td style={tdStyle}>3</td><td style={tdStyle}>36</td><td style={tdStyle}>$1,191</td><td style={tdStyle}>$4,168</td><td style={{ ...tdStyle, fontWeight: 700 }}>$5,360</td></tr>
+                <tr><td style={tdStyle}>18</td><td style={tdStyle}>0</td><td style={tdStyle}>50 (capped)</td><td style={tdStyle}>$0</td><td style={tdStyle}>$4,943</td><td style={{ ...tdStyle, fontWeight: 700 }}>$4,943</td></tr>
+                <tr><td style={tdStyle}>24</td><td style={tdStyle}>0</td><td style={tdStyle}>50</td><td style={tdStyle}>$0</td><td style={tdStyle}>$3,533</td><td style={{ ...tdStyle, fontWeight: 700 }}>$3,533</td></tr>
+                <tr><td style={tdStyle}>36</td><td style={tdStyle}>0</td><td style={tdStyle}>50</td><td style={tdStyle}>$0</td><td style={tdStyle}>$2,263</td><td style={{ ...tdStyle, fontWeight: 700 }}>$2,263</td></tr>
+                <tr><td style={tdStyle}>60</td><td style={tdStyle}>0</td><td style={tdStyle}>50</td><td style={tdStyle}>$0</td><td style={tdStyle}>$1,985</td><td style={{ ...tdStyle, fontWeight: 700 }}>$1,985</td></tr>
+                <tr style={{ background: '#F0FDF4' }}><td colSpan={5} style={{ ...tdStyle, fontWeight: 700 }}>5-year total, 50-client book</td><td style={{ ...tdStyle, fontWeight: 700, color: '#15803d' }}>$180,953</td></tr>
               </tbody>
             </table>
           </div>
+          <p style={pStyle}>
+            The dip after month 18 isn't the book losing value — it's the same 50 clients aging through
+            lower tiers exactly as designed. What matters is the floor: once every client is past month
+            24, this settles at roughly $1,985/mo, indefinitely, from a book you already built — that's
+            the passive part of the model. In practice you wouldn't stop at 50; every additional client
+            you keep closing adds directly on top of that floor.
+          </p>
           <p style={pStyle}>
             The 6-sales-per-year floor on the indefinite residual is there so the residual rewards reps
             who keep producing new business, not just coasting on an old book.
