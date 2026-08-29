@@ -322,7 +322,7 @@ export default function CommissionEvents() {
 
       {showAdjustment && (
         <div className="drawer-overlay" onClick={() => setShowAdjustment(false)}>
-          <div className="drawer" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 480 }}>
+          <div className="drawer" onClick={(e) => e.stopPropagation()}>
             <div className="drawer-head">
               <h2>Manual Adjustment</h2>
               <button className="drawer-close" onClick={() => setShowAdjustment(false)}>×</button>
@@ -391,7 +391,7 @@ export default function CommissionEvents() {
         </div>
       )}
 
-      <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.25rem', borderBottom: '1px solid #e5e7eb' }}>
+      <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.25rem', borderBottom: '1px solid #e5e7eb', overflowX: 'auto' }}>
         {[
           { key: 'needs_review', label: 'Needs Review' },
           { key: 'matched', label: 'Matched' },
