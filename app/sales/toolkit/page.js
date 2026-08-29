@@ -272,6 +272,22 @@ export default function SalesToolkit() {
             </div>
           ))}
 
+          <h2 style={h2Style}>Leave-behind PDFs</h2>
+          <p style={pStyle}>
+            A one-page summary a prospect can forward internally — to a partner, an office manager,
+            anyone who wasn&apos;t on the call. Use the healthcare version for anything with a HIPAA
+            angle; the general version for everyone else, since HIPAA doesn&apos;t apply outside
+            healthcare and shouldn&apos;t appear on a non-healthcare prospect&apos;s copy.
+          </p>
+          <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', marginBottom: '1rem' }}>
+            <a href="/leave-behinds/RespondPal_Healthcare_One_Pager.pdf" target="_blank" rel="noreferrer" className="rev-ai-btn">
+              Healthcare one-pager (PDF) ↓
+            </a>
+            <a href="/leave-behinds/RespondPal_General_One_Pager.pdf" target="_blank" rel="noreferrer" className="rev-mini-btn">
+              General business one-pager (PDF) ↓
+            </a>
+          </div>
+
           <h2 style={h2Style}>What you don&apos;t do</h2>
           <div style={cardStyle}>
             {['Write review responses', 'Review or approve AI drafts', 'Handle client complaints or support', 'Manage ongoing client relationships', 'Deal with billing, cancellations, or account issues', 'Build your own pitch — it\'s all here already'].map((item, i) => (
