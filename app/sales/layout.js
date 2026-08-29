@@ -89,7 +89,7 @@ export default function SalesLayout({ children }) {
     <div className="admin-shell">
       <aside className="admin-sidebar">
         <div className="admin-brand">
-          Respond<span>Pal</span>
+          <div className="admin-brand-text">Respond<span>Pal</span></div>
           <div className="admin-brand-sub">Sales HQ{rep ? ` · ${rep.name}` : ''}</div>
           <button
             className="admin-hamburger"
