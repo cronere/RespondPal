@@ -127,7 +127,27 @@ export default function Terms() {
         </section>
 
         <section className="legal-section">
-          <h2>7. Intellectual Property</h2>
+          <h2>7. What We Process — And What You Should Never Send Us</h2>
+          <p>
+            RespondPal drafts and publishes responses based only on content that
+            is already public — the reviews posted about your business on
+            Google and Yelp. We do not access, request, or accept private
+            patient records, charts, appointment details, or other non-public
+            health information, and you agree not to submit any such
+            information to us through onboarding, brand-voice preferences,
+            support requests, or any other channel.
+          </p>
+          <p>
+            Because our service only processes publicly-posted review content,
+            we do not meet the definition of a HIPAA Business Associate, and a
+            Business Associate Agreement is not required for this service. If
+            you have questions about this position, contact us — we&rsquo;re
+            happy to explain it in more detail.
+          </p>
+        </section>
+
+        <section className="legal-section">
+          <h2>8. Intellectual Property</h2>
           <p>
             Responses we publish on your behalf become part of your business
             profiles and belong to you. The RespondPal name, brand, website,
@@ -137,7 +157,7 @@ export default function Terms() {
         </section>
 
         <section className="legal-section">
-          <h2>8. Disclaimers &amp; Limitation of Liability</h2>
+          <h2>9. Disclaimers &amp; Limitation of Liability</h2>
           <p>
             The service is provided &ldquo;as is.&rdquo; We do not guarantee any
             specific outcome, including improvements in ratings, rankings,
@@ -150,7 +170,7 @@ export default function Terms() {
         </section>
 
         <section className="legal-section">
-          <h2>9. Changes to These Terms</h2>
+          <h2>10. Changes to These Terms</h2>
           <p>
             We may update these Terms from time to time. If we make material
             changes, we will notify active clients by email. Your continued use
@@ -160,7 +180,7 @@ export default function Terms() {
         </section>
 
         <section className="legal-section">
-          <h2>10. Governing Law</h2>
+          <h2>11. Governing Law</h2>
           <p>
             These Terms are governed by the laws of the State of Arizona, without
             regard to its conflict-of-law principles.
@@ -168,7 +188,7 @@ export default function Terms() {
         </section>
 
         <section className="legal-section">
-          <h2>11. Contact</h2>
+          <h2>12. Contact</h2>
           <p>
             Questions about these Terms? Reach us at{' '}
             <a href="mailto:team@respondpal.ai">team@respondpal.ai</a>.
