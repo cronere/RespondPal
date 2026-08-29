@@ -3665,21 +3665,6 @@ footer a:hover {
   .admin-cards { grid-template-columns: 1fr; }
   .leads-tabs-desktop { display: none; }
   .leads-tabs-mobile { display: block; }
-  /* Drawers (used for the Add Task modal, Response Examples' "New
-     Response Example" flow, and others) were a 480px side panel capped
-     at 92vw — technically not overflowing, but cramped and awkward on a
-     narrow phone screen. Full-screen is the standard mobile pattern for
-     this kind of modal. */
-  .drawer {
-    width: 100%;
-    max-width: 100%;
-    top: 0;
-    right: 0;
-    left: 0;
-  }
-  .drawer-grid {
-    grid-template-columns: 1fr;
-  }
 }
 
 /* ════════════════════════════════════════════════════════════════════
@@ -3871,6 +3856,18 @@ footer a:hover {
   flex-direction: column;
   box-shadow: -8px 0 32px rgba(0, 0, 0, 0.18);
   animation: drawerIn 0.2s ease;
+}
+
+/* For drawers that need more room than the 480px default (e.g. showing a
+   list of a rep's leads) — a real class rather than an inline style, so
+   the mobile override below can still reach and override it. An inline
+   style always wins over a stylesheet rule for the same property
+   regardless of media queries, which silently defeated the mobile
+   full-screen override the same way it did on the leads/toolkit tab bars
+   a few rounds back. Named drawer-560 specifically to avoid colliding
+   with the existing .drawer-wide class (720px) used elsewhere. */
+.drawer-560 {
+  width: 560px;
 }
 
 @keyframes drawerIn {
@@ -5319,3 +5316,31 @@ footer a:hover {
 .demo-draft-label { font-size: 0.7rem; font-weight: 700; color: var(--orange); text-transform: uppercase; margin-bottom: 0.25rem; }
 .demo-draft-pending { color: var(--admin-muted); font-size: 0.85rem; font-style: italic; }
 .demo-draft-edit { display: flex; flex-direction: column; gap: 0.5rem; }
+
+/* ═══════════════════════════════════════════════════════
+   Drawer mobile override — deliberately placed at the very end of this
+   file. It was previously inside an earlier @media block (much higher up
+   in this file), which meant the later, non-media-query base .drawer
+   rule (width: 480px) won every cascade tie regardless of actual
+   viewport width — the mobile full-screen fix was silently dead code
+   this entire time for every drawer-based modal (Add Task, Add Lead, Add
+   Sales Rep, Response Examples, Rep's Leads, etc.), not just the one
+   that got reported. Placing this last guarantees it can never lose that
+   tie again, no matter what gets added above it later.
+   ═══════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  .drawer {
+    width: 100%;
+    max-width: 100%;
+    top: 0;
+    right: 0;
+    left: 0;
+  }
+  .drawer-560,
+  .drawer-wide {
+    width: 100%;
+  }
+  .drawer-grid {
+    grid-template-columns: 1fr;
+  }
+}
