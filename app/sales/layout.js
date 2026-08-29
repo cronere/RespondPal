@@ -10,6 +10,7 @@ const NAV = [
   { href: '/sales/leads', label: 'My Leads', badgeKey: 'tasksDue' },
   { href: '/sales/audit-request', label: 'Request Audit', badgeKey: 'auditsReady' },
   { href: '/sales/commissions', label: 'My Commissions' },
+  { href: '/sales/performance', label: 'My Performance' },
   { href: '/sales/statements', label: 'Statements' },
   { href: '/sales/response-examples', label: 'Response Examples' },
   { href: '/sales/onboarding', label: 'Onboard a Client' },
