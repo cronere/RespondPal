@@ -67,7 +67,7 @@ export default function AdminLayout({ children }) {
     <div className="admin-shell">
       <aside className="admin-sidebar">
         <div className="admin-brand">
-          Respond<span>Pal</span>
+          <div className="admin-brand-text">Respond<span>Pal</span></div>
           <div className="admin-brand-sub">Operations HQ</div>
           <button
             className="admin-hamburger"
