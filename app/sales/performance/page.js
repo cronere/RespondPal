@@ -59,6 +59,21 @@ export default function MyPerformance() {
   const resolvedCount = wonCount + lostCount
   const closeRate = resolvedCount > 0 ? Math.round((wonCount / resolvedCount) * 100) : null
 
+  // won_at only exists on leads won since this field was added — older
+  // wins have no way to know retroactively when they actually closed, so
+  // this only averages over leads that actually have the timestamp,
+  // rather than skewing the number with a partial or assumed value.
+  const wonWithTiming = leads.filter((l) => l.stage === 'won' && l.won_at)
+  const avgDaysToClose = wonWithTiming.length > 0
+    ? Math.round(
+        wonWithTiming.reduce((sum, l) => {
+          const created = new Date(l.created_at)
+          const won = new Date(l.won_at)
+          return sum + (won - created) / (1000 * 60 * 60 * 24)
+        }, 0) / wonWithTiming.length
+      )
+    : null
+
   const stageCounts = {
     lead: leads.filter((l) => l.stage === 'lead').length,
     contacting: leads.filter((l) => l.stage === 'contacting').length,
@@ -103,6 +118,11 @@ export default function MyPerformance() {
               label="Close rate"
               value={closeRate !== null ? `${closeRate}%` : '—'}
               sub={closeRate !== null ? 'of leads you\'ve actually resolved (won or lost)' : 'no resolved leads yet'}
+            />
+            <StatCard
+              label="Avg. time to close"
+              value={avgDaysToClose !== null ? `${avgDaysToClose}d` : '—'}
+              sub={avgDaysToClose !== null ? `from ${wonWithTiming.length} win${wonWithTiming.length === 1 ? '' : 's'} with timing data` : 'no wins with timing data yet'}
             />
           </div>
 
