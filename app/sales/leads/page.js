@@ -636,7 +636,7 @@ export default function SalesLeads() {
 
       {showAdd && (
         <div className="drawer-overlay" onClick={() => setShowAdd(false)}>
-          <div className="drawer" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 480 }}>
+          <div className="drawer" onClick={(e) => e.stopPropagation()}>
             <div className="drawer-head">
               <h2>Add Lead</h2>
               <button className="drawer-close" onClick={() => setShowAdd(false)}>×</button>
