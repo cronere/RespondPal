@@ -133,6 +133,7 @@ export async function POST(req) {
               .update({
                 linked_client_id: client.id,
                 stage: 'won',
+                won_at: new Date().toISOString(),
                 last_contacted_at: new Date().toISOString(),
               })
               .eq('id', matchingLead.id)
