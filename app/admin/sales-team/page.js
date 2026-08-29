@@ -216,7 +216,7 @@ export default function SalesTeam() {
 
       {showAdd && (
         <div className="drawer-overlay" onClick={() => setShowAdd(false)}>
-          <div className="drawer" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 480 }}>
+          <div className="drawer" onClick={(e) => e.stopPropagation()}>
             <div className="drawer-head">
               <h2>Add Sales Rep</h2>
               <button className="drawer-close" onClick={() => setShowAdd(false)}>×</button>
@@ -289,7 +289,7 @@ export default function SalesTeam() {
 
       {selectedRep && (
         <div className="drawer-overlay" onClick={() => setSelectedRep(null)}>
-          <div className="drawer" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 560 }}>
+          <div className="drawer drawer-560" onClick={(e) => e.stopPropagation()}>
             <div className="drawer-head">
               <h2>{selectedRep.name}&apos;s Leads</h2>
               <button className="drawer-close" onClick={() => setSelectedRep(null)}>×</button>
