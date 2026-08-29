@@ -326,13 +326,16 @@ export default function SalesToolkit() {
 
           <h2 style={h2Style}>If a prospect insists on responding manually</h2>
           <div style={cardStyle}>
-            <p style={{ ...pStyle, marginBottom: 0 }}>
+            <p style={pStyle}>
               Some healthcare prospects will want to keep responding themselves even after seeing
               the risk. These three templates are safe patterns they can copy directly — hand them
               over as a genuine, useful gift, then close with: &quot;You can copy and paste these
               every time, or let RespondPal handle it automatically so your staff never has to get
               this right on their own.&quot;
             </p>
+            <a href="/leave-behinds/RespondPal_Template_Pack.pdf" target="_blank" rel="noreferrer" className="rev-mini-btn">
+              Template Pack (PDF) ↓
+            </a>
           </div>
 
           <div style={cardStyle}>
@@ -835,6 +838,18 @@ export default function SalesToolkit() {
               since the client canceled, commission resets to month 1 on reactivation. At that point,
               winning them back is treated like a new sale, not a continuation — so a lead that&apos;s
               been dark that long is still very much worth chasing, at full first-month commission.
+            </p>
+          </div>
+
+          <h2 style={h2Style}>Referrals</h2>
+          <div style={cardStyle}>
+            <p style={{ ...pStyle, marginBottom: 0 }}>
+              A referral follows the same ownership logic as everything else here. If a client sends
+              a prospect directly to you, it&apos;s just a new lead you own and work normally. If it
+              comes in without a specific rep attached, it&apos;s first offered to the referring
+              client&apos;s current rep — you — before anyone else can work it. Full details,
+              including the referral bonus if someone else closes it instead, are in the How You
+              Sell tab.
             </p>
           </div>
         </div>
