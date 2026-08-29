@@ -90,7 +90,7 @@ export async function PATCH(req, { params }) {
   try {
     const { data: existing, error: fetchError } = await supabase
       .from('leads')
-      .select('id, sales_rep_id')
+      .select('id, sales_rep_id, stage, won_at')
       .eq('id', params.id)
       .single()
 
@@ -116,6 +116,13 @@ export async function PATCH(req, { params }) {
         return NextResponse.json({ error: 'Invalid stage.' }, { status: 400 })
       }
       updates.stage = body.stage
+      // Stamp won_at the first time a lead actually becomes won — not on
+      // every subsequent save while it stays won, and not re-stamped if
+      // it's toggled away and back later. Powers "average time from lead
+      // to close" on the performance page.
+      if (body.stage === 'won' && existing.stage !== 'won' && !existing.won_at) {
+        updates.won_at = new Date().toISOString()
+      }
     }
     if (body.business_name !== undefined) updates.business_name = body.business_name
     if (body.industry !== undefined) updates.industry = body.industry
