@@ -3,6 +3,13 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 
+function daysSince(iso) {
+  if (!iso) return null
+  const then = new Date(iso)
+  const now = new Date()
+  return Math.floor((now - then) / (1000 * 60 * 60 * 24))
+}
+
 const LEAD_TABS = [
   { key: 'mine', label: 'My Leads' },
   { key: 'open', label: 'Open Leads' },
@@ -413,7 +420,10 @@ export default function SalesLeads() {
           <p className="admin-page-sub">No leads match &quot;{searchQuery}&quot;.</p>
         ) : (
           <div className="demo-list">
-            {filteredLeads.map((l) => (
+            {filteredLeads.map((l) => {
+              const days = daysSince(l.last_contacted_at || l.created_at)
+              const atRisk = l.stage !== 'won' && l.stage !== 'lost' && days !== null && days >= 75 && days < 90
+              return (
               <div className="response-demo-card" key={l.id} style={{ flexDirection: 'column', alignItems: 'stretch', gap: '0.5rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.5rem' }}>
                   <div style={{ minWidth: 0, flex: '1 1 auto' }}>
@@ -425,6 +435,14 @@ export default function SalesLeads() {
                       {l.contact_name ? ` · ${l.contact_name}` : ''}
                       {l.contact_phone ? ` · ${l.contact_phone}` : ''}
                     </div>
+                    {atRisk && (
+                      <div style={{
+                        display: 'inline-block', marginTop: '0.35rem', background: '#FEF2F2', color: '#B91C1C',
+                        fontSize: '0.72rem', fontWeight: 700, padding: '0.15rem 0.5rem', borderRadius: 4,
+                      }}>
+                        ⏰ {90 - days}d left before this opens up to other reps
+                      </div>
+                    )}
                   </div>
                   <select
                     value={l.stage}
@@ -438,7 +456,8 @@ export default function SalesLeads() {
                 </div>
                 {l.notes && <div style={{ fontSize: '0.85rem', color: '#6b7280' }}>{l.notes}</div>}
               </div>
-            ))}
+              )
+            })}
           </div>
         )
       )}
