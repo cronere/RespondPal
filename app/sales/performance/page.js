@@ -25,6 +25,10 @@ export default function MyPerformance() {
   const [commissions, setCommissions] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [calc1, setCalc1] = useState('')
+  const [calc2, setCalc2] = useState('')
+  const [calc3, setCalc3] = useState('')
+  const [calcCleanups, setCalcCleanups] = useState('')
 
   useEffect(() => {
     Promise.all([
@@ -81,6 +85,19 @@ export default function MyPerformance() {
     won: wonCount,
     lost: lostCount,
   }
+
+  // Calculator — month-1 commission is always 100% of price, so this is
+  // just the raw tier prices times count. Cleanup commission is the
+  // fixed 50/50 split ($98.50 per Cleanup). Existing residual is real
+  // data already fetched above, not a projection.
+  const n1 = parseInt(calc1) || 0
+  const n2 = parseInt(calc2) || 0
+  const n3 = parseInt(calc3) || 0
+  const nCleanups = parseInt(calcCleanups) || 0
+  const fromNewClosesCents = (n1 * 39700) + (n2 * 64900) + (n3 * 89700)
+  const fromCleanupsCents = nCleanups * 9850
+  const existingResidualCents = commissions?.total_monthly_residual_cents || 0
+  const calcTotalCents = fromNewClosesCents + fromCleanupsCents + existingResidualCents
 
   return (
     <div className="admin-page">
@@ -169,6 +186,102 @@ export default function MyPerformance() {
           ) : (
             <p className="admin-page-sub">No commission data yet.</p>
           )}
+
+          <h2 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#1a1a1a', marginTop: '2rem', marginBottom: '0.75rem' }}>
+            What could I earn?
+          </h2>
+          <p style={{ fontSize: '0.85rem', color: '#6b7280', marginBottom: '1rem' }}>
+            Enter what you&apos;re working toward closing, and see what it&apos;d actually add to
+            your payout — combined with the residual you&apos;re already earning from your
+            existing book, not just the new deals on their own.
+          </p>
+
+          <div style={{ background: 'white', border: '1px solid #e5e7eb', borderRadius: 10, padding: '1.25rem', marginBottom: '1rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '1rem' }}>
+              <label style={{ display: 'block' }}>
+                <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#374151', display: 'block', marginBottom: '0.3rem' }}>
+                  1-location closes
+                </span>
+                <input
+                  type="number"
+                  min="0"
+                  value={calc1}
+                  onChange={(e) => setCalc1(e.target.value)}
+                  placeholder="0"
+                  style={{ width: '100%', padding: '0.6rem 0.7rem', borderRadius: 6, border: '1px solid #d1d5db', fontSize: '0.95rem' }}
+                />
+                <span style={{ fontSize: '0.72rem', color: '#9ca3af' }}>$397/mo each</span>
+              </label>
+              <label style={{ display: 'block' }}>
+                <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#374151', display: 'block', marginBottom: '0.3rem' }}>
+                  2-location closes
+                </span>
+                <input
+                  type="number"
+                  min="0"
+                  value={calc2}
+                  onChange={(e) => setCalc2(e.target.value)}
+                  placeholder="0"
+                  style={{ width: '100%', padding: '0.6rem 0.7rem', borderRadius: 6, border: '1px solid #d1d5db', fontSize: '0.95rem' }}
+                />
+                <span style={{ fontSize: '0.72rem', color: '#9ca3af' }}>$649/mo each</span>
+              </label>
+              <label style={{ display: 'block' }}>
+                <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#374151', display: 'block', marginBottom: '0.3rem' }}>
+                  3-location closes
+                </span>
+                <input
+                  type="number"
+                  min="0"
+                  value={calc3}
+                  onChange={(e) => setCalc3(e.target.value)}
+                  placeholder="0"
+                  style={{ width: '100%', padding: '0.6rem 0.7rem', borderRadius: 6, border: '1px solid #d1d5db', fontSize: '0.95rem' }}
+                />
+                <span style={{ fontSize: '0.72rem', color: '#9ca3af' }}>$897/mo each</span>
+              </label>
+              <label style={{ display: 'block' }}>
+                <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#374151', display: 'block', marginBottom: '0.3rem' }}>
+                  Cleanups sold
+                </span>
+                <input
+                  type="number"
+                  min="0"
+                  value={calcCleanups}
+                  onChange={(e) => setCalcCleanups(e.target.value)}
+                  placeholder="0"
+                  style={{ width: '100%', padding: '0.6rem 0.7rem', borderRadius: 6, border: '1px solid #d1d5db', fontSize: '0.95rem' }}
+                />
+                <span style={{ fontSize: '0.72rem', color: '#9ca3af' }}>$98.50 each</span>
+              </label>
+            </div>
+          </div>
+
+          <div style={{ background: 'white', border: '1px solid #e5e7eb', borderRadius: 10, padding: '1.25rem', marginBottom: '1rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', color: '#374151', padding: '0.4rem 0' }}>
+              <span>From new closes this period (month 1, 100%)</span>
+              <span style={{ fontWeight: 700 }}>{formatMoney(fromNewClosesCents)}</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', color: '#374151', padding: '0.4rem 0' }}>
+              <span>From Cleanups sold</span>
+              <span style={{ fontWeight: 700 }}>{formatMoney(fromCleanupsCents)}</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', color: '#374151', padding: '0.4rem 0', borderBottom: '1px solid #f3f4f6' }}>
+              <span>From your existing book (real, ongoing residual)</span>
+              <span style={{ fontWeight: 700 }}>{formatMoney(existingResidualCents)}</span>
+            </div>
+          </div>
+
+          <div style={{ background: '#111827', color: 'white', borderRadius: 10, padding: '1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ fontSize: '0.95rem', fontWeight: 700 }}>Total expected payout</span>
+            <span style={{ fontSize: '1.6rem', fontWeight: 800 }}>{formatMoney(calcTotalCents)}</span>
+          </div>
+          <p style={{ fontSize: '0.75rem', color: '#9ca3af', marginTop: '0.5rem' }}>
+            New closes shown at month-1 pricing — actual payout depends on when in the pay period
+            each client&apos;s payment actually clears. 4+ location deals aren&apos;t included here
+            since those are priced individually — check the Toolkit&apos;s Commission tab for that
+            range.
+          </p>
         </>
       )}
     </div>
