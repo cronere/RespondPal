@@ -388,6 +388,19 @@ export default function SalesToolkit() {
             ))}
           </div>
 
+          <h2 style={h2Style}>If a client contacts you directly after signing</h2>
+          <div style={cardStyle}>
+            <p style={pStyle}>
+              It&apos;ll happen — you&apos;re the person they know. You don&apos;t need to solve
+              anything yourself, just hand it off cleanly:
+            </p>
+            <p style={{ ...pStyle, marginBottom: 0, fontStyle: 'italic' }}>
+              &quot;Thanks for reaching out! For anything account, billing, or support related, the
+              fastest way to get it handled is team@respondpal.ai — they&apos;ll take care of it
+              right away. Let me know if there&apos;s anything else I can help with on my end.&quot;
+            </p>
+          </div>
+
           <h2 style={h2Style}>Pro tips</h2>
           <div style={cardStyle}>
             {[
@@ -650,7 +663,7 @@ export default function SalesToolkit() {
                 <tr><td style={tdStyle}>Month 3</td><td style={{ ...tdStyle, fontWeight: 700 }}>50%</td><td style={tdStyle}>Even split as the relationship establishes</td></tr>
                 <tr><td style={tdStyle}>Months 4–12</td><td style={{ ...tdStyle, fontWeight: 700 }}>25%</td><td style={tdStyle}>Passive residual — client stays, you keep earning</td></tr>
                 <tr><td style={tdStyle}>Months 13–24</td><td style={{ ...tdStyle, fontWeight: 700 }}>15%</td><td style={tdStyle}>Reduced residual as the account matures</td></tr>
-                <tr><td style={tdStyle}>Month 25+</td><td style={{ ...tdStyle, fontWeight: 700 }}>10%</td><td style={tdStyle}>Indefinite residual (requires 6+ new sales/year)</td></tr>
+                <tr><td style={tdStyle}>Month 25+</td><td style={{ ...tdStyle, fontWeight: 700 }}>10%</td><td style={tdStyle}>Indefinite residual, for as long as the client stays active</td></tr>
               </tbody>
             </table>
           </div>
@@ -780,10 +793,6 @@ export default function SalesToolkit() {
             24, this settles at roughly $1,985/mo, indefinitely, from a book you already built — that's
             the passive part of the model. In practice you wouldn't stop at 50; every additional client
             you keep closing adds directly on top of that floor.
-          </p>
-          <p style={pStyle}>
-            The 6-sales-per-year floor on the indefinite residual is there so the residual rewards reps
-            who keep producing new business, not just coasting on an old book.
           </p>
         </div>
       )}
