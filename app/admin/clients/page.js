@@ -310,6 +310,41 @@ function ClientDrawer({ client, onClose, onSaved }) {
   const [form, setForm] = useState(client)
   const [saving, setSaving] = useState(false)
   const [saveError, setSaveError] = useState('')
+  const [showReferralForm, setShowReferralForm] = useState(false)
+  const [referralForm, setReferralForm] = useState({ business_name: '', contact_name: '', contact_email: '', contact_phone: '' })
+  const [referralSaving, setReferralSaving] = useState(false)
+  const [referralError, setReferralError] = useState('')
+  const [referralSuccess, setReferralSuccess] = useState('')
+
+  const setReferral = (field, value) => setReferralForm((f) => ({ ...f, [field]: value }))
+
+  const handleLogReferral = async () => {
+    if (!referralForm.business_name.trim()) {
+      setReferralError('Business name is required.')
+      return
+    }
+    setReferralSaving(true)
+    setReferralError('')
+    try {
+      const res = await fetch(`/api/admin/clients/${client.id}/log-referral`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(referralForm),
+      })
+      const data = await res.json()
+      if (res.ok) {
+        setReferralSuccess(`Logged. Offered to ${data.lead.sales_reps?.name || 'the client\u2019s rep'} just now.`)
+        setReferralForm({ business_name: '', contact_name: '', contact_email: '', contact_phone: '' })
+        setReferralSaving(false)
+      } else {
+        setReferralError(data.error || 'Failed to log referral.')
+        setReferralSaving(false)
+      }
+    } catch (err) {
+      setReferralError('Failed to log referral.')
+      setReferralSaving(false)
+    }
+  }
 
   const set = (field, value) => setForm((f) => ({ ...f, [field]: value }))
 
@@ -415,6 +450,53 @@ function ClientDrawer({ client, onClose, onSaved }) {
                 <input value={form.rep_name || ''} onChange={(e) => set('rep_name', e.target.value)} />
               </Field>
             </div>
+          </div>
+
+          <div className="drawer-section">
+            <div className="drawer-section-label">Referrals — Section 4.6</div>
+            {!showReferralForm ? (
+              <button className="drawer-btn-secondary" onClick={() => { setShowReferralForm(true); setReferralSuccess('') }}>
+                Log a referral from this client
+              </button>
+            ) : (
+              <>
+                <p style={{ fontSize: '0.82rem', color: '#6b7280', marginBottom: '0.75rem' }}>
+                  For a blind referral that came in to the Company generally (not addressed to a
+                  specific rep). This creates the new lead already assigned to{' '}
+                  {client.sales_rep_id ? (client.rep_name || 'this client\u2019s current rep') : 'no one — this client has no rep on file'},
+                  and timestamps the offer — the actual paper trail Section 4.6 requires.
+                </p>
+                <div className="drawer-grid">
+                  <Field label="New prospect — business name *">
+                    <input value={referralForm.business_name}
+                      onChange={(e) => setReferral('business_name', e.target.value)}
+                      placeholder="Who they referred" autoFocus />
+                  </Field>
+                  <Field label="Contact name">
+                    <input value={referralForm.contact_name}
+                      onChange={(e) => setReferral('contact_name', e.target.value)} />
+                  </Field>
+                  <Field label="Contact email">
+                    <input value={referralForm.contact_email}
+                      onChange={(e) => setReferral('contact_email', e.target.value)} />
+                  </Field>
+                  <Field label="Contact phone">
+                    <input value={referralForm.contact_phone}
+                      onChange={(e) => setReferral('contact_phone', e.target.value)} />
+                  </Field>
+                </div>
+                {referralError && <div className="drawer-error">{referralError}</div>}
+                {referralSuccess && <p style={{ fontSize: '0.85rem', color: '#15803d', fontWeight: 600, marginTop: '0.5rem' }}>{referralSuccess}</p>}
+                <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
+                  <button className="drawer-btn-primary" onClick={handleLogReferral} disabled={referralSaving}>
+                    {referralSaving ? 'Logging…' : 'Log referral'}
+                  </button>
+                  <button className="drawer-btn-secondary" onClick={() => { setShowReferralForm(false); setReferralError('') }}>
+                    Cancel
+                  </button>
+                </div>
+              </>
+            )}
           </div>
 
           <div className="drawer-section">
