@@ -563,6 +563,37 @@ export default function SalesToolkit() {
               different problem than budget.
             </p>
           </div>
+
+          <h2 style={h2Style}>&quot;We require a signed BAA&quot;</h2>
+          <div style={cardStyle}>
+            <div style={{ fontWeight: 700, fontSize: '0.85rem', color: '#C2410C', marginBottom: '0.5rem' }}>
+              First — why we don&apos;t need one
+            </div>
+            <p style={pStyle}>
+              This isn&apos;t a policy we&apos;re asking them to just trust — it&apos;s a real,
+              confirmed legal position, and you can say so directly. RespondPal only ever works
+              from content that&apos;s already public — the reviews posted about their practice.
+              We have no access to, and never connect to, their patient records or practice
+              management software. If a review happens to mention a patient, that information came
+              from the patient themselves choosing to post it publicly — not from the practice
+              disclosing it to us. Because of that, we don&apos;t meet the legal definition of a
+              HIPAA Business Associate, and we&apos;ve had this confirmed by healthcare-specific
+              legal counsel, not just our own read of it. Point them to Section 7 of our Terms of
+              Service if they want to see it in writing.
+            </p>
+            <div style={{ fontWeight: 700, fontSize: '0.85rem', color: '#C2410C', marginTop: '1rem', marginBottom: '0.5rem' }}>
+              If they still insist on it as a requirement
+            </div>
+            <p style={{ ...pStyle, marginBottom: '0.5rem' }}>
+              Don&apos;t negotiate this yourself or promise anything — this is exactly the kind of
+              compliance representation that&apos;s outside what you&apos;re authorized to commit
+              to. Hand it to Jacob directly:
+            </p>
+            <p style={{ ...pStyle, marginBottom: 0, fontStyle: 'italic' }}>
+              &quot;I&apos;ll need to touch base with our team on whether we can sign a BAA, given
+              you&apos;re making it a requirement — let me get back to you on that.&quot;
+            </p>
+          </div>
         </div>
       )}
 
