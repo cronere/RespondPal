@@ -131,18 +131,36 @@ export default function Terms() {
           <p>
             RespondPal drafts and publishes responses based only on content that
             is already public — the reviews posted about your business on
-            Google and Yelp. We do not access, request, or accept private
-            patient records, charts, appointment details, or other non-public
-            health information, and you agree not to submit any such
-            information to us through onboarding, brand-voice preferences,
-            support requests, or any other channel.
+            Google and Yelp. We do not access, request, or accept patient
+            charts, medical records, appointment details, or any other
+            non-public health information, and we have no access to, and never
+            connect to, your internal medical records system or practice
+            management software.
           </p>
           <p>
-            Because our service only processes publicly-posted review content,
-            we do not meet the definition of a HIPAA Business Associate, and a
-            Business Associate Agreement is not required for this service. If
-            you have questions about this position, contact us — we&rsquo;re
-            happy to explain it in more detail.
+            If a review you&rsquo;re asking us to respond to contains
+            information about a patient, that information came from the
+            patient themselves — they chose to post it publicly, and we&rsquo;re
+            working with what&rsquo;s already there, not information you
+            disclosed to us. We never receive anything from you directly about
+            a specific patient, their care, or their records.
+          </p>
+          <p>
+            Because of this, RespondPal does not meet the definition of a
+            HIPAA Business Associate, and a Business Associate Agreement is
+            not required for this service — we&rsquo;ve confirmed this
+            position with healthcare-specific legal counsel. If you have
+            questions about it, contact us — we&rsquo;re happy to explain in
+            more detail.
+          </p>
+          <p>
+            You agree not to submit patient charts, medical records, or other
+            non-public health information to us through onboarding,
+            brand-voice preferences, support requests, or any other channel.
+            If you inadvertently provide us with any such information in the
+            course of using our service, you agree to indemnify and hold
+            RespondPal harmless from any loss, liability, claim, or expense
+            arising from that disclosure.
           </p>
         </section>
 
