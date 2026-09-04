@@ -296,7 +296,8 @@ function OnboardingForm() {
                   <div className="ob-platform-name">🔵 Google Business Profile</div>
                   <ol className="ob-steps-list">
                     <li>Go to <strong>business.google.com</strong> and sign in</li>
-                    <li>Click on your business → <strong>Settings</strong> → <strong>Managers</strong></li>
+                    <li>Click the <strong>three-dot menu</strong> next to your business, then <strong>Business Profile settings</strong></li>
+                    <li>Click <strong>People and access</strong></li>
                     <li>Click <strong>Add</strong> and enter: <strong style={{color:'var(--orange)'}}>team@respondpal.ai</strong></li>
                     <li>Set role to <strong>Manager</strong> and click <strong>Invite</strong></li>
                   </ol>
@@ -306,9 +307,9 @@ function OnboardingForm() {
                   <div className="ob-platform-name">🔴 Yelp Business</div>
                   <ol className="ob-steps-list">
                     <li>Go to <strong>biz.yelp.com</strong> and sign in</li>
-                    <li>Click <strong>Account Settings</strong> → <strong>Team Members</strong></li>
-                    <li>Click <strong>Add Team Member</strong> and enter: <strong style={{color:'var(--orange)'}}>team@respondpal.ai</strong></li>
-                    <li>Set role to <strong>Manager</strong> and click <strong>Send Invitation</strong></li>
+                    <li>Click <strong>User Management</strong> in the left navigation menu</li>
+                    <li>Enter: <strong style={{color:'var(--orange)'}}>team@respondpal.ai</strong> and select the location(s) to grant access to</li>
+                    <li>We&apos;ll get an email invitation to accept — no separate role selection needed on Yelp&apos;s side</li>
                   </ol>
                 </div>
               </div>
