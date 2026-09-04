@@ -232,7 +232,8 @@ export async function POST(req) {
                 <p style="color: #1e2a44; font-weight: 700; margin: 0 0 0.85rem; font-size: 0.95rem;">Google Business Profile</p>
                 <ol style="color: #4a4a4a; font-size: 0.875rem; line-height: 1.9; margin: 0; padding-left: 1.25rem;">
                   <li>Go to <a href="https://business.google.com" style="color: #C2410C;">business.google.com</a> and sign in</li>
-                  <li>Click your business &rarr; Settings &rarr; Managers</li>
+                  <li>Click the three-dot menu next to your business, then Business Profile settings</li>
+                  <li>Click People and access</li>
                   <li>Click Add and enter <strong style="color: #1e2a44;">team@respondpal.ai</strong></li>
                   <li>Set role to Manager and click Invite</li>
                 </ol>
@@ -242,9 +243,9 @@ export async function POST(req) {
                 <p style="color: #1e2a44; font-weight: 700; margin: 0 0 0.85rem; font-size: 0.95rem;">Yelp Business</p>
                 <ol style="color: #4a4a4a; font-size: 0.875rem; line-height: 1.9; margin: 0; padding-left: 1.25rem;">
                   <li>Go to <a href="https://biz.yelp.com" style="color: #C2410C;">biz.yelp.com</a> and sign in</li>
-                  <li>Click Account Settings &rarr; Team Members</li>
-                  <li>Click Add Team Member and enter <strong style="color: #1e2a44;">team@respondpal.ai</strong></li>
-                  <li>Set role to Manager and click Send Invitation</li>
+                  <li>Click User Management in the left navigation menu</li>
+                  <li>Enter <strong style="color: #1e2a44;">team@respondpal.ai</strong> and select the location(s) to grant access to</li>
+                  <li>We&apos;ll get an email invitation to accept &mdash; no separate role selection needed on Yelp&apos;s side</li>
                 </ol>
               </div>
 
