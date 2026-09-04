@@ -43,10 +43,10 @@ export default function CleanupConfirmed() {
               </div>
               <ol style={{ color: 'rgba(255,255,255,0.8)', fontSize: '0.9rem', lineHeight: 1.7, paddingLeft: '1.2rem', margin: 0 }}>
                 <li>Go to <a href="https://business.google.com" target="_blank" rel="noopener noreferrer" style={{ color: '#C2410C' }}>business.google.com</a></li>
-                <li>Select your business → click <strong style={{ color: 'white' }}>Users</strong> (or Business Profile settings → People and access)</li>
-                <li>Click <strong style={{ color: 'white' }}>Add user</strong></li>
-                <li>Enter <strong style={{ color: 'white' }}>team@respondpal.ai</strong></li>
-                <li>Set role to <strong style={{ color: 'white' }}>Manager</strong> → Save</li>
+                <li>Click the three-dot menu next to your business, then <strong style={{ color: 'white' }}>Business Profile settings</strong></li>
+                <li>Click <strong style={{ color: 'white' }}>People and access</strong></li>
+                <li>Click <strong style={{ color: 'white' }}>Add</strong> and enter <strong style={{ color: 'white' }}>team@respondpal.ai</strong></li>
+                <li>Set role to <strong style={{ color: 'white' }}>Manager</strong> → Invite</li>
               </ol>
             </div>
 
@@ -56,10 +56,9 @@ export default function CleanupConfirmed() {
               </div>
               <ol style={{ color: 'rgba(255,255,255,0.8)', fontSize: '0.9rem', lineHeight: 1.7, paddingLeft: '1.2rem', margin: 0 }}>
                 <li>Go to <a href="https://biz.yelp.com" target="_blank" rel="noopener noreferrer" style={{ color: '#C2410C' }}>biz.yelp.com</a></li>
-                <li>Select your business → click <strong style={{ color: 'white' }}>Account Settings</strong></li>
-                <li>Go to <strong style={{ color: 'white' }}>User Management</strong></li>
-                <li>Click <strong style={{ color: 'white' }}>Invite User</strong></li>
-                <li>Enter <strong style={{ color: 'white' }}>team@respondpal.ai</strong> → Send invite</li>
+                <li>Click <strong style={{ color: 'white' }}>User Management</strong> in the left navigation menu</li>
+                <li>Enter <strong style={{ color: 'white' }}>team@respondpal.ai</strong> and select the location(s) to grant access to</li>
+                <li>No separate role selection needed — we&apos;ll get an email invitation to accept</li>
               </ol>
             </div>
           </div>
