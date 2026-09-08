@@ -49,6 +49,13 @@ async function buildLinkSet(stripe, repId, repName, { trial } = {}) {
       console.warn(`Skipping Stripe link for tier "${tier}"${trial ? ' (trial)' : ''} — price ID not set.`)
       continue
     }
+    // Cleanup is a one-time, non-recurring price — Stripe rejects
+    // subscription_data (trial_period_days) on a link whose line_items
+    // aren't a recurring price, so it's excluded from trial generation
+    // entirely, not just skipped for the optional-item upsell below.
+    if (trial && tier === 'cleanup') {
+      continue
+    }
     const linkParams = {
       line_items: [{ price: priceId, quantity: 1 }],
       metadata: {
@@ -149,27 +156,31 @@ export async function POST(req) {
     // reps to use at their discretion when a prospect needs the extra
     // reassurance to close. Tolerates missing Stripe config entirely (no
     // key, no price IDs set yet) — rep creation still succeeds either way,
-    // same pattern as the welcome email above. Logs exactly what's missing
-    // so it's easy to diagnose once Stripe is actually configured.
-    try {
-      const stripe = getStripeClient()
-      if (!stripe) {
-        console.warn('Skipping Stripe link generation — STRIPE_SECRET_KEY not set.')
-      } else {
+    // same pattern as the welcome email above. Each set is generated and
+    // saved independently — a failure generating one (a bad price ID, a
+    // Stripe-side issue) never prevents the other, already-successful set
+    // from being saved. Logs exactly what's missing so it's easy to
+    // diagnose once Stripe is actually configured.
+    const stripe = getStripeClient()
+    if (!stripe) {
+      console.warn('Skipping Stripe link generation — STRIPE_SECRET_KEY not set.')
+    } else {
+      try {
         const links = await generateRepPaymentLinks(stripe, data.id, data.name)
-        const trialLinks = await generateRepTrialPaymentLinks(stripe, data.id, data.name)
-        const updatePayload = {}
-        if (Object.keys(links).length > 0) updatePayload.stripe_payment_links = links
-        if (Object.keys(trialLinks).length > 0) updatePayload.stripe_trial_payment_links = trialLinks
-        if (Object.keys(updatePayload).length > 0) {
-          await supabaseAdmin
-            .from('sales_reps')
-            .update(updatePayload)
-            .eq('id', data.id)
+        if (Object.keys(links).length > 0) {
+          await supabaseAdmin.from('sales_reps').update({ stripe_payment_links: links }).eq('id', data.id)
         }
+      } catch (stripeErr) {
+        console.error('Stripe standard payment link generation error:', stripeErr)
       }
-    } catch (stripeErr) {
-      console.error('Stripe payment link generation error:', stripeErr)
+      try {
+        const trialLinks = await generateRepTrialPaymentLinks(stripe, data.id, data.name)
+        if (Object.keys(trialLinks).length > 0) {
+          await supabaseAdmin.from('sales_reps').update({ stripe_trial_payment_links: trialLinks }).eq('id', data.id)
+        }
+      } catch (stripeErr) {
+        console.error('Stripe trial payment link generation error:', stripeErr)
+      }
     }
 
     // Email the new rep their login credentials. Sent after the DB insert
