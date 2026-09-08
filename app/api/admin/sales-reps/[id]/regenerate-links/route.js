@@ -33,23 +33,49 @@ export async function POST(req, { params }) {
       return NextResponse.json({ error: 'Rep not found.' }, { status: 404 })
     }
 
-    const links = await generateRepPaymentLinks(stripe, rep.id, rep.name)
-    const trialLinks = await generateRepTrialPaymentLinks(stripe, rep.id, rep.name)
+    // Each set is generated and saved independently — a failure in one
+    // (a bad price ID, a Stripe-side issue) never prevents the other,
+    // already-successful set from being saved. This matters in practice:
+    // it's exactly what protects a rep's working standard links from
+    // being wiped out by an unrelated failure generating trial links.
+    let links = {}
+    let trialLinks = {}
+    let linksError = null
+    let trialLinksError = null
+
+    try {
+      links = await generateRepPaymentLinks(stripe, rep.id, rep.name)
+    } catch (err) {
+      linksError = err.message || 'Failed to generate standard links.'
+    }
+    try {
+      trialLinks = await generateRepTrialPaymentLinks(stripe, rep.id, rep.name)
+    } catch (err) {
+      trialLinksError = err.message || 'Failed to generate trial links.'
+    }
 
     if (Object.keys(links).length === 0 && Object.keys(trialLinks).length === 0) {
-      return NextResponse.json({ error: 'No links were generated — check that tier price IDs are set.' }, { status: 500 })
+      return NextResponse.json({
+        error: 'No links were generated.',
+        linksError,
+        trialLinksError,
+      }, { status: 500 })
     }
+
+    const updatePayload = {}
+    if (Object.keys(links).length > 0) updatePayload.stripe_payment_links = links
+    if (Object.keys(trialLinks).length > 0) updatePayload.stripe_trial_payment_links = trialLinks
 
     const { error: updateError } = await supabaseAdmin
       .from('sales_reps')
-      .update({ stripe_payment_links: links, stripe_trial_payment_links: trialLinks })
+      .update(updatePayload)
       .eq('id', rep.id)
 
     if (updateError) {
       return NextResponse.json({ error: updateError.message }, { status: 500 })
     }
 
-    return NextResponse.json({ links, trialLinks })
+    return NextResponse.json({ links, trialLinks, linksError, trialLinksError })
   } catch (err) {
     console.error('Regenerate links error:', err)
     return NextResponse.json({ error: err.message || 'Failed to regenerate links.' }, { status: 500 })
