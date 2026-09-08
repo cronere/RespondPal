@@ -310,8 +310,15 @@ export default function SalesTeam() {
                         const res = await fetch(`/api/admin/sales-reps/${selectedRep.id}/regenerate-links`, { method: 'POST' })
                         const data = await res.json()
                         if (res.ok) {
-                          setSelectedRep((prev) => ({ ...prev, stripe_payment_links: data.links }))
+                          setSelectedRep((prev) => ({ ...prev, stripe_payment_links: data.links, stripe_trial_payment_links: data.trialLinks }))
                           load()
+                          if (data.linksError || data.trialLinksError) {
+                            alert(
+                              'Partially regenerated — one set failed:\n' +
+                              (data.linksError ? `Standard links: ${data.linksError}\n` : '') +
+                              (data.trialLinksError ? `Trial links: ${data.trialLinksError}` : '')
+                            )
+                          }
                         } else {
                           alert(data.error || 'Failed to regenerate links.')
                         }
@@ -330,6 +337,24 @@ export default function SalesTeam() {
                   </p>
                 ) : (
                   Object.entries(selectedRep.stripe_payment_links).map(([tier, url]) => (
+                    <div key={tier} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
+                      <span style={{ fontSize: '0.85rem', color: '#1a1a1a' }}>{TIER_LABELS[tier] || tier}</span>
+                      <a href={url} target="_blank" rel="noreferrer" style={{ fontSize: '0.8rem', color: '#C2410C' }}>
+                        {url.replace('https://', '')}
+                      </a>
+                    </div>
+                  ))
+                )}
+
+                <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#6b7280', textTransform: 'uppercase', marginTop: '1.1rem', marginBottom: '0.6rem' }}>
+                  Trial Payment Links (14-day)
+                </div>
+                {!selectedRep.stripe_trial_payment_links || Object.keys(selectedRep.stripe_trial_payment_links).length === 0 ? (
+                  <p style={{ fontSize: '0.82rem', color: '#9ca3af' }}>
+                    Not generated yet — click Regenerate above once Stripe is configured.
+                  </p>
+                ) : (
+                  Object.entries(selectedRep.stripe_trial_payment_links).map(([tier, url]) => (
                     <div key={tier} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
                       <span style={{ fontSize: '0.85rem', color: '#1a1a1a' }}>{TIER_LABELS[tier] || tier}</span>
                       <a href={url} target="_blank" rel="noreferrer" style={{ fontSize: '0.8rem', color: '#C2410C' }}>
