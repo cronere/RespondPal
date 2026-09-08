@@ -34,6 +34,18 @@ export default function SalesOnboarding() {
     personal: !!(hasPersonalLinks && rep.stripe_payment_links[tier]),
   }))
 
+  // Trial links only cover the three location tiers — no fallback exists
+  // since this is a newer feature with no hand-built links predating it,
+  // and deliberately no Cleanup entry, since trial links never include
+  // that upsell (see generateRepTrialPaymentLinks).
+  const trialLinkPlans = { '1_location': '1 Location', '2_locations': '2 Locations', '3_locations': '3 Locations' }
+  const hasTrialLinks = rep?.stripe_trial_payment_links && Object.keys(rep.stripe_trial_payment_links).length > 0
+  const trialStripeLinks = hasTrialLinks
+    ? Object.entries(trialLinkPlans)
+        .filter(([tier]) => rep.stripe_trial_payment_links[tier])
+        .map(([tier, plan]) => ({ tier, plan, url: rep.stripe_trial_payment_links[tier] }))
+    : []
+
   const copy = (text, key) => {
     navigator.clipboard.writeText(text)
     setCopied(key)
@@ -80,6 +92,36 @@ export default function SalesOnboarding() {
           ))}
         </div>
       </div>
+
+      {hasTrialLinks && (
+        <div className="drawer-section" style={{ maxWidth: 620, background: '#FFF7ED', border: '1px solid #FDBA74' }}>
+          <div className="drawer-section-label">Free 14-day trial links</div>
+          <p style={{ fontSize: '0.82rem', color: '#6b7280', marginBottom: '0.9rem' }}>
+            Use these at your discretion when a prospect needs the extra reassurance to close — not
+            your default. A card is still collected at signup, so it converts to a normal paid
+            subscription automatically after 14 days unless they cancel first. No Cleanup add-on on
+            these — if they want that too, send the Cleanup link separately.
+          </p>
+          <div className="demo-list">
+            {trialStripeLinks.map((l) => (
+              <div className="response-demo-card" key={l.tier} style={{ cursor: 'default' }}>
+                <div>
+                  <div className="demo-card-name">{l.plan} — 14-day trial</div>
+                  <div className="demo-card-meta">Then {FALLBACK_LINKS[l.tier]?.price}</div>
+                </div>
+                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                  <button className="rev-mini-btn" onClick={() => copy(l.url, 'trial_' + l.tier)}>
+                    {copied === 'trial_' + l.tier ? 'Copied!' : 'Copy Link'}
+                  </button>
+                  <a href={l.url} target="_blank" rel="noreferrer" className="rev-mini-btn">
+                    Open
+                  </a>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="drawer-section" style={{ maxWidth: 620, background: '#fafafa', border: '1px solid #e5e7eb', borderRadius: 8, padding: '1.25rem', marginTop: '1.5rem' }}>
         <div style={{ fontWeight: 700, fontSize: '0.9rem', marginBottom: '0.4rem', color: '#1a1a1a' }}>
