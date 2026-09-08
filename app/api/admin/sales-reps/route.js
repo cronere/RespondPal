@@ -31,26 +31,52 @@ function escapeHtml(str) {
 // the combined option would just be a redundant, confusing choice for
 // them. The cleanup tier's own link doesn't get this upsell added to
 // itself — offering "add cleanup" on the cleanup link would be circular.
-export async function generateRepPaymentLinks(stripe, repId, repName) {
+//
+// trial: when true, generates the 14-day free trial variant instead —
+// same tiers, same rep attribution, but with subscription_data.
+// trial_period_days set so the subscription starts free and auto-converts
+// to paid unless the client cancels first (card is still collected up
+// front by default — that's what makes conversion the default outcome
+// rather than something that requires a second ask). Deliberately never
+// adds the Cleanup optional item to trial links — Stripe's handling of a
+// one-time add-on alongside a trialing subscription isn't something
+// worth risking unverified, and a prospect who needs a trial to be
+// convinced isn't likely paying $197 upfront at the same moment anyway.
+async function buildLinkSet(stripe, repId, repName, { trial } = {}) {
   const links = {}
   for (const [tier, priceId] of Object.entries(TIER_PRICE_IDS)) {
     if (!priceId) {
-      console.warn(`Skipping Stripe link for tier "${tier}" — price ID not set.`)
+      console.warn(`Skipping Stripe link for tier "${tier}"${trial ? ' (trial)' : ''} — price ID not set.`)
       continue
     }
     const linkParams = {
       line_items: [{ price: priceId, quantity: 1 }],
-      metadata: { sales_rep_id: repId, sales_rep_name: repName },
+      metadata: {
+        sales_rep_id: repId,
+        sales_rep_name: repName,
+        ...(trial ? { is_trial: 'true' } : {}),
+      },
       consent_collection: { terms_of_service: 'required' },
       automatic_tax: { enabled: true },
     }
-    if (tier !== 'cleanup' && TIER_PRICE_IDS.cleanup) {
+    if (!trial && tier !== 'cleanup' && TIER_PRICE_IDS.cleanup) {
       linkParams.optional_items = [{ price: TIER_PRICE_IDS.cleanup, quantity: 1 }]
+    }
+    if (trial) {
+      linkParams.subscription_data = { trial_period_days: 14 }
     }
     const link = await stripe.paymentLinks.create(linkParams)
     links[tier] = link.url
   }
   return links
+}
+
+export async function generateRepPaymentLinks(stripe, repId, repName) {
+  return buildLinkSet(stripe, repId, repName)
+}
+
+export async function generateRepTrialPaymentLinks(stripe, repId, repName) {
+  return buildLinkSet(stripe, repId, repName, { trial: true })
 }
 
 export const dynamic = 'force-dynamic'
@@ -62,7 +88,7 @@ export async function GET() {
   try {
     const { data, error } = await supabaseAdmin
       .from('sales_reps')
-      .select('id, name, email, active, created_at, stripe_payment_links')
+      .select('id, name, email, active, created_at, stripe_payment_links, stripe_trial_payment_links')
       .order('created_at', { ascending: false })
 
     if (error) {
@@ -119,20 +145,26 @@ export async function POST(req) {
     // Generate this rep's own Stripe payment links — one per pricing tier,
     // each with sales_rep_id embedded in Stripe metadata so a payment made
     // through it is attributed automatically, independent of the
-    // onboarding form. Tolerates missing Stripe config entirely (no key,
-    // no price IDs set yet) — rep creation still succeeds either way, same
-    // pattern as the welcome email above. Logs exactly what's missing so
-    // it's easy to diagnose once Stripe is actually configured.
+    // onboarding form. Also generates the parallel trial-offer set, for
+    // reps to use at their discretion when a prospect needs the extra
+    // reassurance to close. Tolerates missing Stripe config entirely (no
+    // key, no price IDs set yet) — rep creation still succeeds either way,
+    // same pattern as the welcome email above. Logs exactly what's missing
+    // so it's easy to diagnose once Stripe is actually configured.
     try {
       const stripe = getStripeClient()
       if (!stripe) {
         console.warn('Skipping Stripe link generation — STRIPE_SECRET_KEY not set.')
       } else {
         const links = await generateRepPaymentLinks(stripe, data.id, data.name)
-        if (Object.keys(links).length > 0) {
+        const trialLinks = await generateRepTrialPaymentLinks(stripe, data.id, data.name)
+        const updatePayload = {}
+        if (Object.keys(links).length > 0) updatePayload.stripe_payment_links = links
+        if (Object.keys(trialLinks).length > 0) updatePayload.stripe_trial_payment_links = trialLinks
+        if (Object.keys(updatePayload).length > 0) {
           await supabaseAdmin
             .from('sales_reps')
-            .update({ stripe_payment_links: links })
+            .update(updatePayload)
             .eq('id', data.id)
         }
       }
