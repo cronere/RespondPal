@@ -23,7 +23,7 @@ export async function GET(req) {
     }
     const { data: rep, error } = await supabase
       .from('sales_reps')
-      .select('id, name, email, active, stripe_payment_links')
+      .select('id, name, email, active, stripe_payment_links, stripe_trial_payment_links')
       .eq('id', repId)
       .single()
 
@@ -34,7 +34,7 @@ export async function GET(req) {
     if (error || !rep) {
       return NextResponse.json({ error: 'Not signed in.' }, { status: 401 })
     }
-    return NextResponse.json({ rep: { id: rep.id, name: rep.name, email: rep.email, active: rep.active, stripe_payment_links: rep.stripe_payment_links } })
+    return NextResponse.json({ rep: { id: rep.id, name: rep.name, email: rep.email, active: rep.active, stripe_payment_links: rep.stripe_payment_links, stripe_trial_payment_links: rep.stripe_trial_payment_links } })
   } catch (err) {
     return NextResponse.json({ error: 'Failed to load rep.' }, { status: 500 })
   }
