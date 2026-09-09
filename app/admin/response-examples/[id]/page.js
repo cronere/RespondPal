@@ -90,13 +90,18 @@ export default function ResponseDemoDetail() {
 
   const saveEdit = async () => {
     setSaving(true)
+    // complianceFlag is sent optimistically cleared, but the server
+    // re-runs the actual compliance/fault-concession checks on the new
+    // text (via editedIndex) and overwrites this with whatever it finds —
+    // a human edit doesn't mean the text is automatically clean, it means
+    // it now gets the same scrutiny a fresh AI draft already gets.
     const updatedReviews = demo.reviews.map((r, i) =>
       i === editingIdx ? { ...r, draft_response: editDraft, complianceFlag: null } : r
     )
     const res = await fetch(`/api/admin/response-demos/${id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ reviews: updatedReviews }),
+      body: JSON.stringify({ reviews: updatedReviews, editedIndex: editingIdx }),
     })
     const data = await res.json()
     if (res.ok) { setDemo(data.demo); setMsg('Saved.') }
