@@ -65,6 +65,14 @@ export default function SalesResponseExampleReport() {
   // response in the detail page, which clears the flag, then it'll appear).
   const draftedReviews = allDrafted.filter((r) => !FLAGGED_STATES.includes(r.complianceFlag))
   const excludedCount = allDrafted.length - draftedReviews.length
+  // Split by actual reason, not just a combined total — 'blocked_needs_human_review'
+  // is the HIPAA-specific compliance check, 'concedes_fault_needs_review' is the
+  // universal fault-concession check that applies to every client regardless of
+  // industry. A non-healthcare client will only ever hit the second one, and the
+  // warning should say so plainly rather than mentioning "compliance" generically,
+  // which reads as healthcare-specific even when it isn't what actually happened.
+  const complianceExcludedCount = allDrafted.filter((r) => r.complianceFlag === 'blocked_needs_human_review').length
+  const faultExcludedCount = allDrafted.filter((r) => r.complianceFlag === 'concedes_fault_needs_review').length
   const platforms = [...new Set((demo.reviews || []).map((r) => r.platform))].join(' & ')
   const today = new Date(demo.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
 
@@ -99,7 +107,7 @@ export default function SalesResponseExampleReport() {
         .stat-num.green { color: #15803d; }
         .stat-label { font-size: 7.5pt; color: #6b7280; text-transform: uppercase; letter-spacing: 0.04em; }
         .body { font-size: 9.5pt; color: #374151; margin-bottom: 10px; }
-        h2.section-h { font-size: 13pt; font-weight: 700; color: #111827; margin: 20px 0 8px; }
+        h2.section-h { font-size: 13pt; font-weight: 700; color: #111827; margin: 20px 0 8px; page-break-after: avoid; }
         .why-box { background: #F9FAFB; border: 1px solid #e5e7eb; border-radius: 6px; padding: 12px 14px; margin: 12px 0; }
         .review-card { border: 1px solid #e5e7eb; border-radius: 6px; margin-bottom: 12px; overflow: hidden; page-break-inside: avoid; }
         .review-head { background: #F9FAFB; padding: 8px 12px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #e5e7eb; }
@@ -141,10 +149,19 @@ export default function SalesResponseExampleReport() {
 
       {excludedCount > 0 && (
         <div className="no-print admin-warning-banner" style={{ margin: '0.75rem 1.5rem' }}>
-          ⚠️ {excludedCount} response{excludedCount > 1 ? 's were' : ' was'} generated but flagged for
-          compliance or fault-concession issues, so {excludedCount > 1 ? "they're" : "it's"} excluded from
-          this report automatically. Go back to the detail page, edit the flagged response(s) to clear the
-          issue, then return here — this note is for you only and will never appear in the downloaded PDF.
+          ⚠️ {excludedCount} response{excludedCount > 1 ? 's were' : ' was'} generated but flagged
+          {faultExcludedCount > 0 && complianceExcludedCount > 0 ? (
+            <> — {faultExcludedCount} for fault-concession language (conceding fault or liability in
+            writing, which applies to every client regardless of industry) and {complianceExcludedCount} for
+            HIPAA compliance</>
+          ) : faultExcludedCount > 0 ? (
+            <> for fault-concession language — conceding fault or liability in writing, which applies to
+            every client regardless of industry, not a healthcare-specific check</>
+          ) : (
+            <> for HIPAA compliance issues</>
+          )}, so {excludedCount > 1 ? "they're" : "it's"} excluded from this report automatically. Go back
+          to the detail page, edit the flagged response(s) to clear the issue, then return here — this
+          note is for you only and will never appear in the downloaded PDF.
         </div>
       )}
 
@@ -195,7 +212,7 @@ export default function SalesResponseExampleReport() {
           </span>
         </div>
 
-        <h2 className="section-h page-break">Sample Responses</h2>
+        <h2 className="section-h">Sample Responses</h2>
 
         {draftedReviews.length === 0 ? (
           <p className="body">No responses generated yet — go back and click &quot;Generate Responses.&quot;</p>
