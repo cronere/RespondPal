@@ -483,6 +483,54 @@ export function scanForFaultConcession(text) {
 // HIPAA) deterministic blocklist scan. Returns { draft, complianceFlag }.
 // Used by both the live ai-draft route and the response-demos tool so both
 // get identical, always-in-sync protection.
+// Re-checks a response AFTER a human has hand-edited it — used when saving
+// an edit on the detail page, not during initial drafting. This exists
+// because editing to clear a flag previously just trusted the human got it
+// right, with no safety net; a quick edit on a call can miss something a
+// second pass would catch, and this is a cheap way to give edited text the
+// same scrutiny freshly-drafted text already gets.
+//
+// Deliberately does NOT use runComplianceCheck's rewritten response the way
+// generateCompliantDraft does — only its compliant/not verdict. The whole
+// point of a human editing and saving is that the text is now theirs,
+// deliberately written; silently substituting the AI's own rewrite behind
+// their back would defeat that. If something's still wrong, this flags it
+// for their attention again rather than overwriting what they just wrote.
+export async function checkEditedDraft({ draft, reviewText, industry, apiKey }) {
+  const isHipaa = isHipaaIndustry(industry)
+  let complianceFlag = null
+
+  if (isHipaa && apiKey) {
+    const dynamicNames = extractNamedPersons(reviewText || '')
+    try {
+      const checked = await runComplianceCheck(draft, apiKey, dynamicNames)
+      if (checked.compliant === false) {
+        complianceFlag = 'blocked_needs_human_review'
+      }
+    } catch (err) {
+      console.error('Re-check compliance call failed:', err.message)
+      // Falls through to the deterministic scans below rather than
+      // silently treating a failed check as a clean pass.
+    }
+
+    const draftLower = draft.toLowerCase()
+    const nameHits = dynamicNames.filter((n) => draftLower.includes(n.toLowerCase()))
+    const blockedHits = [...scanForBlockedPhrases(draft), ...nameHits]
+    if (blockedHits.length > 0) {
+      complianceFlag = 'blocked_needs_human_review'
+    }
+  }
+
+  const faultHits = scanForFaultConcession(draft)
+  if (faultHits.length > 0) {
+    complianceFlag = complianceFlag === 'blocked_needs_human_review'
+      ? complianceFlag
+      : 'concedes_fault_needs_review'
+  }
+
+  return complianceFlag
+}
+
 export async function generateCompliantDraft({ review, client, apiKey }) {
   const isHipaa = isHipaaIndustry(client.industry)
   const prompt = buildPrompt({ review, client })
