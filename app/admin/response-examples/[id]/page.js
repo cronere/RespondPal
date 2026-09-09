@@ -17,6 +17,8 @@ export default function ResponseDemoDetail() {
   const [editingDetails, setEditingDetails] = useState(false)
   const [detailsDraft, setDetailsDraft] = useState({})
   const [savingDetails, setSavingDetails] = useState(false)
+  const [showAddForm, setShowAddForm] = useState(false)
+  const [newReview, setNewReview] = useState({ reviewer_name: '', platform: 'Google', star_rating: 5, review_text: '' })
 
   const load = () => {
     setLoading(true)
@@ -99,6 +101,49 @@ export default function ResponseDemoDetail() {
     const data = await res.json()
     if (res.ok) { setDemo(data.demo); setMsg('Saved.') }
     setEditingIdx(null); setSaving(false)
+  }
+
+  const deleteReview = async (idx) => {
+    if (!confirm('Remove this review from the report? This can\'t be undone.')) return
+    const updatedReviews = demo.reviews.filter((_, i) => i !== idx)
+    const res = await fetch(`/api/admin/response-demos/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ reviews: updatedReviews }),
+    })
+    const data = await res.json()
+    if (res.ok) { setDemo(data.demo); setMsg('Review removed.') } else { setMsg(data.error || 'Failed to remove.') }
+  }
+
+  const addReview = async () => {
+    if (!newReview.review_text.trim()) {
+      setMsg('Review text is required.')
+      return
+    }
+    setSaving(true)
+    const updatedReviews = [...demo.reviews, {
+      reviewer_name: newReview.reviewer_name.trim() || 'Anonymous',
+      platform: newReview.platform,
+      star_rating: parseInt(newReview.star_rating) || 5,
+      review_text: newReview.review_text.trim(),
+      draft_response: null,
+      complianceFlag: null,
+    }]
+    const res = await fetch(`/api/admin/response-demos/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ reviews: updatedReviews }),
+    })
+    const data = await res.json()
+    if (res.ok) {
+      setDemo(data.demo)
+      setMsg('Review added.')
+      setShowAddForm(false)
+      setNewReview({ reviewer_name: '', platform: 'Google', star_rating: 5, review_text: '' })
+    } else {
+      setMsg(data.error || 'Failed to add.')
+    }
+    setSaving(false)
   }
 
   // Closes a real gap: there was previously NO way to fix the industry field
@@ -247,6 +292,12 @@ export default function ResponseDemoDetail() {
               {r.complianceFlag === 'concedes_fault_needs_review' && (
                 <span className="demo-flag-badge">⚠️ Concedes fault</span>
               )}
+              <button
+                onClick={() => deleteReview(i)}
+                style={{ marginLeft: 'auto', background: 'none', border: 'none', color: '#9ca3af', fontSize: '0.78rem', cursor: 'pointer' }}
+              >
+                Remove
+              </button>
             </div>
             <p className="demo-review-text">&ldquo;{r.review_text}&rdquo;</p>
 
@@ -288,6 +339,55 @@ export default function ResponseDemoDetail() {
             )}
           </div>
         ))}
+      </div>
+
+      <div style={{ marginTop: '1.5rem' }}>
+        {!showAddForm ? (
+          <button className="rev-mini-btn" onClick={() => setShowAddForm(true)}>+ Add a Review</button>
+        ) : (
+          <div className="drawer-section" style={{ background: '#fafafa', border: '1px solid #e5e7eb', borderRadius: 8, padding: '1rem' }}>
+            <div className="drawer-section-label">Add a review</div>
+            <div className="drawer-grid">
+              <label className="field">
+                <span className="field-label">Reviewer name</span>
+                <input value={newReview.reviewer_name} onChange={(e) => setNewReview((f) => ({ ...f, reviewer_name: e.target.value }))} />
+              </label>
+              <label className="field">
+                <span className="field-label">Platform</span>
+                <select value={newReview.platform} onChange={(e) => setNewReview((f) => ({ ...f, platform: e.target.value }))}>
+                  <option value="Google">Google</option>
+                  <option value="Yelp">Yelp</option>
+                </select>
+              </label>
+              <label className="field">
+                <span className="field-label">Star rating</span>
+                <select value={newReview.star_rating} onChange={(e) => setNewReview((f) => ({ ...f, star_rating: e.target.value }))}>
+                  {[5, 4, 3, 2, 1].map((n) => <option key={n} value={n}>{n} star{n === 1 ? '' : 's'}</option>)}
+                </select>
+              </label>
+            </div>
+            <label className="field" style={{ marginTop: '0.75rem' }}>
+              <span className="field-label">Review text</span>
+              <textarea
+                className="rev-textarea"
+                style={{ minHeight: 80 }}
+                value={newReview.review_text}
+                onChange={(e) => setNewReview((f) => ({ ...f, review_text: e.target.value }))}
+                placeholder="Paste the actual review text here"
+              />
+            </label>
+            <p className="field-hint" style={{ marginTop: '0.5rem' }}>
+              No response yet — use Generate Remaining above once it&apos;s added to draft one, or write
+              it directly by clicking Edit on the new card below.
+            </p>
+            <div className="rev-draft-actions">
+              <button className="rev-mini-btn" onClick={() => setShowAddForm(false)} disabled={saving}>Cancel</button>
+              <button className="rev-ai-btn" onClick={addReview} disabled={saving}>
+                {saving ? 'Adding…' : 'Add Review'}
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )
