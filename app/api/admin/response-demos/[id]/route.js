@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { supabaseAdmin } from '../../../../lib/supabaseAdmin'
+import { checkEditedDraft } from '../../../../lib/aiDrafting'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
@@ -35,6 +36,32 @@ export async function PATCH(req, { params }) {
       if (key in body) update[key] = body[key]
     }
     update.updated_at = new Date().toISOString()
+
+    // Same re-check the sales-side route does: when the caller identifies
+    // which review was just hand-edited, re-run the compliance/
+    // fault-concession checks on the new text server-side rather than
+    // trusting whatever complianceFlag was sent — a human edit doesn't
+    // mean the text is automatically clean, it means it now gets the same
+    // scrutiny a fresh AI draft already gets. Not run for plain
+    // deletes/adds/regenerates, which don't send editedIndex.
+    if (Array.isArray(update.reviews) && Number.isInteger(body.editedIndex) && update.reviews[body.editedIndex]?.draft_response) {
+      const apiKey = process.env.ANTHROPIC_API_KEY
+      if (apiKey) {
+        const { data: existing } = await supabaseAdmin
+          .from('response_demos')
+          .select('industry')
+          .eq('id', params.id)
+          .single()
+        const target = update.reviews[body.editedIndex]
+        const complianceFlag = await checkEditedDraft({
+          draft: target.draft_response,
+          reviewText: target.review_text,
+          industry: update.industry ?? existing?.industry,
+          apiKey,
+        })
+        update.reviews = update.reviews.map((r, i) => i === body.editedIndex ? { ...r, complianceFlag } : r)
+      }
+    }
 
     const { data, error } = await supabaseAdmin
       .from('response_demos')
