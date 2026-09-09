@@ -313,7 +313,7 @@ function ReviewDrawer({ review, onClose, onUpdate, onDelete }) {
         if (data.complianceFlag === 'blocked_needs_human_review') {
           setMsg('⚠️ Draft generated, but our compliance scan still found a risky phrase after two AI passes. Read carefully and edit before saving — do not post as-is.')
         } else if (data.complianceFlag === 'concedes_fault_needs_review') {
-          setMsg('⚠️ Draft generated, but it appears to concede fault in writing (e.g. "you\'re right" or "we should have"). Review and soften before posting — acknowledge the feeling, not the fault.')
+          setMsg('⚠️ Our system already tried to soften fault-conceding language here (e.g. "you\'re right" or "we should have") and couldn\'t fully fix it automatically. This one needs real human editing, not just a quick tweak — acknowledge the feeling, not the fault.')
         } else if (data.complianceFlag === 'corrected') {
           setMsg('Draft generated — our compliance check caught and corrected an issue automatically. Still review before posting.')
         } else if (data.complianceFlag === 'unchecked') {
