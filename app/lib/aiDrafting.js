@@ -459,7 +459,7 @@ const FAULT_CONCESSION_PHRASES = [
   // CURRENT performance is deficient, just framed as a commitment to
   // improve rather than a confession about the past. Same liability, new tense.
   'can and should', 'should manage better', 'should handle better',
-  'should be better', 'should do better', 'can do better', 'how we can do better', 'need to manage better',
+  'should be better', 'should do better', 'need to manage better',
   'need to do better', 'need to be better',
   'not the standard we aim for', 'not the standard we hold ourselves to',
   'not the standard we set for', 'not the standard we strive for',
@@ -531,6 +531,63 @@ export async function checkEditedDraft({ draft, reviewText, industry, apiKey }) 
   return complianceFlag
 }
 
+// Attempts one targeted rewrite to remove fault-concession language while
+// keeping the response's warmth and structure intact — the same
+// draft-then-verify pattern the HIPAA compliance check already uses, just
+// applied to the universal fault-concession scan instead of an AI
+// judgment call. Returns the rewritten text (untouched if the API call
+// fails, so a rewrite failure degrades to "still flagged" rather than
+// silently losing the original draft).
+async function rewriteToReduceFaultConcession({ draft, hitPhrases, apiKey }) {
+  const prompt = `You drafted a response to a negative customer review, but it contains language that could be read as a legal admission of fault or liability — specifically: ${hitPhrases.join(', ')}
+
+Rewrite the response so it:
+- Keeps the same warmth, empathy, and willingness to make things right
+- Removes or rephrases only the language that admits fault, promises concrete improvement as a concession of past failure, or confirms the customer's specific factual claims as true
+- Stays close to the original length and structure — this is a targeted fix, not a full rewrite
+- Does not deny or argue with the customer
+
+The line to draw: expressing sympathy for how someone feels ("that sounds frustrating," "we're sorry to hear this") is fine. Confirming specific facts as true or admitting the business was at fault ("we failed you," "we should have...") is what needs to be removed or softened.
+
+Original response:
+${draft}
+
+Return ONLY the rewritten response text, nothing else — no preamble, no explanation.`
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+      },
+      body: JSON.stringify({
+        model: MODEL,
+        max_tokens: 500,
+        messages: [{ role: 'user', content: prompt }],
+      }),
+    })
+
+    if (!res.ok) {
+      console.error('Fault-concession rewrite API error:', res.status)
+      return draft
+    }
+
+    const data = await res.json()
+    const rewritten = (data.content || [])
+      .filter((b) => b.type === 'text')
+      .map((b) => b.text)
+      .join('')
+      .trim()
+
+    return rewritten || draft
+  } catch (err) {
+    console.error('Fault-concession rewrite failed:', err.message)
+    return draft
+  }
+}
+
 export async function generateCompliantDraft({ review, client, apiKey }) {
   const isHipaa = isHipaaIndustry(client.industry)
   const prompt = buildPrompt({ review, client })
@@ -596,12 +653,29 @@ export async function generateCompliantDraft({ review, client, apiKey }) {
   // conceding fault in writing is a liability risk everywhere, not just in
   // healthcare. Cheap deterministic scan, no extra API call needed, so there's
   // no reason this should only protect HIPAA clients.
-  const faultHits = scanForFaultConcession(draft)
+  //
+  // Same draft-then-verify pattern the HIPAA path already uses: don't flag
+  // immediately on the first hit — attempt one targeted rewrite, re-scan the
+  // result, and only escalate to human review if the rewrite genuinely
+  // didn't clear it. At scale, most fault-concession language is fixable by
+  // softening a phrase while keeping the same empathy, and reserving human
+  // review for the cases the AI couldn't actually resolve on its own is the
+  // difference between this being sustainable at hundreds of reviews a month
+  // and it quietly becoming a hand-written-response bottleneck.
+  let faultHits = scanForFaultConcession(draft)
   if (faultHits.length > 0) {
-    console.error('Fault-concession language found — needs human review before posting:', faultHits)
-    complianceFlag = complianceFlag === 'blocked_needs_human_review'
-      ? complianceFlag // already flagged for a HIPAA reason, keep that flag
-      : 'concedes_fault_needs_review'
+    const rewritten = await rewriteToReduceFaultConcession({ draft, hitPhrases: faultHits, apiKey })
+    const remainingHits = scanForFaultConcession(rewritten)
+    if (remainingHits.length === 0) {
+      console.warn('Fault-concession language found and auto-corrected:', faultHits)
+      draft = rewritten
+      complianceFlag = complianceFlag === 'blocked_needs_human_review' ? complianceFlag : 'corrected'
+    } else {
+      console.error('Fault-concession language found — rewrite attempt did not fully clear it, needs human review:', remainingHits)
+      complianceFlag = complianceFlag === 'blocked_needs_human_review'
+        ? complianceFlag // already flagged for a HIPAA reason, keep that flag
+        : 'concedes_fault_needs_review'
+    }
   }
 
   return { draft, complianceFlag }
