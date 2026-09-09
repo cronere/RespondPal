@@ -89,14 +89,17 @@ export default function ResponseExampleDetail() {
     setTimeout(() => setCopiedIdx(null), 1500)
   }
 
-  const patchReviews = async (updatedReviews, onSuccess) => {
+  const patchReviews = async (updatedReviews, onSuccess, editedIndex) => {
     setSaving(true)
     setError('')
     try {
       const res = await fetch(`/api/sales/response-examples/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ reviews: updatedReviews }),
+        body: JSON.stringify({
+          reviews: updatedReviews,
+          ...(Number.isInteger(editedIndex) ? { editedIndex } : {}),
+        }),
       })
       const data = await res.json()
       if (res.ok) {
@@ -122,15 +125,17 @@ export default function ResponseExampleDetail() {
   }
 
   const saveEdit = () => {
-    // Editing and saving manually clears the flag — same reasoning as the
-    // audit rewrite editor: a human has now personally reviewed and
-    // approved this exact text, which is the actual point of a
-    // human-in-the-loop review step. If the new text still has an issue,
-    // that surfaces on the next read-through, not as a stale leftover flag.
+    // The saved text is sent with complianceFlag optimistically cleared,
+    // but that's not the real answer — editedIndex tells the server which
+    // review this is, and the server re-runs the same compliance/
+    // fault-concession checks on the new text before actually saving,
+    // overwriting this optimistic value with whatever it finds. A human
+    // editing doesn't mean the edit is automatically clean; it means this
+    // text now gets the same scrutiny a fresh AI draft already gets.
     const updated = reviews.map((r, i) =>
       i === editingIdx ? { ...r, draft_response: editDraft, complianceFlag: null } : r
     )
-    patchReviews(updated, () => { setEditingIdx(null); setEditDraft('') })
+    patchReviews(updated, () => { setEditingIdx(null); setEditDraft('') }, editingIdx)
   }
 
   const deleteReview = (i) => {
