@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { getSalesRepId } from '../../../../lib/salesAuth'
+import { checkEditedDraft } from '../../../../lib/aiDrafting'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -49,7 +50,7 @@ export async function PATCH(req, { params }) {
   try {
     const { data: demo, error: fetchError } = await supabase
       .from('response_demos')
-      .select('id, sales_rep_id')
+      .select('id, sales_rep_id, industry')
       .eq('id', params.id)
       .single()
 
@@ -65,9 +66,33 @@ export async function PATCH(req, { params }) {
       return NextResponse.json({ error: 'reviews must be an array.' }, { status: 400 })
     }
 
+    let reviews = body.reviews
+
+    // When the client identifies which review was just hand-edited,
+    // re-check it server-side rather than trusting whatever complianceFlag
+    // the client sent — this is the actual fix for edits never getting
+    // re-scanned. Not run for plain deletes/adds (no editedIndex sent),
+    // since those don't touch existing response text.
+    if (Number.isInteger(body.editedIndex) && reviews[body.editedIndex]?.draft_response) {
+      const apiKey = process.env.ANTHROPIC_API_KEY
+      if (apiKey) {
+        const target = reviews[body.editedIndex]
+        const complianceFlag = await checkEditedDraft({
+          draft: target.draft_response,
+          reviewText: target.review_text,
+          industry: demo.industry,
+          apiKey,
+        })
+        reviews = reviews.map((r, i) => i === body.editedIndex ? { ...r, complianceFlag } : r)
+      }
+      // No ANTHROPIC_API_KEY: falls through and saves complianceFlag as
+      // sent (null, from the frontend's optimistic clear) rather than
+      // blocking the save entirely over missing AI config.
+    }
+
     const { data, error } = await supabase
       .from('response_demos')
-      .update({ reviews: body.reviews, updated_at: new Date().toISOString() })
+      .update({ reviews, updated_at: new Date().toISOString() })
       .eq('id', params.id)
       .select()
       .single()
