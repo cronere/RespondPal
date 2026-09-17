@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 
 function emptyReview() {
-  return { platform: 'Google', star_rating: 5, reviewer_name: '', review_text: '' }
+  return { platform: 'Google', star_rating: null, reviewer_name: '', review_text: '' }
 }
 
 export default function SalesResponseExamples() {
@@ -185,10 +185,11 @@ export default function SalesResponseExamples() {
                   <label className="field" style={{ marginBottom: 0 }}>
                     <span className="field-label">Stars</span>
                     <select
-                      value={r.star_rating}
-                      onChange={(e) => setReview(i, 'star_rating', parseInt(e.target.value))}
+                      value={r.star_rating ?? ''}
+                      onChange={(e) => setReview(i, 'star_rating', e.target.value ? parseInt(e.target.value) : null)}
                       style={{ padding: '0.55rem 0.7rem', borderRadius: 6, border: '1px solid #d1d5db', width: '100%' }}
                     >
+                      <option value="">Select rating…</option>
                       {[5, 4, 3, 2, 1].map((n) => <option key={n} value={n}>{n} star{n === 1 ? '' : 's'}</option>)}
                     </select>
                   </label>
