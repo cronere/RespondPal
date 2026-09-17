@@ -496,6 +496,60 @@ export function scanForFaultConcession(text) {
 // deliberately written; silently substituting the AI's own rewrite behind
 // their back would defeat that. If something's still wrong, this flags it
 // for their attention again rather than overwriting what they just wrote.
+// Generates a short, damning excerpt from a long review — for the
+// trigger-letter tool, where a review needs to fit on one printed page
+// alongside its response and the offer. A mechanical character-count cut
+// (take the first N characters) tends to stop mid-thought at whatever
+// point it happens to land, which can cut off exactly the specific detail
+// that made the complaint land in the first place. This instead asks the
+// model to select and connect the most specific, damaging phrases already
+// in the review — never paraphrase or invent wording, only choose what to
+// keep and where to place an ellipsis between non-consecutive parts.
+export async function generateReviewExcerpt({ reviewText, apiKey }) {
+  const prompt = `A negative customer review needs to be excerpted to fit on one printed page, next to a response and a sales offer. Full text is too long, but a plain character-count cutoff often lands mid-thought and misses what actually makes the complaint damaging.
+
+Select and connect the 2-4 most specific, damaging phrases from the review below — the concrete details (what happened, how long, who, what was said) that make clear why this is a serious complaint, not vague dissatisfaction. Use "…" to join non-consecutive parts. Do not paraphrase, add commentary, or change any wording — only select and connect existing phrases, exactly as written. Keep the total under 300 characters.
+
+Review:
+${reviewText}
+
+Return ONLY the excerpt text, nothing else — no preamble, no explanation, no quotation marks around it.`
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+      },
+      body: JSON.stringify({
+        model: MODEL,
+        max_tokens: 200,
+        messages: [{ role: 'user', content: prompt }],
+      }),
+    })
+
+    if (!res.ok) {
+      console.error('Review excerpt API error:', res.status)
+      return null
+    }
+
+    const data = await res.json()
+    const excerpt = (data.content || [])
+      .filter((b) => b.type === 'text')
+      .map((b) => b.text)
+      .join('')
+      .trim()
+      .replace(/^["']|["']$/g, '')
+
+    return excerpt || null
+  } catch (err) {
+    console.error('Review excerpt generation failed:', err.message)
+    return null
+  }
+}
+
 export async function checkEditedDraft({ draft, reviewText, industry, apiKey }) {
   const isHipaa = isHipaaIndustry(industry)
   let complianceFlag = null
