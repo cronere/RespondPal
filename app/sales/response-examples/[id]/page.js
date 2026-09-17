@@ -17,7 +17,7 @@ export default function ResponseExampleDetail() {
   const [editDraft, setEditDraft] = useState('')
   const [saving, setSaving] = useState(false)
   const [showAddForm, setShowAddForm] = useState(false)
-  const [newReview, setNewReview] = useState({ reviewer_name: '', platform: 'Google', star_rating: 5, review_text: '' })
+  const [newReview, setNewReview] = useState({ reviewer_name: '', platform: 'Google', star_rating: '', review_text: '' })
 
   // Same two flagged states the report page excludes — kept in sync here
   // so a flagged response is actually visible on the one page the report's
@@ -149,17 +149,21 @@ export default function ResponseExampleDetail() {
       setError('Review text is required.')
       return
     }
+    if (!newReview.star_rating) {
+      setError('Select a star rating.')
+      return
+    }
     const updated = [...reviews, {
       reviewer_name: newReview.reviewer_name.trim() || 'Anonymous',
       platform: newReview.platform,
-      star_rating: parseInt(newReview.star_rating) || 5,
+      star_rating: parseInt(newReview.star_rating),
       review_text: newReview.review_text.trim(),
       draft_response: null,
       complianceFlag: null,
     }]
     patchReviews(updated, () => {
       setShowAddForm(false)
-      setNewReview({ reviewer_name: '', platform: 'Google', star_rating: 5, review_text: '' })
+      setNewReview({ reviewer_name: '', platform: 'Google', star_rating: '', review_text: '' })
     })
   }
 
@@ -219,7 +223,7 @@ export default function ResponseExampleDetail() {
             <div key={i} style={{ border: isFlagged ? '1px solid #FCA5A5' : '1px solid #e5e7eb', borderRadius: 10, padding: '1.1rem', background: 'white' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.2rem' }}>
                 <div style={{ fontWeight: 700, color: '#1a1a1a' }}>
-                  {r.reviewer_name || 'Anonymous'} · {r.platform} · {'★'.repeat(r.star_rating || 5)}
+                  {r.reviewer_name || 'Anonymous'} · {r.platform} · {r.star_rating ? '★'.repeat(r.star_rating) : '(no rating set)'}
                 </div>
                 <button
                   onClick={() => deleteReview(i)}
@@ -318,6 +322,7 @@ export default function ResponseExampleDetail() {
                   onChange={(e) => setNewReview((f) => ({ ...f, star_rating: e.target.value }))}
                   style={{ width: '100%', padding: '0.5rem 0.6rem', borderRadius: 6, border: '1px solid #d1d5db' }}
                 >
+                  <option value="">Select rating…</option>
                   {[5, 4, 3, 2, 1].map((n) => <option key={n} value={n}>{n} star{n === 1 ? '' : 's'}</option>)}
                 </select>
               </label>
