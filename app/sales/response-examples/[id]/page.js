@@ -270,6 +270,11 @@ export default function ResponseExampleDetail() {
                     <button className="rev-mini-btn" onClick={() => copyDraft(r.draft_response, i)}>
                       {copiedIdx === i ? 'Copied!' : 'Copy'}
                     </button>
+                    {!isFlagged && (
+                      <a className="rev-mini-btn" href={`/sales/response-examples/${id}/letter?review=${i}`}>
+                        Generate Letter
+                      </a>
+                    )}
                   </div>
                 </div>
               ) : (
