@@ -16,6 +16,38 @@ import { useParams, useSearchParams } from 'next/navigation'
 // just a different export of the same underlying data (one review at a
 // time instead of the full multi-review report), which is why it lives
 // under the existing response-examples route tree rather than its own.
+
+// Simple possessive helper — "Founding Farmers" becomes "Founding
+// Farmers'", not the grammatically wrong "Founding Farmers's". Any name
+// ending in s/S just gets a bare apostrophe; everything else gets 's.
+function possessive(name) {
+  if (!name) return name
+  return /s$/i.test(name) ? `${name}'` : `${name}'s`
+}
+
+// Formats digits as (XXX) XXX-XXXX as the rep types, so what's in the
+// input already matches what prints on the letter — a raw, unpunctuated
+// number looked unfinished on the actual mailed page.
+function formatPhone(value) {
+  const digits = value.replace(/\D/g, '').slice(0, 10)
+  if (digits.length === 0) return ''
+  if (digits.length < 4) return `(${digits}`
+  if (digits.length < 7) return `(${digits.slice(0, 3)}) ${digits.slice(3)}`
+  return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`
+}
+
+// The letter needs to fit on one page — a manager who skims page 1 and
+// sees nothing but "Here's how I'd respond:" never reaches the offer.
+// Long reviews get trimmed to this many characters (cut at the last full
+// word, not mid-word) with a note pointing to the full review elsewhere,
+// rather than let the page silently overflow onto a second sheet.
+const MAX_REVIEW_CHARS = 380
+function trimReview(text) {
+  if (!text || text.length <= MAX_REVIEW_CHARS) return { text, trimmed: false }
+  const cut = text.slice(0, MAX_REVIEW_CHARS).replace(/\s+\S*$/, '')
+  return { text: cut + '…', trimmed: true }
+}
+
 function TriggerLetterForm() {
   const { id } = useParams()
   const searchParams = useSearchParams()
@@ -92,6 +124,8 @@ function TriggerLetterForm() {
     )
   }
 
+  const trimmedReview = trimReview(review.review_text)
+
   const savePhoneIfChanged = async () => {
     if (repPhone !== (rep?.phone || '')) {
       try {
@@ -143,7 +177,7 @@ function TriggerLetterForm() {
             </label>
             <label className="field">
               <span className="field-label">Phone</span>
-              <input value={repPhone} onChange={(e) => setRepPhone(e.target.value)} placeholder="(555) 555-5555" />
+              <input value={repPhone} onChange={(e) => setRepPhone(formatPhone(e.target.value))} placeholder="(555) 555-5555" />
             </label>
             <label className="field">
               <span className="field-label">Email</span>
@@ -165,14 +199,20 @@ function TriggerLetterForm() {
         </div>
 
         <div style={{ marginBottom: '0.3in' }}>
-          I noticed this review on {demo.business_name}&apos;s {review.platform} profile:
+          I noticed this review on {possessive(demo.business_name)} {review.platform} profile:
         </div>
 
         <div style={{ borderLeft: '3px solid #d1d5db', paddingLeft: '0.25in', marginBottom: '0.3in', fontStyle: 'italic' }}>
           <div style={{ marginBottom: '0.1in', fontStyle: 'normal', fontSize: '0.95em', color: '#4b5563' }}>
-            {review.reviewer_name || 'A reviewer'} — {'★'.repeat(review.star_rating || 5)}{'☆'.repeat(5 - (review.star_rating || 5))} on {review.platform}
+            {review.reviewer_name || 'A reviewer'}
+            {review.star_rating ? <> — {'★'.repeat(review.star_rating)}{'☆'.repeat(5 - review.star_rating)}</> : null} on {review.platform}
           </div>
-          &ldquo;{review.review_text}&rdquo;
+          &ldquo;{trimmedReview.text}&rdquo;
+          {trimmedReview.trimmed && (
+            <div style={{ fontStyle: 'normal', fontSize: '0.85em', color: '#6b7280', marginTop: '0.08in' }}>
+              (Full review on {review.platform})
+            </div>
+          )}
         </div>
 
         <div style={{ marginBottom: '0.15in' }}>Here&apos;s how I&apos;d respond:</div>
