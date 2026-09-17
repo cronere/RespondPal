@@ -15,6 +15,7 @@ export default function ResponseExampleDetail() {
   const [copiedIdx, setCopiedIdx] = useState(null)
   const [editingIdx, setEditingIdx] = useState(null)
   const [editDraft, setEditDraft] = useState('')
+  const [editStarRating, setEditStarRating] = useState('')
   const [saving, setSaving] = useState(false)
   const [showAddForm, setShowAddForm] = useState(false)
   const [newReview, setNewReview] = useState({ reviewer_name: '', platform: 'Google', star_rating: '', review_text: '' })
@@ -117,14 +118,20 @@ export default function ResponseExampleDetail() {
   const startEdit = (i) => {
     setEditingIdx(i)
     setEditDraft(reviews[i].draft_response || '')
+    setEditStarRating(reviews[i].star_rating || '')
   }
 
   const cancelEdit = () => {
     setEditingIdx(null)
     setEditDraft('')
+    setEditStarRating('')
   }
 
   const saveEdit = () => {
+    if (!editStarRating) {
+      setError('Select a star rating.')
+      return
+    }
     // The saved text is sent with complianceFlag optimistically cleared,
     // but that's not the real answer — editedIndex tells the server which
     // review this is, and the server re-runs the same compliance/
@@ -132,10 +139,16 @@ export default function ResponseExampleDetail() {
     // overwriting this optimistic value with whatever it finds. A human
     // editing doesn't mean the edit is automatically clean; it means this
     // text now gets the same scrutiny a fresh AI draft already gets.
+    //
+    // Also saves star_rating now, not just draft_response — this is the
+    // actual fix for a review stuck with an old, incorrect rating (e.g.
+    // one saved under the previous default-to-5 bug), since there was
+    // previously no way to correct it short of deleting and re-adding
+    // the whole review.
     const updated = reviews.map((r, i) =>
-      i === editingIdx ? { ...r, draft_response: editDraft, complianceFlag: null } : r
+      i === editingIdx ? { ...r, draft_response: editDraft, star_rating: parseInt(editStarRating), complianceFlag: null } : r
     )
-    patchReviews(updated, () => { setEditingIdx(null); setEditDraft('') }, editingIdx)
+    patchReviews(updated, () => { setEditingIdx(null); setEditDraft(''); setEditStarRating('') }, editingIdx)
   }
 
   const deleteReview = (i) => {
@@ -246,6 +259,19 @@ export default function ResponseExampleDetail() {
 
               {editingIdx === i ? (
                 <div style={{ background: '#F9FAFB', border: '1px solid #e5e7eb', borderRadius: 8, padding: '0.9rem' }}>
+                  <label style={{ display: 'block', marginBottom: '0.6rem' }}>
+                    <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#6b7280', textTransform: 'uppercase', display: 'block', marginBottom: '0.3rem' }}>
+                      Star rating
+                    </span>
+                    <select
+                      value={editStarRating}
+                      onChange={(e) => setEditStarRating(e.target.value)}
+                      style={{ padding: '0.5rem 0.6rem', borderRadius: 6, border: '1px solid #d1d5db' }}
+                    >
+                      <option value="">Select rating…</option>
+                      {[5, 4, 3, 2, 1].map((n) => <option key={n} value={n}>{n} star{n === 1 ? '' : 's'}</option>)}
+                    </select>
+                  </label>
                   <div style={{ fontSize: '0.72rem', fontWeight: 700, color: '#6b7280', textTransform: 'uppercase', marginBottom: '0.4rem' }}>
                     Editing response
                   </div>
