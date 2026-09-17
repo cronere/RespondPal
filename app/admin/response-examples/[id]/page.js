@@ -18,7 +18,7 @@ export default function ResponseDemoDetail() {
   const [detailsDraft, setDetailsDraft] = useState({})
   const [savingDetails, setSavingDetails] = useState(false)
   const [showAddForm, setShowAddForm] = useState(false)
-  const [newReview, setNewReview] = useState({ reviewer_name: '', platform: 'Google', star_rating: 5, review_text: '' })
+  const [newReview, setNewReview] = useState({ reviewer_name: '', platform: 'Google', star_rating: '', review_text: '' })
 
   const load = () => {
     setLoading(true)
@@ -125,11 +125,15 @@ export default function ResponseDemoDetail() {
       setMsg('Review text is required.')
       return
     }
+    if (!newReview.star_rating) {
+      setMsg('Select a star rating.')
+      return
+    }
     setSaving(true)
     const updatedReviews = [...demo.reviews, {
       reviewer_name: newReview.reviewer_name.trim() || 'Anonymous',
       platform: newReview.platform,
-      star_rating: parseInt(newReview.star_rating) || 5,
+      star_rating: parseInt(newReview.star_rating),
       review_text: newReview.review_text.trim(),
       draft_response: null,
       complianceFlag: null,
@@ -144,7 +148,7 @@ export default function ResponseDemoDetail() {
       setDemo(data.demo)
       setMsg('Review added.')
       setShowAddForm(false)
-      setNewReview({ reviewer_name: '', platform: 'Google', star_rating: 5, review_text: '' })
+      setNewReview({ reviewer_name: '', platform: 'Google', star_rating: '', review_text: '' })
     } else {
       setMsg(data.error || 'Failed to add.')
     }
@@ -367,6 +371,7 @@ export default function ResponseDemoDetail() {
               <label className="field">
                 <span className="field-label">Star rating</span>
                 <select value={newReview.star_rating} onChange={(e) => setNewReview((f) => ({ ...f, star_rating: e.target.value }))}>
+                  <option value="">Select rating…</option>
                   {[5, 4, 3, 2, 1].map((n) => <option key={n} value={n}>{n} star{n === 1 ? '' : 's'}</option>)}
                 </select>
               </label>
