@@ -260,8 +260,9 @@ function TriggerLetterForm() {
 
         <div>
           {repName}
-          {repPhone && <><br />{repPhone}</>}
-          {repEmail && <><br />{repEmail}</>}
+          <br /><strong>RespondPal</strong>
+          {repPhone && <><br />P: {repPhone}</>}
+          {repEmail && <><br />E: {repEmail}</>}
         </div>
       </div>
     </div>
