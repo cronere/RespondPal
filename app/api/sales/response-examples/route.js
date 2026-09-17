@@ -100,7 +100,18 @@ export async function POST(req) {
       )
     }
 
-    const reviews = (body.reviews || []).slice(0, 5).map((r) => ({
+    // A missing star rating used to silently default to 5 — which, for a
+    // review whose whole point is showing a tough one, could print as a
+    // glowing 5-star review on an actual mailed letter while the quoted
+    // text is a complaint. Required here, not just nudged client-side,
+    // since that's the only way to guarantee it can't happen again.
+    const rawReviews = (body.reviews || []).slice(0, 5)
+    const missingRating = rawReviews.find((r) => (r.review_text || '').trim() && !r.star_rating)
+    if (missingRating) {
+      return NextResponse.json({ error: 'Select a star rating for every review that has text.' }, { status: 400 })
+    }
+
+    const reviews = rawReviews.map((r) => ({
       platform: r.platform || 'Google',
       star_rating: r.star_rating || null,
       reviewer_name: r.reviewer_name || '',
