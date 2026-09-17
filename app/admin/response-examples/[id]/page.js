@@ -13,6 +13,7 @@ export default function ResponseDemoDetail() {
   const [msg, setMsg] = useState('')
   const [editingIdx, setEditingIdx] = useState(null)
   const [editDraft, setEditDraft] = useState('')
+  const [editStarRating, setEditStarRating] = useState('')
   const [saving, setSaving] = useState(false)
   const [editingDetails, setEditingDetails] = useState(false)
   const [detailsDraft, setDetailsDraft] = useState({})
@@ -86,17 +87,27 @@ export default function ResponseDemoDetail() {
   const startEdit = (idx) => {
     setEditingIdx(idx)
     setEditDraft(demo.reviews[idx].draft_response || '')
+    setEditStarRating(demo.reviews[idx].star_rating || '')
   }
 
   const saveEdit = async () => {
+    if (!editStarRating) {
+      setMsg('Select a star rating.')
+      return
+    }
     setSaving(true)
     // complianceFlag is sent optimistically cleared, but the server
     // re-runs the actual compliance/fault-concession checks on the new
     // text (via editedIndex) and overwrites this with whatever it finds —
     // a human edit doesn't mean the text is automatically clean, it means
     // it now gets the same scrutiny a fresh AI draft already gets.
+    //
+    // Also saves star_rating now — the actual fix for a review stuck with
+    // an old, incorrect rating (e.g. one saved under the previous
+    // default-to-5 bug), since there was previously no way to correct it
+    // short of deleting and re-adding the whole review.
     const updatedReviews = demo.reviews.map((r, i) =>
-      i === editingIdx ? { ...r, draft_response: editDraft, complianceFlag: null } : r
+      i === editingIdx ? { ...r, draft_response: editDraft, star_rating: parseInt(editStarRating), complianceFlag: null } : r
     )
     const res = await fetch(`/api/admin/response-demos/${id}`, {
       method: 'PATCH',
@@ -313,6 +324,19 @@ export default function ResponseDemoDetail() {
             {r.draft_response ? (
               editingIdx === i ? (
                 <div className="demo-draft-edit">
+                  <label style={{ display: 'block', marginBottom: '0.6rem' }}>
+                    <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#6b7280', textTransform: 'uppercase', display: 'block', marginBottom: '0.3rem' }}>
+                      Star rating
+                    </span>
+                    <select
+                      value={editStarRating}
+                      onChange={(e) => setEditStarRating(e.target.value)}
+                      style={{ padding: '0.5rem 0.6rem', borderRadius: 6, border: '1px solid #d1d5db' }}
+                    >
+                      <option value="">Select rating…</option>
+                      {[5, 4, 3, 2, 1].map((n) => <option key={n} value={n}>{n} star{n === 1 ? '' : 's'}</option>)}
+                    </select>
+                  </label>
                   <textarea
                     className="rev-textarea"
                     style={{ minHeight: 100 }}
