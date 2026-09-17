@@ -56,6 +56,7 @@ function TriggerLetterForm() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [generating, setGenerating] = useState(false)
+  const [excerpting, setExcerpting] = useState(false)
   const [scriptLoaded, setScriptLoaded] = useState(false)
   const [repName, setRepName] = useState('')
   const [repPhone, setRepPhone] = useState('')
@@ -100,11 +101,8 @@ function TriggerLetterForm() {
     load()
   }, [id])
 
-  if (loading) return <div style={{ padding: '2rem', textAlign: 'center' }}>Loading…</div>
-  if (error || !demo) return <div style={{ padding: '2rem', textAlign: 'center', color: '#b91c1c' }}>{error || 'Not found.'}</div>
-
   const FLAGGED_STATES = ['blocked_needs_human_review', 'concedes_fault_needs_review']
-  const reviews = demo.reviews || []
+  const reviews = demo?.reviews || []
 
   // Which review to use: the ?review= index if it points at a real,
   // drafted, non-flagged review — otherwise fall back to the first
@@ -114,7 +112,35 @@ function TriggerLetterForm() {
   // the query param is client input and shouldn't be trusted blindly.
   const requestedIdx = parseInt(searchParams.get('review'))
   const isUsable = (r) => r && r.draft_response && !FLAGGED_STATES.includes(r.complianceFlag)
-  const review = isUsable(reviews[requestedIdx]) ? reviews[requestedIdx] : reviews.find(isUsable)
+  const usableIdx = isUsable(reviews[requestedIdx]) ? requestedIdx : reviews.findIndex(isUsable)
+  const review = usableIdx >= 0 ? reviews[usableIdx] : null
+
+  // Long reviews get an AI-generated excerpt rather than a mechanical
+  // character cutoff — see generateReviewExcerpt for why. Generated once
+  // per review, then cached on the review object itself (letterExcerpt),
+  // so revisiting the same letter doesn't re-generate it. Placed before
+  // the loading/error early returns below, since hooks can't follow a
+  // conditional return — guarded internally instead with a check on demo
+  // and review being loaded yet.
+  useEffect(() => {
+    if (!demo || !review || excerpting) return
+    if (review.review_text && review.review_text.length > MAX_REVIEW_CHARS && !review.letterExcerpt) {
+      setExcerpting(true)
+      fetch(`/api/sales/response-examples/${id}/excerpt`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reviewIndex: usableIdx }),
+      })
+        .then((res) => res.json())
+        .then((data) => { if (data.demo) setDemo(data.demo) })
+        .catch(() => {})
+        .finally(() => setExcerpting(false))
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [demo?.id, usableIdx])
+
+  if (loading) return <div style={{ padding: '2rem', textAlign: 'center' }}>Loading…</div>
+  if (error || !demo) return <div style={{ padding: '2rem', textAlign: 'center', color: '#b91c1c' }}>{error || 'Not found.'}</div>
 
   if (!review) {
     return (
@@ -124,7 +150,13 @@ function TriggerLetterForm() {
     )
   }
 
-  const trimmedReview = trimReview(review.review_text)
+  // Prefer the AI-generated excerpt once it's ready; while it's still
+  // generating (or for a review short enough to never need one), fall
+  // back to the plain mechanical trim so there's always something
+  // reasonable on screen rather than an empty gap.
+  const displayedReview = review.letterExcerpt
+    ? { text: review.letterExcerpt, trimmed: true }
+    : trimReview(review.review_text)
 
   const savePhoneIfChanged = async () => {
     if (repPhone !== (rep?.phone || '')) {
@@ -188,8 +220,8 @@ function TriggerLetterForm() {
             Your phone number is saved for next time when you download.
           </p>
         </div>
-        <button className="print-btn" disabled={generating || !scriptLoaded} onClick={downloadPdf} style={{ background: '#C2410C', color: 'white', border: 'none', padding: '10px 24px', fontSize: 13, fontWeight: 600, borderRadius: 6, cursor: 'pointer', display: 'block', margin: '0 auto 1.5rem' }}>
-          {generating ? 'Generating PDF…' : scriptLoaded ? 'Download Letter PDF' : 'Loading…'}
+        <button className="print-btn" disabled={generating || excerpting || !scriptLoaded} onClick={downloadPdf} style={{ background: '#C2410C', color: 'white', border: 'none', padding: '10px 24px', fontSize: 13, fontWeight: 600, borderRadius: 6, cursor: 'pointer', display: 'block', margin: '0 auto 1.5rem' }}>
+          {generating ? 'Generating PDF…' : excerpting ? 'Preparing excerpt…' : scriptLoaded ? 'Download Letter PDF' : 'Loading…'}
         </button>
       </div>
 
@@ -205,10 +237,10 @@ function TriggerLetterForm() {
         <div style={{ borderLeft: '3px solid #d1d5db', paddingLeft: '0.25in', marginBottom: '0.3in', fontStyle: 'italic' }}>
           <div style={{ marginBottom: '0.1in', fontStyle: 'normal', fontSize: '0.95em', color: '#4b5563' }}>
             {review.reviewer_name || 'A reviewer'}
-            {review.star_rating ? <> — {'★'.repeat(review.star_rating)}{'☆'.repeat(5 - review.star_rating)}</> : null} on {review.platform}
+            {review.star_rating ? <> — {'★'.repeat(review.star_rating)} ({review.star_rating} star{review.star_rating === 1 ? '' : 's'})</> : null} on {review.platform}
           </div>
-          &ldquo;{trimmedReview.text}&rdquo;
-          {trimmedReview.trimmed && (
+          &ldquo;{displayedReview.text}&rdquo;
+          {displayedReview.trimmed && (
             <div style={{ fontStyle: 'normal', fontSize: '0.85em', color: '#6b7280', marginTop: '0.08in' }}>
               (Full review on {review.platform})
             </div>
