@@ -22,6 +22,13 @@ export const HIPAA_KEYWORDS = ['dental', 'dentist', 'orthodont', 'medical', 'doc
 
 export function isHipaaIndustry(industry) {
   const ind = (industry || '').toLowerCase()
+  // Veterinary practices aren't HIPAA-covered — HIPAA governs human patient
+  // health info only. Checked first and short-circuits, since the broader
+  // "clinic"/"hospital"-adjacent keywords below would otherwise false-
+  // positive on "veterinary clinic," "animal hospital," etc. \bvet\b
+  // matches "vet" as a standalone word only, not inside "veteran" or
+  // "veterinary" itself (which is matched separately, explicitly).
+  if (/\bvet\b|veterinary|animal hospital|animal clinic|pet hospital/.test(ind)) return false
   return HIPAA_KEYWORDS.some(kw => ind.includes(kw))
 }
 
