@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { INDUSTRY_OPTIONS, INDUSTRY_INSTRUCTIONS } from '../../lib/industryInstructions'
 
 const US_STATES = [
   'AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA', 'HI', 'ID', 'IL',
@@ -261,8 +262,12 @@ function AddClientModal({ onClose, onCreated }) {
               <Field label="Phone">
                 <input value={form.phone} onChange={(e) => set('phone', e.target.value)} />
               </Field>
-              <Field label="Industry" hint="e.g. Dental, Med Spa — determines HIPAA handling.">
-                <input value={form.industry} onChange={(e) => set('industry', e.target.value)} placeholder="Dental" />
+              <Field label="Industry" hint="e.g. Dental, Med Spa — determines HIPAA handling. Pick one of the calibrated industries below if it fits, or type any other industry.">
+                <input value={form.industry} onChange={(e) => set('industry', e.target.value)}
+                  placeholder="Dental" list="industry-suggestions" />
+                <datalist id="industry-suggestions">
+                  {INDUSTRY_OPTIONS.map((label) => <option key={label} value={label} />)}
+                </datalist>
               </Field>
               <Field label="State">
                 <select value={form.state} onChange={(e) => set('state', e.target.value)}>
@@ -437,8 +442,12 @@ function ClientDrawer({ client, onClose, onSaved }) {
               <Field label="Email">
                 <input value={form.email || ''} onChange={(e) => set('email', e.target.value)} />
               </Field>
-              <Field label="Industry">
-                <input value={form.industry || ''} onChange={(e) => set('industry', e.target.value)} />
+              <Field label="Industry" hint="Pick one of the calibrated industries below if it fits (lets you load its instruction template further down), or type any other industry — this also determines HIPAA handling.">
+                <input value={form.industry || ''} onChange={(e) => set('industry', e.target.value)}
+                  list="industry-suggestions-edit" />
+                <datalist id="industry-suggestions-edit">
+                  {INDUSTRY_OPTIONS.map((label) => <option key={label} value={label} />)}
+                </datalist>
               </Field>
               <Field label="State">
                 <select value={form.state || ''} onChange={(e) => set('state', e.target.value)}>
@@ -540,8 +549,27 @@ function ClientDrawer({ client, onClose, onSaved }) {
                 onChange={(e) => set('business_tagline', e.target.value)} />
             </Field>
             <Field
+              label="Load industry template"
+              hint={`Industry is set above. ${form.industry && INDUSTRY_INSTRUCTIONS[form.industry] ? `A calibrated template exists for "${form.industry}" — load it into Custom AI Instructions below.` : 'Set Industry above to one of the ten calibrated industries to enable this.'}`}
+            >
+              <button type="button" className="drawer-btn-secondary" disabled={!INDUSTRY_INSTRUCTIONS[form.industry]}
+                onClick={() => {
+                  const text = INDUSTRY_INSTRUCTIONS[form.industry]
+                  if (!text) return
+                  if (form.ai_instructions && form.ai_instructions.trim()) {
+                    const ok = window.confirm(
+                      'Custom AI instructions already has text in it. Loading the template will replace it — this can\'t be undone. Continue?'
+                    )
+                    if (!ok) return
+                  }
+                  set('ai_instructions', text)
+                }}>
+                Load {form.industry || 'industry'} template
+              </button>
+            </Field>
+            <Field
               label="Custom AI instructions"
-              hint="Free-form guidance for drafting this client's responses — industry context, phrases they love or hate, what to emphasize, who to thank. This carries more weight than the fields above. Build it up as you learn the client."
+              hint="Free-form guidance for drafting this client's responses — industry context, phrases they love or hate, what to emphasize, who to thank. This carries more weight than the fields above. Build it up as you learn the client. Loading an industry template above is a starting point, not a final answer — keep tuning it as you learn this specific client."
             >
               <textarea rows={5} value={form.ai_instructions || ''}
                 placeholder="e.g. HVAC company — emphasize 24/7 emergency availability. Owner is warm and informal, uses ‘folks.’ If a technician is named in the review, thank them by name. Never quote prices. Keep it short."
