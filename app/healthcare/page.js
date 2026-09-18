@@ -70,7 +70,6 @@ const localStyles = `
 
   .hc-legal-band p { max-width: 42em; margin: 0 auto; text-align: center; font-size: 0.95rem; line-height: 1.7; color: var(--text); }
   .hc-legal-band p + p { margin-top: 1rem; }
-  .hc-legal-note { font-size: 0.875rem !important; color: var(--muted) !important; }
 
   .hc-centered-cards .ai-card { text-align: center; }
   .hc-centered-cards .ai-card-icon { font-size: 2rem; }
@@ -254,10 +253,6 @@ export default function HealthcarePage() {
             processes information a reviewer has already made public — and never accesses, stores, or
             transmits protected health information from your systems — RespondPal doesn&apos;t meet that
             definition.
-          </p>
-          <p className="hc-legal-note">
-            If your compliance officer or attorney wants to see the underlying analysis directly,
-            we&apos;re glad to send it — just ask.
           </p>
         </div>
       </section>
