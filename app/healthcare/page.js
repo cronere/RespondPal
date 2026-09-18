@@ -12,6 +12,34 @@ import { useState } from 'react'
 import Image from 'next/image'
 
 const localStyles = `
+  /* Explicit block-color utilities. globals.css redefines .ai-section a second
+     time later in the file (under a "LIGHT SECTIONS" comment) which silently
+     overrides its own background/text colors depending on cascade order — so
+     rather than fight that, these three classes set colors directly with
+     !important and are applied per-section below instead of relying on any
+     shared section class for color. border-top is explicitly cleared too,
+     since that's what was showing as stray lines between blocks. */
+  .hc-section { padding: 5rem 0; }
+
+  .hc-black { background: var(--black) !important; border-top: none !important; }
+  .hc-black .section-label { color: var(--orange) !important; }
+  .hc-black .section-h2 { color: var(--white) !important; }
+  .hc-black .section-sub { color: var(--muted) !important; }
+
+  .hc-white { background: #ffffff !important; border-top: none !important; }
+  .hc-white .section-label { color: var(--orange) !important; }
+  .hc-white .section-h2 { color: #14161b !important; }
+  .hc-white .section-sub { color: #5c6470 !important; }
+  .hc-white .hc-guard-row { border-top-color: #e3e6eb !important; }
+  .hc-white .hc-guard-row h3 { color: #14161b !important; }
+  .hc-white .hc-guard-row p { color: #5c6470 !important; }
+
+  .hc-grey { background: var(--card) !important; border-top: none !important; }
+  .hc-grey .section-label { color: var(--orange) !important; }
+  .hc-grey .section-h2 { color: var(--white) !important; }
+  .hc-grey .section-sub { color: var(--muted) !important; }
+  .hc-grey .hc-fines-note { color: var(--muted); }
+
   .hc-principle-list { margin-top: 2.5rem; }
   .hc-principle-row { padding: 1.35rem 0; border-top: 1px solid var(--border); }
   .hc-principle-row:first-child { border-top: none; padding-top: 0; }
@@ -29,9 +57,6 @@ const localStyles = `
   .hc-guard-row h3 { font-size: 0.95rem; font-weight: 700; color: var(--white); margin-bottom: 0.3rem; }
   .hc-guard-row p { font-size: 0.875rem; color: var(--muted); line-height: 1.6; }
 
-  .hc-fines-section { background: #ffffff; padding: 5rem 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
-  .hc-fines-section .section-h2 { color: var(--light-text); }
-  .hc-fines-section .section-sub { color: var(--light-muted); }
   .hc-fines-grid {
     display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1px;
     background: var(--border); border: 1px solid var(--border); border-radius: 12px;
@@ -41,12 +66,11 @@ const localStyles = `
   .hc-fine-amount { font-family: var(--font-display); font-size: 2.3rem; font-weight: 800; color: var(--red); line-height: 1; }
   .hc-fine-meta { font-size: 0.75rem; color: var(--muted); margin-top: 0.6rem; }
   .hc-fine-desc { font-size: 0.85rem; color: var(--muted); line-height: 1.55; margin-top: 0.5rem; }
-  .hc-fines-note { text-align: center; margin-top: 2rem; font-size: 0.95rem; color: var(--light-muted); }
+  .hc-fines-note { text-align: center; margin-top: 2rem; font-size: 0.95rem; }
 
-  .hc-legal-band { background: var(--card); padding: 5rem 0; }
-  .hc-legal-band p { color: var(--text); max-width: 42em; margin: 0 auto; text-align: center; font-size: 0.95rem; line-height: 1.7; }
+  .hc-legal-band p { max-width: 42em; margin: 0 auto; text-align: center; font-size: 0.95rem; line-height: 1.7; color: var(--text); }
   .hc-legal-band p + p { margin-top: 1rem; }
-  .hc-legal-note { color: var(--muted) !important; font-size: 0.875rem !important; }
+  .hc-legal-note { font-size: 0.875rem !important; color: var(--muted) !important; }
 
   .hc-centered-cards .ai-card { text-align: center; }
   .hc-centered-cards .ai-card-icon { font-size: 2rem; }
@@ -133,7 +157,7 @@ export default function HealthcarePage() {
       </section>
 
       {/* WHY PRACTICES GO QUIET */}
-      <section className="ai-section" style={{ background: 'var(--card)' }}>
+      <section className="hc-section hc-white">
         <div className="container">
           <div className="section-label">Why practices go quiet</div>
           <h2 className="section-h2">Silence has a cost too.</h2>
@@ -153,8 +177,8 @@ export default function HealthcarePage() {
         </div>
       </section>
 
-      {/* THIS ISN'T HYPOTHETICAL — the one full white section */}
-      <section className="hc-fines-section">
+      {/* THIS ISN'T HYPOTHETICAL */}
+      <section className="hc-section hc-grey">
         <div className="container">
           <div className="section-label">This isn&apos;t hypothetical</div>
           <h2 className="section-h2">Regulators have already fined practices for this.</h2>
@@ -186,7 +210,7 @@ export default function HealthcarePage() {
       </section>
 
       {/* HOW RESPONDPAL SOLVES IT */}
-      <section className="ai-section" id="different">
+      <section className="hc-section hc-white" id="different">
         <div className="container">
           <div className="section-label">How we&apos;re different</div>
           <h2 className="section-h2">Every response stays inside the line.</h2>
@@ -220,7 +244,7 @@ export default function HealthcarePage() {
       </section>
 
       {/* BAA */}
-      <section className="hc-legal-band">
+      <section className="hc-legal-band hc-section hc-black">
         <div className="container" style={{ textAlign: 'center' }}>
           <div className="section-label">The legal question</div>
           <h2 className="section-h2">Do we need a Business Associate Agreement?</h2>
@@ -239,7 +263,7 @@ export default function HealthcarePage() {
       </section>
 
       {/* WHAT WE NEVER DO */}
-      <section className="compare-sec" style={{ background: 'var(--black)' }}>
+      <section className="hc-section hc-white">
         <div className="container">
           <div className="section-label">The guardrails</div>
           <h2 className="section-h2">What a RespondPal response will never do.</h2>
@@ -290,8 +314,8 @@ export default function HealthcarePage() {
         </div>
       </section>
 
-      {/* EXAMPLE — reuses the real compare-sec / compare-col pattern */}
-      <section className="compare-sec">
+      {/* EXAMPLE — reuses the real compare-grid / compare-col pattern */}
+      <section className="hc-section hc-grey">
         <div className="container">
           <div className="section-label">In practice</div>
           <h2 className="section-h2">The same review, handled two ways.</h2>
