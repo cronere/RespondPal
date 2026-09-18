@@ -174,6 +174,24 @@ const styles = `
   .hc-legal-body p + p { margin-top: 16px; }
   .hc-legal-note { margin-top: 26px; font-size: 0.92rem; color: var(--muted); }
 
+  /* Fines proof section */
+  .hc-fines {
+    margin-top: 44px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  @media (min-width: 760px) { .hc-fines { grid-template-columns: repeat(3, 1fr); } }
+  .hc-fine-card { background: var(--card); padding: 28px 26px; }
+  .hc-fine-amount { font-family: var(--display); font-size: 2.4rem; color: var(--red); line-height: 1; }
+  .hc-fine-meta { font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.5px; color: var(--muted); margin-top: 10px; }
+  .hc-fine-desc { margin-top: 10px; font-size: 0.88rem; color: var(--muted); }
+  .hc-fines-note { margin-top: 24px; color: var(--muted); max-width: 42em; }
+
   /* Guard list */
   .hc-guard-item { display: flex; gap: 16px; padding: 20px 0; border-top: 1px solid var(--border); }
   .hc-guard-item:first-child { border-top: none; padding-top: 0; }
@@ -331,11 +349,54 @@ export default function HealthcarePage() {
               &mdash; it just looks like it doesn&apos;t care. The truth is usually that it never had a safe way to
               reply.
             </p>
+            <p>
+              And it&apos;s not just future patients reading what gets posted. Google&apos;s AI Overviews, ChatGPT,
+              and Perplexity read review responses too when they decide how to describe and recommend a business.
+              A combative or privacy-violating response doesn&apos;t just land badly with the one person who reads
+              it &mdash; it can shape how AI characterizes the practice to everyone who asks.
+            </p>
           </div>
         </div>
       </section>
 
       <section className="hc-band">
+        <div className="hc-band-inner">
+          <h2 className="hc-h2">This isn&apos;t hypothetical</h2>
+          <p className="hc-lede">
+            Federal regulators have already fined practices for exactly this &mdash; not for a data breach, not
+            for a hack, but for what someone typed in reply to a bad review.
+          </p>
+          <div className="hc-fines">
+            <div className="hc-fine-card">
+              <div className="hc-fine-amount">$23,000</div>
+              <div className="hc-fine-meta">New Vision Dental &mdash; California, 2022</div>
+              <p className="hc-fine-desc">
+                Disclosed a patient&apos;s name, treatment, and insurance details in responses to Yelp reviews.
+              </p>
+            </div>
+            <div className="hc-fine-card">
+              <div className="hc-fine-amount">$50,000</div>
+              <div className="hc-fine-meta">U. Phillip Igbinadolor, D.M.D. &mdash; North Carolina, 2022</div>
+              <p className="hc-fine-desc">
+                Named a patient and their treatment in a single response to a negative online review.
+              </p>
+            </div>
+            <div className="hc-fine-card">
+              <div className="hc-fine-amount">$30,000</div>
+              <div className="hc-fine-meta">Manasa Health Center &mdash; New Jersey, 2023</div>
+              <p className="hc-fine-desc">
+                Disclosed a patient&apos;s mental health diagnosis in a response to a Google review.
+              </p>
+            </div>
+          </div>
+          <p className="hc-fines-note">
+            Every one of these traces back to the same instinct &mdash; wanting to set the record straight in
+            public. It&apos;s exactly the instinct RespondPal is built to override.
+          </p>
+        </div>
+      </section>
+
+      <section className="hc-band hc-band-alt">
         <div className="hc-band-inner">
           <h2 className="hc-h2">How RespondPal keeps every response inside the line</h2>
           <div className="hc-body">
@@ -501,8 +562,9 @@ export default function HealthcarePage() {
         <div className="hc-band-inner">
           <h2 className="hc-h2">See what this looks like for your practice</h2>
           <p className="hc-lede">
-            Send us a real review from your page and we&apos;ll draft the response &mdash; free, no commitment, and
-            nothing about your patients required to do it.
+            We&apos;ll pull your practice&apos;s actual Google and Yelp reviews, flag anything that carries privacy
+            risk, and show you exactly where you stand &mdash; free, no commitment, and nothing about your patients
+            required to do it.
           </p>
           <a className="hc-btn" href="mailto:hello@respondpal.ai?subject=Getting%20started%20with%20RespondPal">
             Get started
