@@ -1,630 +1,330 @@
 // RespondPal — Healthcare / HIPAA & Privacy page
-// Drop into a Next.js app:
-//   App Router:   app/healthcare/page.js  (export default component below works as-is)
-//   Pages Router: pages/healthcare.js
-// No external dependencies beyond the Google Fonts loaded in <head> below.
-// Primary CTA and nav button link to https://www.respondpal.ai/#pricing.
-// Footer links assume /privacy and /terms exist at the site root — update if those paths differ.
+// Drop into the existing respondpal-site app at: app/healthcare/page.js
+// Relies on app/globals.css already being loaded by the root layout — this file
+// reuses real site classes (nav, footer, final-cta, ai-cards, compare-sec, demo-card,
+// etc.) and CSS variables directly rather than defining its own parallel system,
+// so it stays in sync with the rest of the site automatically.
+// Local <style> below covers only the handful of elements with no existing
+// equivalent on the main site (the principle-row divider list, the guard list,
+// and the fine-amount cards).
+'use client'
+import Image from 'next/image'
 
-const styles = `
-  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Mono:wght@400;500&display=swap');
+const localStyles = `
+  .hc-principle-list { margin-top: 2.5rem; }
+  .hc-principle-row { padding: 1.35rem 0; border-top: 1px solid var(--border); }
+  .hc-principle-row:first-child { border-top: none; padding-top: 0; }
+  .hc-principle-row h3 { font-size: 1rem; font-weight: 700; color: var(--white); margin-bottom: 0.35rem; }
+  .hc-principle-row p { font-size: 0.9rem; color: var(--muted); line-height: 1.65; max-width: 42em; }
 
-  .hc-page {
-    --bg: #0A0A0A;
-    --bg-alt: #111318;
-    --card: #16191F;
-    --border: #1E2128;
-    --orange: #FF5C1A;
-    --orange-light: #FF7A40;
-    --orange-glow: rgba(255,92,26,0.12);
-    --white: #F4F2ED;
-    --muted: #7A7F8E;
-    --red: #EF4444;
-    --red-glow: rgba(239,68,68,0.12);
-    --paper: #F4F2ED;
-    --paper-ink: #14161B;
-    --paper-muted: #5B6169;
-    --paper-line: #E4DFD3;
-    --display: 'Bebas Neue', sans-serif;
-    --mono: 'DM Mono', monospace;
-    --body: 'DM Sans', sans-serif;
-
-    background: var(--bg);
-    color: var(--white);
-    font-family: var(--body);
-    font-size: 17px;
-    line-height: 1.6;
-    -webkit-font-smoothing: antialiased;
-  }
-  .hc-page * { box-sizing: border-box; }
-  .hc-page p { margin: 0; }
-  .hc-page a { color: var(--orange); }
-  .hc-page a:hover { color: var(--orange-light); }
-  .hc-page *:focus-visible { outline: 2px solid var(--orange); outline-offset: 3px; }
-
-  .hc-h1, .hc-h2 {
-    font-family: var(--display);
-    font-weight: 400;
-    color: var(--white);
-    letter-spacing: 0.3px;
-    margin: 0;
-  }
-
-  .hc-band { width: 100%; }
-  .hc-band-inner { max-width: 660px; margin: 0 auto; padding: 84px 24px; }
-  .hc-band-wide .hc-band-inner { max-width: 980px; }
-  .hc-band-alt { background: var(--bg-alt); }
-
-  /* Nav */
-  .hc-nav {
-    position: sticky;
-    top: 0;
-    z-index: 20;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    max-width: 980px;
-    margin: 0 auto;
-    padding: 20px 24px;
-    background: rgba(10,10,10,0.9);
-    backdrop-filter: blur(16px);
-    border-bottom: 1px solid var(--border);
-  }
-  .hc-logo {
-    font-family: var(--display);
-    font-size: 24px;
-    letter-spacing: 0.5px;
-    color: var(--white);
-    text-decoration: none;
-  }
-  .hc-logo span { color: var(--orange); }
-  .hc-nav-cta {
-    font-family: var(--body);
-    font-size: 0.88rem;
-    font-weight: 600;
-    text-decoration: none;
-    color: #ffffff;
-    background: var(--orange);
-    padding: 9px 18px;
-    border-radius: 6px;
-    transition: background 0.15s;
-  }
-  .hc-nav-cta:hover { background: var(--orange-light); color: #ffffff; }
-
-  /* Hero */
-  .hc-hero .hc-band-inner { padding-top: 80px; padding-bottom: 64px; }
-  .hc-h1 {
-    font-size: clamp(2.6rem, 1.9rem + 3vw, 4rem);
-    line-height: 1.05;
-  }
-  .hc-hero-sub {
-    margin-top: 22px;
-    max-width: 40em;
-    font-size: 1.08rem;
-    color: var(--muted);
-  }
-
-  .hc-reveal { opacity: 1; }
-  @media (prefers-reduced-motion: no-preference) {
-    .hc-reveal { opacity: 0; animation: hcFadeUp 0.65s ease both; }
-    .hc-reveal:nth-of-type(1) { animation-delay: 0.02s; }
-    .hc-reveal:nth-of-type(2) { animation-delay: 0.14s; }
-    .hc-reveal:nth-of-type(3) { animation-delay: 0.26s; }
-  }
-  @keyframes hcFadeUp {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  /* Demo card — light paper treatment, matches the actual audit report's look */
-  .hc-demo {
-    margin-top: 44px;
-    background: var(--paper);
-    border: 1px solid var(--paper-line);
-    border-radius: 10px;
-    padding: 30px 32px;
-  }
-  .hc-demo-stars { font-size: 0.9rem; color: var(--paper-muted); margin-bottom: 8px; }
-  .hc-demo-review { font-size: 0.98rem; color: var(--paper-muted); font-style: italic; }
-  .hc-demo-divider { height: 1px; background: var(--paper-line); margin: 22px 0; }
-  .hc-demo-label {
-    font-family: var(--mono);
-    font-size: 0.72rem;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    color: var(--orange);
-    margin-bottom: 10px;
-  }
-  .hc-demo-response { font-size: 1rem; color: var(--paper-ink); }
-  .hc-demo-notes {
-    display: flex;
-    flex-wrap: wrap;
-    margin-top: 24px;
-    border-top: 1px solid var(--paper-line);
-    padding-top: 18px;
-  }
-  .hc-demo-note {
-    display: flex;
-    align-items: center;
-    gap: 7px;
-    font-size: 0.85rem;
-    color: var(--paper-muted);
-    padding: 4px 18px 4px 0;
-    margin-right: 18px;
-    border-right: 1px solid var(--paper-line);
-  }
-  .hc-demo-note:last-child { border-right: none; margin-right: 0; }
-  .hc-icon-ok { color: var(--orange); flex-shrink: 0; }
-  .hc-icon-no { color: var(--red); flex-shrink: 0; }
-
-  /* Section headings */
-  .hc-h2 { font-size: clamp(1.7rem, 1.3rem + 1.4vw, 2.3rem); line-height: 1.15; max-width: 22em; }
-  .hc-lede { margin-top: 16px; color: var(--muted); max-width: 42em; }
-  .hc-body { margin-top: 40px; }
-  .hc-prose { color: var(--muted); max-width: 42em; }
-  .hc-prose p + p { margin-top: 16px; }
-
-  /* Principles */
-  .hc-principle { padding: 22px 0; border-top: 1px solid var(--border); }
-  .hc-principle:first-child { border-top: none; padding-top: 0; }
-  .hc-principle-title { font-weight: 600; font-size: 1.02rem; color: var(--white); }
-  .hc-principle-desc { margin-top: 6px; color: var(--muted); max-width: 42em; }
-
-  /* Legal band */
-  .hc-band-legal { background: var(--card); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
-  .hc-legal-body { margin-top: 24px; }
-  .hc-legal-body p { color: var(--white); max-width: 42em; }
-  .hc-legal-body p + p { margin-top: 16px; }
-  .hc-legal-note { margin-top: 26px; font-size: 0.92rem; color: var(--muted); }
-
-  /* Fines proof section */
-  .hc-fines {
-    margin-top: 44px;
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 1px;
-    background: var(--paper-line);
-    border: 1px solid var(--paper-line);
-    border-radius: 10px;
-    overflow: hidden;
-  }
-  @media (min-width: 760px) { .hc-fines { grid-template-columns: repeat(3, 1fr); } }
-  .hc-fine-card { background: var(--paper); padding: 28px 26px; }
-  .hc-fine-amount { font-family: var(--display); font-size: 2.4rem; color: #B91C1C; line-height: 1; }
-  .hc-fine-meta { font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.5px; color: var(--paper-muted); margin-top: 10px; }
-  .hc-fine-desc { margin-top: 10px; font-size: 0.88rem; color: var(--paper-ink); }
-  .hc-fines-note { margin-top: 24px; color: var(--muted); max-width: 42em; }
-
-  /* Guard list */
-  .hc-guard-item { display: flex; gap: 16px; padding: 20px 0; border-top: 1px solid var(--border); }
-  .hc-guard-item:first-child { border-top: none; padding-top: 0; }
+  .hc-guard-list { margin-top: 2.5rem; }
+  .hc-guard-row { display: flex; gap: 1rem; padding: 1.15rem 0; border-top: 1px solid var(--border); }
+  .hc-guard-row:first-child { border-top: none; padding-top: 0; }
   .hc-guard-icon {
-    flex-shrink: 0;
-    width: 26px;
-    height: 26px;
-    border-radius: 50%;
-    border: 1px solid var(--red);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--red);
-    margin-top: 2px;
+    flex-shrink: 0; width: 24px; height: 24px; border-radius: 50%;
+    border: 1px solid var(--red); color: var(--red);
+    display: flex; align-items: center; justify-content: center; margin-top: 2px;
   }
-  .hc-guard-title { font-weight: 600; color: var(--white); }
-  .hc-guard-desc { margin-top: 4px; color: var(--muted); }
+  .hc-guard-row h3 { font-size: 0.95rem; font-weight: 700; color: var(--white); margin-bottom: 0.3rem; }
+  .hc-guard-row p { font-size: 0.875rem; color: var(--muted); line-height: 1.6; }
 
-  /* Compare */
-  .hc-compare { margin-top: 44px; display: grid; grid-template-columns: 1fr; gap: 28px; }
-  @media (min-width: 760px) { .hc-compare { grid-template-columns: 1fr 1fr; gap: 32px; } }
-  .hc-compare-col { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 26px 28px; }
-  .hc-compare-heading {
-    font-family: var(--mono);
-    font-size: 0.78rem;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    font-weight: 500;
-    margin-bottom: 16px;
+  .hc-fines-section { background: #ffffff; padding: 5rem 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  .hc-fines-section .section-h2 { color: var(--light-text); }
+  .hc-fines-section .section-sub { color: var(--light-muted); }
+  .hc-fines-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1px;
+    background: var(--border); border: 1px solid var(--border); border-radius: 12px;
+    overflow: hidden; margin-top: 2.5rem;
   }
-  .hc-compare-heading.risky { color: var(--red); }
-  .hc-compare-heading.safe { color: var(--orange); }
-  .hc-compare-review {
-    font-size: 0.92rem;
-    color: var(--muted);
-    font-style: italic;
-    margin-bottom: 16px;
-    padding-bottom: 16px;
-    border-bottom: 1px solid var(--border);
-  }
-  .hc-compare-response { font-size: 0.97rem; color: var(--white); }
-  .hc-flag { background: var(--red-glow); color: var(--red); padding: 1px 4px; border-radius: 3px; }
-  .hc-compare-callouts { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--border); }
-  .hc-compare-callout { display: flex; align-items: flex-start; gap: 8px; font-size: 0.86rem; color: var(--muted); margin-top: 8px; }
-  .hc-compare-callout:first-child { margin-top: 0; }
-  .hc-compare-callout svg { margin-top: 2px; flex-shrink: 0; }
+  .hc-fine-card { background: var(--black); padding: 1.75rem; }
+  .hc-fine-amount { font-family: var(--font-display); font-size: 2.3rem; font-weight: 800; color: var(--red); line-height: 1; }
+  .hc-fine-meta { font-size: 0.75rem; color: var(--muted); margin-top: 0.6rem; }
+  .hc-fine-desc { font-size: 0.85rem; color: var(--muted); line-height: 1.55; margin-top: 0.5rem; }
+  .hc-fines-note { text-align: center; margin-top: 2rem; font-size: 0.95rem; color: var(--light-muted); }
 
-  /* CTA — orange band with a white pill button, matches respondpal.ai's own CTA treatment */
-  .hc-cta-band { background: var(--orange); position: relative; overflow: hidden; }
-  .hc-cta-band .hc-band-inner { position: relative; z-index: 1; }
-  .hc-cta-watermark {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: var(--display);
-    font-size: 220px;
-    color: rgba(20,16,12,0.06);
-    white-space: nowrap;
-    pointer-events: none;
-  }
-  .hc-cta-band .hc-h2 { max-width: 18em; color: #14100C; }
-  .hc-cta-band .hc-lede { color: rgba(20,16,12,0.72); }
-  .hc-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    margin-top: 32px;
-    padding: 17px 34px;
-    background: #ffffff;
-    color: var(--orange);
-    text-decoration: none;
-    font-weight: 700;
-    font-size: 1rem;
-    border-radius: 8px;
-    transition: transform 0.2s, box-shadow 0.2s;
-  }
-  .hc-btn:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(0,0,0,0.25); color: var(--orange); }
-  .hc-cta-fine { margin-top: 20px; font-size: 0.88rem; color: rgba(20,16,12,0.6); }
-  .hc-cta-fine a { color: #14100C; text-decoration: underline; }
-  .hc-cta-fine a:hover { color: #000000; }
-
-  /* Footer */
-  .hc-footer .hc-band-inner {
-    padding-top: 48px;
-    padding-bottom: 48px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 18px;
-    text-align: center;
-  }
-  .hc-footer-logo {
-    font-family: var(--display);
-    font-size: 22px;
-    letter-spacing: 0.5px;
-    color: var(--white);
-    text-decoration: none;
-  }
-  .hc-footer-logo span { color: var(--orange); }
-  .hc-footer-copy { font-size: 0.82rem; color: var(--muted); }
-  .hc-footer-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 22px; }
-  .hc-footer-links a { font-size: 0.85rem; color: var(--muted); text-decoration: none; }
-  .hc-footer-links a:hover { color: var(--white); }
-`;
-
-function IconOk({ className }) {
-  return (
-    <svg className={className} width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-      <path d="M3 8.5L6.2 12L13 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
-function IconNo({ className, size }) {
-  const s = size || 12;
-  return (
-    <svg className={className} width={s} height={s} viewBox="0 0 16 16" fill="none" aria-hidden="true">
-      <circle cx="8" cy="8" r="6.3" stroke="currentColor" strokeWidth="1.6" />
-      <line x1="4.2" y1="11.8" x2="11.8" y2="4.2" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-function IconArrow() {
-  return (
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
+  .hc-legal-band { background: var(--card); padding: 5rem 0; }
+  .hc-legal-band p { color: var(--text); max-width: 42em; margin: 0 auto; text-align: left; font-size: 0.95rem; line-height: 1.7; }
+  .hc-legal-band p + p { margin-top: 1rem; }
+  .hc-legal-note { color: var(--muted) !important; font-size: 0.875rem !important; }
+`
 
 export default function HealthcarePage() {
   return (
-    <div className="hc-page">
-      <style>{styles}</style>
+    <main>
+      <style>{localStyles}</style>
 
-      <nav className="hc-nav">
-        <a className="hc-logo" href="/">RESPOND<span>PAL</span></a>
-        <a className="hc-nav-cta" href="https://www.respondpal.ai/#pricing">Get started</a>
-      </nav>
-
-      <header className="hc-band hc-hero">
-        <div className="hc-band-inner">
-          <h1 className="hc-h1 hc-reveal">Silence isn&apos;t a HIPAA strategy.</h1>
-          <p className="hc-hero-sub hc-reveal">
-            Most healthcare practices skip the review conversation entirely, worried that one wrong sentence in a
-            public reply could disclose something it shouldn&apos;t. That silence has a cost of its own. RespondPal
-            writes responses built, from the first draft, to never say the things HIPAA protects.
-          </p>
-
-          <div className="hc-demo hc-reveal">
-            <div className="hc-demo-stars">★★☆☆☆</div>
-            <p className="hc-demo-review">
-              &ldquo;I felt rushed during my appointment and my concerns weren&apos;t taken seriously. Won&apos;t be
-              coming back.&rdquo;
-            </p>
-            <div className="hc-demo-divider" />
-            <div className="hc-demo-label">RespondPal&apos;s draft</div>
-            <p className="hc-demo-response">
-              Thank you for taking the time to share this. Feeling rushed or unheard is never the experience we want
-              for anyone who visits us. We&apos;d welcome the chance to talk more directly &mdash; please reach out
-              to our office at your convenience.
-            </p>
-            <div className="hc-demo-notes">
-              <div className="hc-demo-note"><IconOk className="hc-icon-ok" />No patient status confirmed</div>
-              <div className="hc-demo-note"><IconOk className="hc-icon-ok" />No visit or treatment details</div>
-              <div className="hc-demo-note"><IconOk className="hc-icon-ok" />No records referenced</div>
-            </div>
+      {/* NAV — identical to the main site nav */}
+      <nav className="nav" style={{ position: 'relative' }}>
+        <div className="nav-inner">
+          <Image src="/logo-white.png" alt="RespondPal" className="nav-logo" width={180} height={36} />
+          <div className="desktop-links">
+            <a href="/#how">How it works</a>
+            <a href="/#different">Our AI</a>
+            <a href="/#features">What&apos;s included</a>
+            <a href="/#pricing">Pricing</a>
+            <a href="/details">Details</a>
+            <a href="/#pricing" className="nav-cta">Get started</a>
           </div>
         </div>
-      </header>
+      </nav>
 
-      <section className="hc-band hc-band-alt">
-        <div className="hc-band-inner">
-          <h2 className="hc-h2">Why practices go quiet</h2>
-          <div className="hc-body hc-prose">
-            <p>
-              It usually starts the same way. Someone on staff drafts a reply, reads it back, and realizes it
-              confirms more than it should &mdash; that the person was a patient, what they came in for, what they
-              were charged. So the reply gets deleted, and the review sits there unanswered, sometimes for months.
-            </p>
-            <p>
-              That silence has a cost most practices don&apos;t see directly. Unanswered negative reviews tend to
-              outrank the ones a practice has responded to, and they&apos;re often the first thing a prospective
-              patient reads. A practice that never engages doesn&apos;t look like it&apos;s protecting privacy
-              &mdash; it just looks like it doesn&apos;t care. The truth is usually that it never had a safe way to
-              reply.
-            </p>
-            <p>
-              And it&apos;s not just future patients reading what gets posted. Google&apos;s AI Overviews, ChatGPT,
-              and Perplexity read review responses too when they decide how to describe and recommend a business.
-              A combative or privacy-violating response doesn&apos;t just land badly with the one person who reads
-              it &mdash; it can shape how AI characterizes the practice to everyone who asks.
-            </p>
+      {/* HERO */}
+      <section className="hero">
+        <div className="container">
+          <div className="hero-eyebrow">For healthcare practices</div>
+          <h1>
+            Silence isn&apos;t<br /><em>a HIPAA strategy.</em>
+          </h1>
+          <p className="hero-sub">
+            Most healthcare practices skip the review conversation entirely, worried that one wrong
+            sentence in a public reply could disclose something it shouldn&apos;t. RespondPal writes
+            responses built, from the first draft, to never say the things HIPAA protects.
+          </p>
+
+          <div className="demo-card" style={{ textAlign: 'left' }}>
+            <div className="review-item">
+              <div className="review-meta">
+                <span className="avatar neg">R</span>
+                <div>
+                  <div className="reviewer-name">Review · Google</div>
+                  <div className="stars low">★★☆☆☆</div>
+                </div>
+              </div>
+              <p className="review-text">
+                &ldquo;I felt rushed during my appointment and my concerns weren&apos;t taken seriously.
+                Won&apos;t be coming back.&rdquo;
+              </p>
+              <div className="response-box">
+                <div className="response-label">RespondPal&apos;s draft</div>
+                <p className="response-text">
+                  Thank you for taking the time to share this. Feeling rushed or unheard is never the
+                  experience we want for anyone who visits us. We&apos;d welcome the chance to talk more
+                  directly — please reach out to our office at your convenience.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      <section className="hc-band">
-        <div className="hc-band-inner">
-          <h2 className="hc-h2">This isn&apos;t hypothetical</h2>
-          <p className="hc-lede">
-            Federal regulators have already fined practices for exactly this &mdash; not for a data breach, not
-            for a hack, but for what someone typed in reply to a bad review.
+      {/* WHY PRACTICES GO QUIET */}
+      <section className="ai-section">
+        <div className="container">
+          <div className="section-label">Why practices go quiet</div>
+          <h2 className="section-h2">Silence has a cost too.</h2>
+          <p className="section-sub">
+            It usually starts the same way. Someone on staff drafts a reply, reads it back, and realizes
+            it confirms more than it should — that the person was a patient, what they came in for, what
+            they were charged. So the reply gets deleted, and the review sits there unanswered, sometimes
+            for months. Unanswered negative reviews tend to outrank the ones a practice has responded to,
+            and they&apos;re often the first thing a prospective patient reads.
           </p>
-          <div className="hc-fines">
+          <p className="section-sub" style={{ marginTop: '1rem' }}>
+            And it&apos;s not just future patients reading what gets posted. Google&apos;s AI Overviews,
+            ChatGPT, and Perplexity read review responses too when deciding how to describe and recommend
+            a business. A privacy-violating response doesn&apos;t just land badly with the one person who
+            reads it — it can shape how AI characterizes the practice to everyone who asks.
+          </p>
+        </div>
+      </section>
+
+      {/* THIS ISN'T HYPOTHETICAL — the one full white section */}
+      <section className="hc-fines-section">
+        <div className="container">
+          <div className="section-label">This isn&apos;t hypothetical</div>
+          <h2 className="section-h2">Regulators have already fined practices for this.</h2>
+          <p className="section-sub">
+            Not for a data breach, not for a hack — for what someone typed in reply to a bad review.
+          </p>
+          <div className="hc-fines-grid">
             <div className="hc-fine-card">
               <div className="hc-fine-amount">$23,000</div>
-              <div className="hc-fine-meta">New Vision Dental &mdash; California, 2022</div>
-              <p className="hc-fine-desc">
-                Disclosed a patient&apos;s name, treatment, and insurance details in responses to Yelp reviews.
-              </p>
+              <div className="hc-fine-meta">New Vision Dental — California, 2022</div>
+              <p className="hc-fine-desc">Disclosed a patient&apos;s name, treatment, and insurance details in responses to Yelp reviews.</p>
             </div>
             <div className="hc-fine-card">
               <div className="hc-fine-amount">$50,000</div>
-              <div className="hc-fine-meta">U. Phillip Igbinadolor, D.M.D. &mdash; North Carolina, 2022</div>
-              <p className="hc-fine-desc">
-                Named a patient and their treatment in a single response to a negative online review.
-              </p>
+              <div className="hc-fine-meta">U. Phillip Igbinadolor, D.M.D. — North Carolina, 2022</div>
+              <p className="hc-fine-desc">Named a patient and their treatment in a single response to a negative online review.</p>
             </div>
             <div className="hc-fine-card">
               <div className="hc-fine-amount">$30,000</div>
-              <div className="hc-fine-meta">Manasa Health Center &mdash; New Jersey, 2023</div>
-              <p className="hc-fine-desc">
-                Disclosed a patient&apos;s mental health diagnosis in a response to a Google review.
-              </p>
+              <div className="hc-fine-meta">Manasa Health Center — New Jersey, 2023</div>
+              <p className="hc-fine-desc">Disclosed a patient&apos;s mental health diagnosis in a response to a Google review.</p>
             </div>
           </div>
           <p className="hc-fines-note">
-            Every one of these traces back to the same instinct &mdash; wanting to set the record straight in
+            Every one of these traces back to the same instinct — wanting to set the record straight in
             public. It&apos;s exactly the instinct RespondPal is built to override.
           </p>
         </div>
       </section>
 
-      <section className="hc-band hc-band-alt">
-        <div className="hc-band-inner">
-          <h2 className="hc-h2">How RespondPal keeps every response inside the line</h2>
-          <div className="hc-body">
-            <div className="hc-principle">
-              <div className="hc-principle-title">Works only from what&apos;s already public</div>
-              <p className="hc-principle-desc">
-                Every draft is built from the review text itself. RespondPal never connects to your EHR, practice
-                management system, or billing platform &mdash; and never needs to.
-              </p>
-            </div>
-            <div className="hc-principle">
-              <div className="hc-principle-title">Held to a stricter standard automatically</div>
-              <p className="hc-principle-desc">
-                Practices in HIPAA-sensitive fields &mdash; dental, medical, mental health, med spa, and similar
-                &mdash; are recognized automatically and drafted under tighter rules than a typical business gets.
-                Those rules were built and refined against real reviews from practices in fields like dental, med
-                spa, and family law, not written from a checklist.
-              </p>
-            </div>
-            <div className="hc-principle">
-              <div className="hc-principle-title">Neutral by design</div>
-              <p className="hc-principle-desc">
-                Responses acknowledge feedback without confirming or disputing the reviewer&apos;s account, because
-                a practice replying publicly is never in a position to verify what happened privately &mdash; and
-                trying to is where most privacy mistakes start.
-              </p>
-            </div>
-            <div className="hc-principle">
-              <div className="hc-principle-title">Screened before it&apos;s ever posted</div>
-              <p className="hc-principle-desc">
-                Every draft is automatically checked for phrasing that could imply patient status, treatment, or
-                billing information before it goes live.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="hc-band hc-band-legal">
-        <div className="hc-band-inner">
-          <h2 className="hc-h2">Do we need a Business Associate Agreement?</h2>
-          <div className="hc-legal-body">
-            <p>
-              Short answer: no. We had outside healthcare-specialized counsel evaluate RespondPal specifically
-              against HIPAA&apos;s definition of a business associate. Because the system only processes information
-              a reviewer has already made public &mdash; and never accesses, stores, or transmits protected health
-              information from your systems &mdash; RespondPal doesn&apos;t meet that definition.
-            </p>
-            <p className="hc-legal-note">
-              If your compliance officer or attorney wants to see the underlying analysis directly, we&apos;re glad
-              to send it &mdash; just ask.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <section className="hc-band hc-band-alt">
-        <div className="hc-band-inner">
-          <h2 className="hc-h2">What a RespondPal response will never do</h2>
-          <div className="hc-body">
-            <div className="hc-guard-item">
-              <div className="hc-guard-icon"><IconNo /></div>
-              <div>
-                <div className="hc-guard-title">Confirm that someone is, or ever was, a patient</div>
-                <p className="hc-guard-desc">
-                  No &ldquo;our patient,&rdquo; no &ldquo;your visit on [date]&rdquo; &mdash; even when it would
-                  read as more personal or polite.
-                </p>
-              </div>
-            </div>
-            <div className="hc-guard-item">
-              <div className="hc-guard-icon"><IconNo /></div>
-              <div>
-                <div className="hc-guard-title">Suggest a records search took place</div>
-                <p className="hc-guard-desc">
-                  Not even to deny something. A denial can confirm just as much as an admission &mdash; &ldquo;we
-                  have no record of this&rdquo; is still a statement about who is and isn&apos;t in the system.
-                </p>
-              </div>
-            </div>
-            <div className="hc-guard-item">
-              <div className="hc-guard-icon"><IconNo /></div>
-              <div>
-                <div className="hc-guard-title">Reference treatment, diagnosis, or medication</div>
-                <p className="hc-guard-desc">
-                  No procedures, conditions, or prescriptions get named in a response &mdash; regardless of what the
-                  reviewer themselves disclosed.
-                </p>
-              </div>
-            </div>
-            <div className="hc-guard-item">
-              <div className="hc-guard-icon"><IconNo /></div>
-              <div>
-                <div className="hc-guard-title">Reference appointment specifics</div>
-                <p className="hc-guard-desc">No dates, times, or which provider someone saw.</p>
-              </div>
-            </div>
-            <div className="hc-guard-item">
-              <div className="hc-guard-icon"><IconNo /></div>
-              <div>
-                <div className="hc-guard-title">Reference billing, payment, or insurance</div>
-                <p className="hc-guard-desc">No confirmation of what was charged, paid, or covered.</p>
-              </div>
-            </div>
-            <div className="hc-guard-item">
-              <div className="hc-guard-icon"><IconNo /></div>
-              <div>
-                <div className="hc-guard-title">Dispute the reviewer&apos;s account</div>
-                <p className="hc-guard-desc">
-                  A public reply can&apos;t verify what happened in a private appointment, so responses acknowledge
-                  feedback without contesting the specifics &mdash; which also tends to land better with anyone
-                  reading it.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="hc-band hc-band-wide">
-        <div className="hc-band-inner">
-          <h2 className="hc-h2">What this looks like on your page</h2>
-          <p className="hc-lede">The same review, handled two ways.</p>
-          <div className="hc-compare">
-            <div className="hc-compare-col">
-              <div className="hc-compare-heading risky">A common instinct</div>
-              <p className="hc-compare-review">
-                &ldquo;Called ahead about my insurance coverage and was told everything was fine, then got a huge
-                bill after my visit. Feels like a bait and switch.&rdquo;
-              </p>
-              <p className="hc-compare-response">
-                We&apos;re sorry about the confusion.{" "}
-                <span className="hc-flag">Our records show your visit was verified with your insurance provider on
-                March 4th</span>, and <span className="hc-flag">the balance reflects your plan&apos;s out-of-pocket
-                costs</span> after they processed the claim.
-              </p>
-              <div className="hc-compare-callouts">
-                <div className="hc-compare-callout"><IconNo className="hc-icon-no" size={13} />Confirms a records search and a specific visit date</div>
-                <div className="hc-compare-callout"><IconNo className="hc-icon-no" size={13} />Confirms billing and insurance details, publicly</div>
-              </div>
-            </div>
-            <div className="hc-compare-col">
-              <div className="hc-compare-heading safe">What RespondPal drafts</div>
-              <p className="hc-compare-review">
-                &ldquo;Called ahead about my insurance coverage and was told everything was fine, then got a huge
-                bill after my visit. Feels like a bait and switch.&rdquo;
-              </p>
-              <p className="hc-compare-response">
-                We&apos;re sorry to hear this, and we understand how frustrating unexpected costs can be. Billing
-                questions are always worth a closer look &mdash; please reach out to our office directly so we can
-                go through this with you.
-              </p>
-              <div className="hc-compare-callouts">
-                <div className="hc-compare-callout"><IconOk className="hc-icon-ok" />Acknowledges the frustration and invites resolution</div>
-                <div className="hc-compare-callout"><IconOk className="hc-icon-ok" />Confirms nothing about the visit, billing, or coverage</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="hc-band hc-cta-band" id="get-started">
-        <div className="hc-cta-watermark" aria-hidden="true">RESPONDPAL</div>
-        <div className="hc-band-inner">
-          <h2 className="hc-h2">See what this looks like for your practice</h2>
-          <p className="hc-lede">
-            We&apos;ll pull your practice&apos;s actual Google and Yelp reviews, flag anything that carries privacy
-            risk, and show you exactly where you stand &mdash; free, no commitment, and nothing about your patients
-            required to do it.
+      {/* HOW RESPONDPAL SOLVES IT */}
+      <section className="ai-section" id="different">
+        <div className="container">
+          <div className="section-label">How we&apos;re different</div>
+          <h2 className="section-h2">Every response stays inside the line.</h2>
+          <p className="section-sub">
+            Practices in HIPAA-sensitive fields — dental, medical, mental health, med spa, and similar —
+            are recognized automatically and drafted under tighter rules than a typical business gets.
           </p>
-          <a className="hc-btn" href="https://www.respondpal.ai/#pricing">
-            Get started
-            <IconArrow />
+          <div className="ai-cards">
+            <div className="ai-card">
+              <div className="ai-card-icon">🔒</div>
+              <h3>Works only from what&apos;s public</h3>
+              <p>Every draft is built from the review text itself. RespondPal never connects to your EHR, practice management system, or billing platform.</p>
+            </div>
+            <div className="ai-card">
+              <div className="ai-card-icon">⚖️</div>
+              <h3>Neutral by design</h3>
+              <p>Responses acknowledge feedback without confirming or disputing the reviewer&apos;s account — a practice replying publicly can never verify what happened privately.</p>
+            </div>
+            <div className="ai-card">
+              <div className="ai-card-icon">🧠</div>
+              <h3>Calibrated on real reviews</h3>
+              <p>Rules were built and refined against real reviews from dental, med spa, and family law practices — not written from a generic checklist.</p>
+            </div>
+            <div className="ai-card">
+              <div className="ai-card-icon">👤</div>
+              <h3>Screened before it posts</h3>
+              <p>Every draft is automatically checked for phrasing that could imply patient status, treatment, or billing information before it goes live.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* BAA */}
+      <section className="hc-legal-band">
+        <div className="container" style={{ textAlign: 'center' }}>
+          <div className="section-label">The legal question</div>
+          <h2 className="section-h2">Do we need a Business Associate Agreement?</h2>
+          <p style={{ margin: '1.5rem auto 0' }}>
+            Short answer: no. We had outside healthcare-specialized counsel evaluate RespondPal
+            specifically against HIPAA&apos;s definition of a business associate. Because the system only
+            processes information a reviewer has already made public — and never accesses, stores, or
+            transmits protected health information from your systems — RespondPal doesn&apos;t meet that
+            definition.
+          </p>
+          <p className="hc-legal-note">
+            If your compliance officer or attorney wants to see the underlying analysis directly,
+            we&apos;re glad to send it — just ask.
+          </p>
+        </div>
+      </section>
+
+      {/* WHAT WE NEVER DO */}
+      <section className="compare-sec">
+        <div className="container">
+          <div className="section-label">The guardrails</div>
+          <h2 className="section-h2">What a RespondPal response will never do.</h2>
+          <div className="hc-guard-list" style={{ maxWidth: 680, margin: '2.5rem auto 0' }}>
+            <div className="hc-guard-row">
+              <div className="hc-guard-icon">✕</div>
+              <div>
+                <h3>Confirm that someone is, or ever was, a patient</h3>
+                <p>No &ldquo;our patient,&rdquo; no &ldquo;your visit on [date]&rdquo; — even when it would read as more personal or polite.</p>
+              </div>
+            </div>
+            <div className="hc-guard-row">
+              <div className="hc-guard-icon">✕</div>
+              <div>
+                <h3>Suggest a records search took place</h3>
+                <p>Not even to deny something. A denial can confirm just as much as an admission.</p>
+              </div>
+            </div>
+            <div className="hc-guard-row">
+              <div className="hc-guard-icon">✕</div>
+              <div>
+                <h3>Reference treatment, diagnosis, or medication</h3>
+                <p>No procedures, conditions, or prescriptions — regardless of what the reviewer disclosed.</p>
+              </div>
+            </div>
+            <div className="hc-guard-row">
+              <div className="hc-guard-icon">✕</div>
+              <div>
+                <h3>Reference appointment specifics</h3>
+                <p>No dates, times, or which provider someone saw.</p>
+              </div>
+            </div>
+            <div className="hc-guard-row">
+              <div className="hc-guard-icon">✕</div>
+              <div>
+                <h3>Reference billing, payment, or insurance</h3>
+                <p>No confirmation of what was charged, paid, or covered.</p>
+              </div>
+            </div>
+            <div className="hc-guard-row">
+              <div className="hc-guard-icon">✕</div>
+              <div>
+                <h3>Dispute the reviewer&apos;s account</h3>
+                <p>A public reply can&apos;t verify what happened in a private appointment, so responses acknowledge feedback without contesting it.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* EXAMPLE — reuses the real compare-sec / compare-col pattern */}
+      <section className="compare-sec" style={{ background: 'var(--black)' }}>
+        <div className="container">
+          <div className="section-label">In practice</div>
+          <h2 className="section-h2">The same review, handled two ways.</h2>
+          <p className="section-sub">
+            &ldquo;Called ahead about my insurance coverage and was told everything was fine, then got a
+            huge bill after my visit. Feels like a bait and switch.&rdquo;
+          </p>
+          <div className="compare-grid">
+            <div className="compare-col bad">
+              <h4>A common instinct</h4>
+              <ul className="clist">
+                <li>&ldquo;Our records show your visit was verified with your insurance provider on March 4th...&rdquo;</li>
+                <li>Confirms a records search and a specific visit date</li>
+                <li>Confirms billing and insurance details, publicly</li>
+              </ul>
+            </div>
+            <div className="compare-col good">
+              <h4>What RespondPal drafts</h4>
+              <ul className="clist">
+                <li>&ldquo;We&apos;re sorry to hear this — billing questions are always worth a closer look. Please reach out to our office directly.&rdquo;</li>
+                <li>Acknowledges the frustration and invites resolution</li>
+                <li>Confirms nothing about the visit, billing, or coverage</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* FINAL CTA — real final-cta class: orange bg, watermark, white h2/p all inherited */}
+      <section className="final-cta" id="pricing">
+        <div className="container">
+          <h2>See what this looks like<br />for your practice.</h2>
+          <p>
+            We&apos;ll pull your practice&apos;s actual Google and Yelp reviews, flag anything that
+            carries privacy risk, and show you exactly where you stand.
+          </p>
+          <a
+            href="https://www.respondpal.ai/#pricing"
+            className="btn-outline"
+            style={{ background: 'white', color: '#111827', borderColor: 'white', fontWeight: 700 }}
+          >
+            Get started →
           </a>
-          <p className="hc-cta-fine">
-            Prefer to see the legal analysis first?{" "}
-            <a href="mailto:hello@respondpal.ai?subject=HIPAA%20documentation%20request">We&apos;re glad to send it.</a>
-          </p>
         </div>
       </section>
 
-      <footer className="hc-band hc-footer">
-        <div className="hc-band-inner">
-          <a className="hc-footer-logo" href="/">RESPOND<span>PAL</span></a>
-          <p className="hc-footer-copy">&copy; 2026 Inboxx Digital LLC, dba RespondPal.ai. All rights reserved.</p>
-          <div className="hc-footer-links">
-            <a href="https://www.respondpal.ai/privacy">Privacy Policy</a>
-            <a href="https://www.respondpal.ai/terms">Terms of Service</a>
-            <a href="mailto:hello@respondpal.ai">hello@respondpal.ai</a>
+      {/* FOOTER — identical to the main site footer */}
+      <footer className="site-footer">
+        <div className="container footer-inner">
+          <p>&copy; {new Date().getFullYear()} RespondPal LLC · respondpal.ai</p>
+          <div className="footer-links">
+            <a href="/terms">Terms</a>
+            <a href="/privacy">Privacy</a>
+            <a href="/details">How it works</a>
+            <a href="/contact">Contact</a>
           </div>
         </div>
       </footer>
-    </div>
-  );
+    </main>
+  )
 }
