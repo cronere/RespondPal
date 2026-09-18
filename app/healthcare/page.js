@@ -3,7 +3,8 @@
 //   App Router:   app/healthcare/page.js  (export default component below works as-is)
 //   Pages Router: pages/healthcare.js
 // No external dependencies beyond the Google Fonts loaded in <head> below.
-// CTA links point to mailto:hello@respondpal.ai — update to your real signup/booking link before publishing.
+// Primary CTA and nav button link to https://www.respondpal.ai/#pricing.
+// Footer links assume /privacy and /terms exist at the site root — update if those paths differ.
 
 const styles = `
   @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Mono:wght@400;500&display=swap');
@@ -20,6 +21,10 @@ const styles = `
     --muted: #7A7F8E;
     --red: #EF4444;
     --red-glow: rgba(239,68,68,0.12);
+    --paper: #F4F2ED;
+    --paper-ink: #14161B;
+    --paper-muted: #5B6169;
+    --paper-line: #E4DFD3;
     --display: 'Bebas Neue', sans-serif;
     --mono: 'DM Mono', monospace;
     --body: 'DM Sans', sans-serif;
@@ -74,19 +79,17 @@ const styles = `
   }
   .hc-logo span { color: var(--orange); }
   .hc-nav-cta {
-    font-family: var(--mono);
-    font-size: 0.78rem;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    font-weight: 500;
+    font-family: var(--body);
+    font-size: 0.88rem;
+    font-weight: 600;
     text-decoration: none;
-    color: var(--white);
-    border: 1px solid var(--border);
-    padding: 9px 16px;
+    color: #ffffff;
+    background: var(--orange);
+    padding: 9px 18px;
     border-radius: 6px;
-    transition: border-color 0.15s, color 0.15s;
+    transition: background 0.15s;
   }
-  .hc-nav-cta:hover { border-color: var(--orange); color: var(--orange); }
+  .hc-nav-cta:hover { background: var(--orange-light); color: #ffffff; }
 
   /* Hero */
   .hc-hero .hc-band-inner { padding-top: 80px; padding-bottom: 64px; }
@@ -113,17 +116,17 @@ const styles = `
     to { opacity: 1; transform: translateY(0); }
   }
 
-  /* Demo card */
+  /* Demo card — light paper treatment, matches the actual audit report's look */
   .hc-demo {
     margin-top: 44px;
-    background: var(--card);
-    border: 1px solid var(--border);
+    background: var(--paper);
+    border: 1px solid var(--paper-line);
     border-radius: 10px;
     padding: 30px 32px;
   }
-  .hc-demo-stars { font-size: 0.9rem; color: var(--muted); margin-bottom: 8px; }
-  .hc-demo-review { font-size: 0.98rem; color: var(--muted); font-style: italic; }
-  .hc-demo-divider { height: 1px; background: var(--border); margin: 22px 0; }
+  .hc-demo-stars { font-size: 0.9rem; color: var(--paper-muted); margin-bottom: 8px; }
+  .hc-demo-review { font-size: 0.98rem; color: var(--paper-muted); font-style: italic; }
+  .hc-demo-divider { height: 1px; background: var(--paper-line); margin: 22px 0; }
   .hc-demo-label {
     font-family: var(--mono);
     font-size: 0.72rem;
@@ -132,12 +135,12 @@ const styles = `
     color: var(--orange);
     margin-bottom: 10px;
   }
-  .hc-demo-response { font-size: 1rem; color: var(--white); }
+  .hc-demo-response { font-size: 1rem; color: var(--paper-ink); }
   .hc-demo-notes {
     display: flex;
     flex-wrap: wrap;
     margin-top: 24px;
-    border-top: 1px solid var(--border);
+    border-top: 1px solid var(--paper-line);
     padding-top: 18px;
   }
   .hc-demo-note {
@@ -145,10 +148,10 @@ const styles = `
     align-items: center;
     gap: 7px;
     font-size: 0.85rem;
-    color: var(--muted);
+    color: var(--paper-muted);
     padding: 4px 18px 4px 0;
     margin-right: 18px;
-    border-right: 1px solid var(--border);
+    border-right: 1px solid var(--paper-line);
   }
   .hc-demo-note:last-child { border-right: none; margin-right: 0; }
   .hc-icon-ok { color: var(--orange); flex-shrink: 0; }
@@ -180,16 +183,16 @@ const styles = `
     display: grid;
     grid-template-columns: 1fr;
     gap: 1px;
-    background: var(--border);
-    border: 1px solid var(--border);
+    background: var(--paper-line);
+    border: 1px solid var(--paper-line);
     border-radius: 10px;
     overflow: hidden;
   }
   @media (min-width: 760px) { .hc-fines { grid-template-columns: repeat(3, 1fr); } }
-  .hc-fine-card { background: var(--card); padding: 28px 26px; }
-  .hc-fine-amount { font-family: var(--display); font-size: 2.4rem; color: var(--red); line-height: 1; }
-  .hc-fine-meta { font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.5px; color: var(--muted); margin-top: 10px; }
-  .hc-fine-desc { margin-top: 10px; font-size: 0.88rem; color: var(--muted); }
+  .hc-fine-card { background: var(--paper); padding: 28px 26px; }
+  .hc-fine-amount { font-family: var(--display); font-size: 2.4rem; color: #B91C1C; line-height: 1; }
+  .hc-fine-meta { font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.5px; color: var(--paper-muted); margin-top: 10px; }
+  .hc-fine-desc { margin-top: 10px; font-size: 0.88rem; color: var(--paper-ink); }
   .hc-fines-note { margin-top: 24px; color: var(--muted); max-width: 42em; }
 
   /* Guard list */
@@ -239,39 +242,64 @@ const styles = `
   .hc-compare-callout:first-child { margin-top: 0; }
   .hc-compare-callout svg { margin-top: 2px; flex-shrink: 0; }
 
-  /* CTA */
-  .hc-cta-band { background: var(--card); border-top: 1px solid var(--border); }
-  .hc-cta-band .hc-h2 { max-width: 18em; }
+  /* CTA — orange band with a white pill button, matches respondpal.ai's own CTA treatment */
+  .hc-cta-band { background: var(--orange); position: relative; overflow: hidden; }
+  .hc-cta-band .hc-band-inner { position: relative; z-index: 1; }
+  .hc-cta-watermark {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--display);
+    font-size: 220px;
+    color: rgba(20,16,12,0.06);
+    white-space: nowrap;
+    pointer-events: none;
+  }
+  .hc-cta-band .hc-h2 { max-width: 18em; color: #14100C; }
+  .hc-cta-band .hc-lede { color: rgba(20,16,12,0.72); }
   .hc-btn {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
     margin-top: 32px;
-    padding: 15px 30px;
-    background: var(--orange);
-    color: #0A0A0A;
+    padding: 17px 34px;
+    background: #ffffff;
+    color: var(--orange);
     text-decoration: none;
     font-weight: 700;
-    font-size: 0.98rem;
-    border-radius: 6px;
-    transition: background 0.15s, box-shadow 0.15s;
+    font-size: 1rem;
+    border-radius: 8px;
+    transition: transform 0.2s, box-shadow 0.2s;
   }
-  .hc-btn:hover { background: var(--orange-light); color: #0A0A0A; box-shadow: 0 0 0 6px var(--orange-glow); }
-  .hc-cta-fine { margin-top: 20px; font-size: 0.88rem; color: var(--muted); }
-  .hc-cta-fine a { color: var(--muted); text-decoration: underline; }
-  .hc-cta-fine a:hover { color: var(--white); }
+  .hc-btn:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(0,0,0,0.25); color: var(--orange); }
+  .hc-cta-fine { margin-top: 20px; font-size: 0.88rem; color: rgba(20,16,12,0.6); }
+  .hc-cta-fine a { color: #14100C; text-decoration: underline; }
+  .hc-cta-fine a:hover { color: #000000; }
 
   /* Footer */
   .hc-footer .hc-band-inner {
-    padding-top: 40px;
-    padding-bottom: 40px;
+    padding-top: 48px;
+    padding-bottom: 48px;
     display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    gap: 12px;
-    font-size: 0.86rem;
-    color: var(--muted);
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+    text-align: center;
   }
-  .hc-footer a { color: var(--muted); text-decoration: underline; }
-  .hc-footer a:hover { color: var(--white); }
+  .hc-footer-logo {
+    font-family: var(--display);
+    font-size: 22px;
+    letter-spacing: 0.5px;
+    color: var(--white);
+    text-decoration: none;
+  }
+  .hc-footer-logo span { color: var(--orange); }
+  .hc-footer-copy { font-size: 0.82rem; color: var(--muted); }
+  .hc-footer-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 22px; }
+  .hc-footer-links a { font-size: 0.85rem; color: var(--muted); text-decoration: none; }
+  .hc-footer-links a:hover { color: var(--white); }
 `;
 
 function IconOk({ className }) {
@@ -292,6 +320,14 @@ function IconNo({ className, size }) {
   );
 }
 
+function IconArrow() {
+  return (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
 export default function HealthcarePage() {
   return (
     <div className="hc-page">
@@ -299,7 +335,7 @@ export default function HealthcarePage() {
 
       <nav className="hc-nav">
         <a className="hc-logo" href="/">RESPOND<span>PAL</span></a>
-        <a className="hc-nav-cta" href="#get-started">Get started</a>
+        <a className="hc-nav-cta" href="https://www.respondpal.ai/#pricing">Get started</a>
       </nav>
 
       <header className="hc-band hc-hero">
@@ -322,7 +358,7 @@ export default function HealthcarePage() {
             <p className="hc-demo-response">
               Thank you for taking the time to share this. Feeling rushed or unheard is never the experience we want
               for anyone who visits us. We&apos;d welcome the chance to talk more directly &mdash; please reach out
-              to our office whenever works for you.
+              to our office at your convenience.
             </p>
             <div className="hc-demo-notes">
               <div className="hc-demo-note"><IconOk className="hc-icon-ok" />No patient status confirmed</div>
@@ -559,6 +595,7 @@ export default function HealthcarePage() {
       </section>
 
       <section className="hc-band hc-cta-band" id="get-started">
+        <div className="hc-cta-watermark" aria-hidden="true">RESPONDPAL</div>
         <div className="hc-band-inner">
           <h2 className="hc-h2">See what this looks like for your practice</h2>
           <p className="hc-lede">
@@ -566,8 +603,9 @@ export default function HealthcarePage() {
             risk, and show you exactly where you stand &mdash; free, no commitment, and nothing about your patients
             required to do it.
           </p>
-          <a className="hc-btn" href="mailto:hello@respondpal.ai?subject=Getting%20started%20with%20RespondPal">
+          <a className="hc-btn" href="https://www.respondpal.ai/#pricing">
             Get started
+            <IconArrow />
           </a>
           <p className="hc-cta-fine">
             Prefer to see the legal analysis first?{" "}
@@ -578,8 +616,13 @@ export default function HealthcarePage() {
 
       <footer className="hc-band hc-footer">
         <div className="hc-band-inner">
-          <span>RespondPal &mdash; review responses built for regulated industries.</span>
-          <a href="mailto:hello@respondpal.ai">hello@respondpal.ai</a>
+          <a className="hc-footer-logo" href="/">RESPOND<span>PAL</span></a>
+          <p className="hc-footer-copy">&copy; 2026 Inboxx Digital LLC, dba RespondPal.ai. All rights reserved.</p>
+          <div className="hc-footer-links">
+            <a href="https://www.respondpal.ai/privacy">Privacy Policy</a>
+            <a href="https://www.respondpal.ai/terms">Terms of Service</a>
+            <a href="mailto:hello@respondpal.ai">hello@respondpal.ai</a>
+          </div>
         </div>
       </footer>
     </div>
