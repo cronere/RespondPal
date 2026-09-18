@@ -116,7 +116,7 @@ NAME / NO-TEXT / READ-THE-WHOLE-REVIEW (universal)
 - No-text/star-only review: don't thank them for a "review/post" that isn't there.
 - READ THE WHOLE REVIEW + weight the star rating. Don't gush thanks on a low-star review
   (a shop thanked a 3-star complaint about a missed repair "for the kind review" — never
-  do this).
+  do this). 
 
 ────────────────────────────────────────────────────────
 POSITIVE REVIEWS
