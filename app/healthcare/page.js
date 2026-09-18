@@ -8,6 +8,7 @@
 // equivalent on the main site (the principle-row divider list, the guard list,
 // and the fine-amount cards).
 'use client'
+import { useState } from 'react'
 import Image from 'next/image'
 
 const localStyles = `
@@ -43,12 +44,17 @@ const localStyles = `
   .hc-fines-note { text-align: center; margin-top: 2rem; font-size: 0.95rem; color: var(--light-muted); }
 
   .hc-legal-band { background: var(--card); padding: 5rem 0; }
-  .hc-legal-band p { color: var(--text); max-width: 42em; margin: 0 auto; text-align: left; font-size: 0.95rem; line-height: 1.7; }
+  .hc-legal-band p { color: var(--text); max-width: 42em; margin: 0 auto; text-align: center; font-size: 0.95rem; line-height: 1.7; }
   .hc-legal-band p + p { margin-top: 1rem; }
   .hc-legal-note { color: var(--muted) !important; font-size: 0.875rem !important; }
+
+  .hc-centered-cards .ai-card { text-align: center; }
+  .hc-centered-cards .ai-card-icon { font-size: 2rem; }
 `
 
 export default function HealthcarePage() {
+  const [menuOpen, setMenuOpen] = useState(false)
+
   return (
     <main>
       <style>{localStyles}</style>
@@ -56,7 +62,9 @@ export default function HealthcarePage() {
       {/* NAV — identical to the main site nav */}
       <nav className="nav" style={{ position: 'relative' }}>
         <div className="nav-inner">
-          <Image src="/logo-white.png" alt="RespondPal" className="nav-logo" width={180} height={36} />
+          <a href="/" aria-label="RespondPal home">
+            <Image src="/logo-white.png" alt="RespondPal" className="nav-logo" width={180} height={36} />
+          </a>
           <div className="desktop-links">
             <a href="/#how">How it works</a>
             <a href="/#different">Our AI</a>
@@ -65,7 +73,24 @@ export default function HealthcarePage() {
             <a href="/details">Details</a>
             <a href="/#pricing" className="nav-cta">Get started</a>
           </div>
+          <button
+            className={`hamburger${menuOpen ? ' open' : ''}`}
+            onClick={() => setMenuOpen(!menuOpen)}
+            aria-label="Toggle menu"
+          >
+            <span /><span /><span />
+          </button>
         </div>
+        {menuOpen && (
+          <div className="mobile-menu open">
+            <a href="/#how" onClick={() => setMenuOpen(false)}>How it works</a>
+            <a href="/#different" onClick={() => setMenuOpen(false)}>Our AI</a>
+            <a href="/#features" onClick={() => setMenuOpen(false)}>What&apos;s included</a>
+            <a href="/#pricing" onClick={() => setMenuOpen(false)}>Pricing</a>
+            <a href="/details" onClick={() => setMenuOpen(false)}>Details</a>
+            <a href="/#pricing" onClick={() => setMenuOpen(false)}>Get started</a>
+          </div>
+        )}
       </nav>
 
       {/* HERO */}
@@ -108,7 +133,7 @@ export default function HealthcarePage() {
       </section>
 
       {/* WHY PRACTICES GO QUIET */}
-      <section className="ai-section">
+      <section className="ai-section" style={{ background: 'var(--card)' }}>
         <div className="container">
           <div className="section-label">Why practices go quiet</div>
           <h2 className="section-h2">Silence has a cost too.</h2>
@@ -169,7 +194,7 @@ export default function HealthcarePage() {
             Practices in HIPAA-sensitive fields — dental, medical, mental health, med spa, and similar —
             are recognized automatically and drafted under tighter rules than a typical business gets.
           </p>
-          <div className="ai-cards">
+          <div className="ai-cards hc-centered-cards">
             <div className="ai-card">
               <div className="ai-card-icon">🔒</div>
               <h3>Works only from what&apos;s public</h3>
@@ -214,7 +239,7 @@ export default function HealthcarePage() {
       </section>
 
       {/* WHAT WE NEVER DO */}
-      <section className="compare-sec">
+      <section className="compare-sec" style={{ background: 'var(--black)' }}>
         <div className="container">
           <div className="section-label">The guardrails</div>
           <h2 className="section-h2">What a RespondPal response will never do.</h2>
@@ -266,7 +291,7 @@ export default function HealthcarePage() {
       </section>
 
       {/* EXAMPLE — reuses the real compare-sec / compare-col pattern */}
-      <section className="compare-sec" style={{ background: 'var(--black)' }}>
+      <section className="compare-sec">
         <div className="container">
           <div className="section-label">In practice</div>
           <h2 className="section-h2">The same review, handled two ways.</h2>
