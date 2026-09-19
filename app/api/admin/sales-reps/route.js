@@ -32,7 +32,7 @@ function escapeHtml(str) {
 // them. The cleanup tier's own link doesn't get this upsell added to
 // itself — offering "add cleanup" on the cleanup link would be circular.
 //
-// trial: when true, generates the 14-day free trial variant instead —
+// trial: when true, generates the 30-day free trial variant instead —
 // same tiers, same rep attribution, but with subscription_data.
 // trial_period_days set so the subscription starts free and auto-converts
 // to paid unless the client cancels first (card is still collected up
@@ -70,7 +70,7 @@ async function buildLinkSet(stripe, repId, repName, { trial } = {}) {
       linkParams.optional_items = [{ price: TIER_PRICE_IDS.cleanup, quantity: 1 }]
     }
     if (trial) {
-      linkParams.subscription_data = { trial_period_days: 14 }
+      linkParams.subscription_data = { trial_period_days: 30 }
     }
     const link = await stripe.paymentLinks.create(linkParams)
     links[tier] = link.url
