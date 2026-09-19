@@ -20,6 +20,7 @@ export default function ResponseDemoDetail() {
   const [savingDetails, setSavingDetails] = useState(false)
   const [showAddForm, setShowAddForm] = useState(false)
   const [newReview, setNewReview] = useState({ reviewer_name: '', platform: 'Google', star_rating: '', review_text: '' })
+  const [redeemedBy, setRedeemedBy] = useState('')
 
   const load = () => {
     setLoading(true)
@@ -30,6 +31,28 @@ export default function ResponseDemoDetail() {
   }
 
   useEffect(load, [id])
+
+  // Marks (or un-marks) this business as having taken the free-month offer
+  // from their letter — just a plain flag for your own tracking. No code
+  // involved: whoever calls or emails you in already tells you who they
+  // are, so there's nothing to look up that a conversation doesn't already
+  // answer.
+  const toggleFreeMonth = async () => {
+    const body = demo.free_month_claimed_at
+      ? { free_month_claimed_at: null, free_month_claimed_by: null }
+      : { free_month_claimed_at: new Date().toISOString(), free_month_claimed_by: redeemedBy || null }
+    try {
+      const res = await fetch(`/api/admin/response-demos/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      })
+      const data = await res.json()
+      if (res.ok) setDemo(data.demo)
+    } catch {
+      // best-effort — nothing else depends on this succeeding
+    }
+  }
 
   const generate = async () => {
     setGenerating(true); setMsg('')
@@ -229,6 +252,36 @@ export default function ResponseDemoDetail() {
           )}
         </div>
       </header>
+
+      <div
+        className="admin-warning-banner"
+        style={{
+          background: demo.free_month_claimed_at ? '#f0fdf4' : '#FFF7ED',
+          borderColor: demo.free_month_claimed_at ? '#86efac' : '#FDBA74',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem',
+        }}
+      >
+        <span>
+          {demo.free_month_claimed_at ? (
+            <>Took the free month — {new Date(demo.free_month_claimed_at).toLocaleDateString()}{demo.free_month_claimed_by ? ` (${demo.free_month_claimed_by})` : ''}</>
+          ) : (
+            <>Free month from the letter not yet claimed</>
+          )}
+        </span>
+        <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          {!demo.free_month_claimed_at && (
+            <input
+              placeholder="Who took the call? (optional)"
+              value={redeemedBy}
+              onChange={(e) => setRedeemedBy(e.target.value)}
+              style={{ fontSize: '0.8rem', padding: '0.35rem 0.6rem', border: '1px solid #e5e7eb', borderRadius: 6 }}
+            />
+          )}
+          <button className="rev-mini-btn" onClick={toggleFreeMonth}>
+            {demo.free_month_claimed_at ? 'Undo' : 'Mark claimed'}
+          </button>
+        </span>
+      </div>
 
       {!demo.industry && (
         <div className="admin-warning-banner">
