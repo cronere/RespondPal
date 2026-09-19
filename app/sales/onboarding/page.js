@@ -96,18 +96,18 @@ export default function SalesOnboarding() {
 
       {hasTrialLinks && (
         <div className="drawer-section" style={{ maxWidth: 620, background: '#FFF7ED', border: '1px solid #FDBA74' }}>
-          <div className="drawer-section-label">Free 14-day trial links</div>
+          <div className="drawer-section-label">Free 30-day trial links</div>
           <p style={{ fontSize: '0.82rem', color: '#6b7280', marginBottom: '0.9rem' }}>
             Use these at your discretion when a prospect needs the extra reassurance to close — not
             your default. A card is still collected at signup, so it converts to a normal paid
-            subscription automatically after 14 days unless they cancel first. No Cleanup add-on on
+            subscription automatically after 30 days unless they cancel first. No Cleanup add-on on
             these — if they want that too, send the Cleanup link separately.
           </p>
           <div className="demo-list">
             {trialStripeLinks.map((l) => (
               <div className="response-demo-card" key={l.tier} style={{ cursor: 'default' }}>
                 <div>
-                  <div className="demo-card-name">{l.plan} — 14-day trial</div>
+                  <div className="demo-card-name">{l.plan} — 30-day trial</div>
                   <div className="demo-card-meta">Then {FALLBACK_LINKS[l.tier]?.price}</div>
                 </div>
                 <div style={{ display: 'flex', gap: '0.5rem' }}>
