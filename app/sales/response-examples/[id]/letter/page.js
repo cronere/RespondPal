@@ -255,7 +255,7 @@ function TriggerLetterForm() {
 
         <div style={{ marginBottom: '0.3in' }}>
           If you&apos;d like, I can make sure every new review gets a thoughtful response like this one — within
-          24 hours, every time. $397/month, cancel anytime.
+          24 hours, every time. Your first month is free; $397/month after that, cancel anytime.
         </div>
 
         <div>
