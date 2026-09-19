@@ -347,7 +347,7 @@ export default function SalesTeam() {
                 )}
 
                 <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#6b7280', textTransform: 'uppercase', marginTop: '1.1rem', marginBottom: '0.6rem' }}>
-                  Trial Payment Links (14-day)
+                  Trial Payment Links (30-day)
                 </div>
                 {!selectedRep.stripe_trial_payment_links || Object.keys(selectedRep.stripe_trial_payment_links).length === 0 ? (
                   <p style={{ fontSize: '0.82rem', color: '#9ca3af' }}>
