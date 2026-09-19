@@ -8,7 +8,7 @@ export const revalidate = 0
 const EDITABLE_FIELDS = [
   'business_name', 'industry', 'contact_name', 'contact_email',
   'google_url', 'yelp_url', 'total_reviews', 'response_rate',
-  'reviews', 'status',
+  'reviews', 'status', 'free_month_claimed_at', 'free_month_claimed_by',
 ]
 
 export async function GET(req, { params }) {
