@@ -16,9 +16,8 @@ export default function Home() {
             <a href="#how">How it works</a>
             <a href="#different">Our AI</a>
             <a href="#features">What&apos;s included</a>
-            <a href="#pricing">Pricing</a>
             <a href="/details">Details</a>
-            <a href="#pricing" className="nav-cta">Get started</a>
+            <a href="mailto:team@respondpal.ai" className="nav-cta">Contact</a>
           </div>
           <button
             className={`hamburger${menuOpen ? ' open' : ''}`}
@@ -33,9 +32,8 @@ export default function Home() {
             <a href="#how" onClick={() => setMenuOpen(false)}>How it works</a>
             <a href="#different" onClick={() => setMenuOpen(false)}>Our AI</a>
             <a href="#features" onClick={() => setMenuOpen(false)}>What&apos;s included</a>
-            <a href="#pricing" onClick={() => setMenuOpen(false)}>Pricing</a>
             <a href="/details" onClick={() => setMenuOpen(false)}>Details</a>
-            <a href="#pricing" onClick={() => setMenuOpen(false)}>Get started</a>
+            <a href="mailto:team@respondpal.ai" onClick={() => setMenuOpen(false)}>Contact</a>
           </div>
         )}
       </nav>
@@ -43,7 +41,7 @@ export default function Home() {
       {/* HERO */}
       <section className="hero">
         <div className="container">
-          <div className="hero-eyebrow">Intelligent review response management</div>
+          <div className="hero-eyebrow">RespondPal is no longer accepting new clients</div>
           <h1>
             AI-Drafted. Human-Approved.<br />
             <em>Every review. Every time.</em>
@@ -54,7 +52,6 @@ export default function Home() {
             restaurants, and more. A human approves every response before it goes live. You do nothing.
           </p>
           <div className="hero-cta-group">
-            <a href="#pricing" className="btn-orange">Get started today →</a>
             <a href="#demo" className="btn-outline">See a live example</a>
           </div>
           <div className="hero-stats">
@@ -308,58 +305,14 @@ export default function Home() {
       </section>
 
 
-      {/* PRICING */}
-      <section className="pricing" id="pricing">
+      {/* CLOSED NOTICE */}
+      <section className="pricing" id="closed">
         <div className="container">
-          <div className="section-label">Pricing</div>
-          <h2 className="section-h2">Simple pricing.<br />No surprises.</h2>
+          <div className="section-label">Status</div>
+          <h2 className="section-h2">RespondPal is no longer<br />accepting new clients.</h2>
           <p className="section-sub">
-            Flat monthly rate. No contracts. No setup fees. Cancel anytime.
+            Questions? Email <a href="mailto:team@respondpal.ai" style={{ color: '#C2410C', fontWeight: 600 }}>team@respondpal.ai</a>.
           </p>
-          <div className="pricing-cards">
-            <div className="price-card">
-              <div className="price-name">1 Location</div>
-              <div className="price-amount">$397<span>/mo</span></div>
-              <div className="pricing-includes">
-                <div>✓ Google &amp; Yelp responses</div>
-                <div>✓ Unlimited reviews</div>
-                <div>✓ 24-hour guarantee</div>
-                <div>✓ Industry-calibrated AI</div>
-                <div>✓ Human-approved</div>
-                <div>✓ Quarterly intelligence report</div>
-              </div>
-              <a href="https://buy.stripe.com/00w7sNfC78JR3ndeo9ebu00" className="btn-orange" style={{ marginTop: 'auto' }}>Get started →</a>
-            </div>
-            <div className="price-card featured">
-              <div className="price-name">2 Locations</div>
-              <div className="price-amount">$649<span>/mo</span></div>
-              <div className="price-save">Save $145/mo</div>
-              <div className="pricing-includes">
-                <div>✓ Everything in 1 Location</div>
-                <div>✓ Both locations covered</div>
-                <div>✓ Unified brand voice</div>
-              </div>
-              <a href="https://buy.stripe.com/28E5kF89FbW3g9Z2Frebu01" className="btn-orange" style={{ marginTop: 'auto' }}>Get started →</a>
-            </div>
-            <div className="price-card">
-              <div className="price-name">3 Locations</div>
-              <div className="price-amount">$897<span>/mo</span></div>
-              <div className="price-save">Save $294/mo</div>
-              <div className="pricing-includes">
-                <div>✓ Everything in 1 Location</div>
-                <div>✓ All three locations covered</div>
-                <div>✓ Unified brand voice</div>
-              </div>
-              <a href="https://buy.stripe.com/00w3cx89F2lt8Hxeo9ebu02" className="btn-orange" style={{ marginTop: 'auto' }}>Get started →</a>
-            </div>
-          </div>
-          <p className="section-sub" style={{ marginTop: '1.5rem', fontSize: '0.95rem' }}>
-            <strong>4+ locations or enterprise?</strong> <a href="mailto:team@respondpal.ai" style={{ color: '#C2410C', fontWeight: 600 }}>Contact us</a> for custom pricing — high-volume accounts welcome.
-          </p>
-          <div className="pricing-addon">
-            <div className="pricing-addon-badge">Add-on</div>
-            <p><strong>Reputation Risk Audit &amp; Cleanup — $297 one-time.</strong> We scan every existing response on your profile for red flags — privacy slip-ups, combative replies, tone-deaf templates — and rewrite what needs fixing. We also respond to every unanswered 1–3 star review from the last 180 days. One flat fee, your profile fully cleaned up and protected.</p>
-          </div>
         </div>
       </section>
 
@@ -376,7 +329,7 @@ export default function Home() {
               { q: 'Is a human actually reviewing every response?',
                 a: 'Yes. Every response is reviewed by a human before it goes live on your profile. We never auto-post. You get the speed and consistency of AI with the quality control of a real person.' },
               { q: 'What if I don\'t like a response after it\'s posted?',
-                a: 'Just let us know. We\'ll revise or replace it — no questions asked. You can also submit ongoing guidance through our feedback form to refine future responses.' },
+                a: 'Just let us know. We\'ll revise or replace it — no questions asked.' },
               { q: 'How do you handle negative reviews?',
                 a: 'Carefully. Our AI is specifically engineered to handle complaints — it never argues, never gets defensive, never concedes fault inappropriately, and never uses a generic template. Every negative review gets a composed, professional response that protects your reputation.' },
               { q: 'Do I need to give you my password?',
@@ -412,9 +365,8 @@ export default function Home() {
       {/* FINAL CTA */}
       <section className="final-cta">
         <div className="container">
-          <h2>Your reviews deserve better<br />than silence — or templates.</h2>
-          <p>AI-drafted. Human-approved. Live within 48 hours. Cancel anytime.</p>
-          <a href="#pricing" className="btn-outline" style={{ background: 'white', color: '#111827', borderColor: 'white', fontWeight: 700 }}>See pricing →</a>
+          <h2>RespondPal is no longer<br />accepting new clients.</h2>
+          <p>Questions? Email team@respondpal.ai.</p>
         </div>
       </section>
 
