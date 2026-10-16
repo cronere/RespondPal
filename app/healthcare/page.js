@@ -92,9 +92,8 @@ export default function HealthcarePage() {
             <a href="/#how">How it works</a>
             <a href="/#different">Our AI</a>
             <a href="/#features">What&apos;s included</a>
-            <a href="/#pricing">Pricing</a>
             <a href="/details">Details</a>
-            <a href="/#pricing" className="nav-cta">Get started</a>
+            <a href="mailto:team@respondpal.ai" className="nav-cta">Contact</a>
           </div>
           <button
             className={`hamburger${menuOpen ? ' open' : ''}`}
@@ -109,9 +108,8 @@ export default function HealthcarePage() {
             <a href="/#how" onClick={() => setMenuOpen(false)}>How it works</a>
             <a href="/#different" onClick={() => setMenuOpen(false)}>Our AI</a>
             <a href="/#features" onClick={() => setMenuOpen(false)}>What&apos;s included</a>
-            <a href="/#pricing" onClick={() => setMenuOpen(false)}>Pricing</a>
             <a href="/details" onClick={() => setMenuOpen(false)}>Details</a>
-            <a href="/#pricing" onClick={() => setMenuOpen(false)}>Get started</a>
+            <a href="mailto:team@respondpal.ai" onClick={() => setMenuOpen(false)}>Contact</a>
           </div>
         )}
       </nav>
@@ -339,21 +337,11 @@ export default function HealthcarePage() {
         </div>
       </section>
 
-      {/* FINAL CTA — real final-cta class: orange bg, watermark, white h2/p all inherited */}
-      <section className="final-cta" id="pricing">
+      {/* CLOSED NOTICE */}
+      <section className="final-cta" id="closed">
         <div className="container">
-          <h2>See what this looks like<br />for your practice.</h2>
-          <p>
-            We&apos;ll pull your practice&apos;s actual Google and Yelp reviews, flag anything that
-            carries privacy risk, and show you exactly where you stand.
-          </p>
-          <a
-            href="https://www.respondpal.ai/#pricing"
-            className="btn-outline"
-            style={{ background: 'white', color: '#111827', borderColor: 'white', fontWeight: 700 }}
-          >
-            Get started →
-          </a>
+          <h2>RespondPal is no longer<br />accepting new clients.</h2>
+          <p>Questions? Email team@respondpal.ai.</p>
         </div>
       </section>
 

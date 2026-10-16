@@ -15,8 +15,6 @@ export default function Contact() {
           </a>
           <div className="desktop-links">
             <a href="/#how">How it works</a>
-            <a href="/#pricing">Pricing</a>
-            <a href="/#pricing" className="nav-cta">Get started</a>
           </div>
         </div>
       </nav>
@@ -28,8 +26,8 @@ export default function Contact() {
             We&apos;re here to help.
           </h1>
           <p className="hero-sub" style={{ fontSize: '1.05rem', maxWidth: 480 }}>
-            Questions about your account, your audit report, or our service?
-            Reach out anytime — we typically respond within a few hours.
+            RespondPal is no longer accepting new clients. If you have a question
+            about an existing account, please email us.
           </p>
 
           <div style={{
@@ -54,7 +52,7 @@ export default function Contact() {
                 Response time
               </div>
               <p style={{ color: 'rgba(255,255,255,0.75)', fontSize: '0.95rem', margin: 0 }}>
-                We respond to all inquiries within one business day, usually much faster.
+                We will reply as soon as we can.
               </p>
             </div>
           </div>

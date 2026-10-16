@@ -16,7 +16,7 @@ export default function Details() {
           <Link href="/">
             <Image src="/logo-white.png" alt="RespondPal" className="details-nav-logo" width={180} height={36} />
           </Link>
-          <a href="/#pricing" className="details-nav-cta">Get started</a>
+          <a href="mailto:team@respondpal.ai" className="details-nav-cta">Contact</a>
         </div>
       </nav>
 
@@ -196,53 +196,6 @@ export default function Details() {
           </div>
         </section>
 
-        {/* Pricing */}
-        <section className="details-section">
-          <div className="details-label">Pricing — Flat Monthly Rate, No Contracts</div>
-          <div className="details-pricing">
-            <div className="details-price">
-              <div className="details-price-name">1 Location</div>
-              <div className="details-price-amount">$397</div>
-              <div className="details-price-period">per month</div>
-            </div>
-            <div className="details-price">
-              <div className="details-price-name">2 Locations</div>
-              <div className="details-price-amount">$649</div>
-              <div className="details-price-period">per month · save $145</div>
-            </div>
-            <div className="details-price">
-              <div className="details-price-name">3 Locations</div>
-              <div className="details-price-amount">$897</div>
-              <div className="details-price-period">per month · save $294</div>
-            </div>
-            <div className="details-price details-price-custom">
-              <div className="details-price-name">4+ Locations / Enterprise</div>
-              <div className="details-price-amount sm">Custom</div>
-              <div className="details-price-period">high-volume accounts welcome — contact us for a rate</div>
-            </div>
-          </div>
-          <p className="details-price-note">
-            No setup fees. No long-term contracts. Billed monthly in advance —
-            cancel anytime and you won&apos;t be charged again.
-          </p>
-        </section>
-
-        {/* Reputation Risk Audit & Cleanup */}
-        <section className="details-section">
-          <div className="details-label">Optional Add-On — Reputation Risk Audit &amp; Cleanup ($297 one-time)</div>
-          <div className="details-cleanup">
-            <p>
-              Most businesses have two problems on their profile right now: reviews
-              that were never answered, and responses that were answered badly.
-              Our one-time Risk Audit &amp; Cleanup does both. We scan every existing
-              response on your profile for red flags — privacy slip-ups, combative
-              replies, generic templates — and rewrite what needs fixing. We also
-              respond to every unanswered 1–3 star review from the last 180 days.
-              Completed within 5 business days. Most clients add this at signup.
-            </p>
-          </div>
-        </section>
-
         {/* Why It Matters */}
         <section className="details-section">
           <div className="details-label">Why This Matters More Than Ever</div>
@@ -284,16 +237,12 @@ export default function Details() {
           </div>
         </section>
 
-        {/* CTA */}
+        {/* CLOSED NOTICE */}
         <section className="details-cta">
-          <h2>Ready to get started?</h2>
-          <p>Setup takes less than 10 minutes. Live within 48 hours. No contract.</p>
+          <h2>RespondPal is no longer accepting new clients.</h2>
           <div className="details-cta-buttons">
-            <a href="/#pricing" className="details-btn-primary">
-              Get started today
-            </a>
             <Link href="/" className="details-btn-outline">
-              Learn more
+              Back to home
             </Link>
           </div>
           <p className="details-cta-contact">
